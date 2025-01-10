@@ -41,13 +41,9 @@ spec:
   liveness:
     path: "/"
     port: 3000
-    initialDelay: 20
-    timeout: 60
   readiness:
     path: "/"
     port: 3000
-    initialDelay: 20
-    timeout: 60
   replicas:
     min: 1
     max: 1
