@@ -1,0 +1,50 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: europe-north1-docker.pkg.dev/nais-io/nais/images
+
+jobs:
+  build_push_sign:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/platform-build-push-sign@main
+        id: image
+        with:
+          name: my-copilot
+          google_service_account: gh-my-copilot
+          push: ${{ github.actor != 'dependabot[bot]' }}
+          workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
+    outputs:
+      version: ${{ steps.image.outputs.version }}
+  rollout:
+    permissions:
+      id-token: write
+    name: Deploy to NAIS
+    needs: ["build_push_sign"]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: nais/deploy/actions/deploy@v2
+      env:
+        CLUSTER: dev-gcp
+        TEAM: aura
+        PRINT_PAYLOAD: "true"
+        RESOURCE: ".nais/app.yaml"
+        VARS: ".nais/dev.yaml"
+        VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=aura
