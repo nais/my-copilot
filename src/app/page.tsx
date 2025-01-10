@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 export default async function Home() {
 
   const headersList = headers();
-  const authorizationHeader = (await headersList).get("authorization");
+  const authorizationHeader = (await headersList).get("Authorization");
   console.log(authorizationHeader);
 
   return (
