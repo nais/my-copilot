@@ -68,7 +68,7 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
       keyData,
       { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } },
       true,
-      ["verify"]
+      ["verify", "sign"]
     );
     const isValid = await crypto.subtle.verify(
       { name: "RSASSA-PKCS1-v1_5" },
