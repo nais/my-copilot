@@ -13,8 +13,8 @@ type User = {
 
 const loginEndpoint = '/oauth2/login';
 
-const publicKey = process.env.AZURE_APP_JWKS;
-if (!publicKey && process.env.NODE_ENV !== "development") {
+const publicKeys = process.env.AZURE_APP_JWKS;
+if (!publicKeys && process.env.NODE_ENV !== "development") {
   throw new Error("Public key is not defined in environment variables");
 }
 
@@ -47,13 +47,19 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
     }
 
     // Verify the public key
-    if (!publicKey) {
+    if (!publicKeys) {
       throw new Error(`Public key is not defined in environment variables`);
     }
 
     // Verify the signature using Web Crypto API
     const data = `${header}.${payload}`;
-    const keyData = JSON.parse(publicKey);
+    const keysData = JSON.parse(publicKeys);
+
+    if (!Array.isArray(keysData.keys) || keysData.keys.length === 0) {
+      throw new Error("Invalid JWK format. Expected: keys array with at least one key");
+    }
+
+    const keyData = keysData.keys[0];
     if (!keyData.kty || !keyData.n || !keyData.e) {
       throw new Error(`Invalid JWK format. Expected: kty, n, e properties, got: ${JSON.stringify(keyData)}`);
     }
