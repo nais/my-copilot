@@ -56,12 +56,12 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
     const key = await crypto.subtle.importKey(
       "jwk",
       JSON.parse(publicKey),
-      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } },
       true,
       ["verify"]
     );
     const isValid = await crypto.subtle.verify(
-      "RSASSA-PKCS1-v1_5",
+      { name: "RSASSA-PKCS1-v1_5" },
       key,
       Buffer.from(signature, "base64"),
       Buffer.from(data)
@@ -73,7 +73,11 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
 
     return true;
   } catch (error) {
-    console.error("JWT validation error:", error);
+    if (error instanceof Error) {
+      console.error("JWT validation error:", error.message, error.stack);
+    } else {
+      console.error("JWT validation error:", error);
+    }
     return false;
   }
 }
