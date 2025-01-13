@@ -53,9 +53,13 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
 
     // Verify the signature using Web Crypto API
     const data = `${header}.${payload}`;
+    const keyData = JSON.parse(publicKey);
+    if (!keyData.kty || !keyData.n || !keyData.e) {
+      throw new Error(`Invalid JWK format. Expected: kty, n, e properties, got: ${JSON.stringify(keyData)}`);
+    }
     const key = await crypto.subtle.importKey(
       "jwk",
-      JSON.parse(publicKey),
+      keyData,
       { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } },
       true,
       ["verify"]
