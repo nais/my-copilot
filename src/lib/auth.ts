@@ -37,7 +37,7 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
     }
 
     // Verify the audience
-    if (decodedPayload.aud !== process.env.AZURE_APP_CLIENT_SECRET) {
+    if (decodedPayload.aud !== process.env.AZURE_APP_CLIENT_ID) {
       throw new Error(`Invalid audience. Expected: ${process.env.AZURE_APP_CLIENT_SECRET}, got: ${decodedPayload.aud}`);
     }
 
