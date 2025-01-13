@@ -1,6 +1,5 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import jwt from "jsonwebtoken";
 
 type User = {
   firstName: string;
@@ -8,23 +7,66 @@ type User = {
   email: string;
 };
 
-
-// aud = AZURE_APP_CLIENT_SECRET
-// iss = AZURE_OPENID_CONFIG_ISSUER
-// oid = AZURE_APP_CLIENT_ID
-
 const loginEndpoint = '/oauth2/login';
 
-export async function validateToken(token: string): Promise<boolean> {
+const publicKey = process.env.AZURE_APP_JWKS;
+if (!publicKey && process.env.NODE_ENV !== "development") {
+  throw new Error("Public key is not defined in environment variables");
+}
+
+export async function validateJsonWebToken(token: string): Promise<boolean> {
   try {
-    const secret = process.env.AZURE_APP_CLIENT_SECRET;
-    if (!secret) {
-      throw new Error("AZURE_APP_CLIENT_SECRET is not defined");
+    const [header, payload, signature] = token.split(".");
+    if (!header || !payload || !signature) {
+      throw new Error("Invalid token format");
     }
-    jwt.verify(token, secret);
+
+    const decodedHeader = JSON.parse(Buffer.from(header, "base64").toString());
+    const decodedPayload = JSON.parse(Buffer.from(payload, "base64").toString());
+
+    // Verify the algorithm
+    if (decodedHeader.alg !== "RS256") {
+      throw new Error("Invalid algorithm");
+    }
+
+    // Verify the audience
+    if (decodedPayload.aud !== process.env.AZURE_APP_CLIENT_SECRET) {
+      throw new Error("Invalid audience");
+    }
+
+    // Verify the issuer
+    if (decodedPayload.iss !== process.env.AZURE_OPENID_CONFIG_ISSUER) {
+      throw new Error("Invalid issuer");
+    }
+
+    // Verify the public key
+    if (!publicKey) {
+      throw new Error("Public key is not defined");
+    }
+
+    // Verify the signature using Web Crypto API
+    const data = `${header}.${payload}`;
+    const key = await crypto.subtle.importKey(
+      "jwk",
+      JSON.parse(publicKey),
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      true,
+      ["verify"]
+    );
+    const isValid = await crypto.subtle.verify(
+      "RSASSA-PKCS1-v1_5",
+      key,
+      Buffer.from(signature, "base64"),
+      Buffer.from(data)
+    );
+
+    if (!isValid) {
+      throw new Error("Invalid signature");
+    }
+
     return true;
   } catch (error) {
-    console.error("Invalid token", error);
+    console.error("JWT validation error:", error);
     return false;
   }
 }
@@ -52,7 +94,7 @@ export async function getUser(shouldRedirect: boolean = true): Promise<User | nu
   }
 
   const token = authHeader.replace("Bearer ", "");
-  const isValid = await validateToken(token);
+  const isValid = await validateJsonWebToken(token);
   if (!isValid) {
     if (shouldRedirect) {
       redirect(loginEndpoint);

@@ -27,7 +27,7 @@ jobs:
         with:
           name: my-copilot
           google_service_account: gh-my-copilot
-          push: ${{ github.actor != 'dependabot[bot]' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
     outputs:
       version: ${{ steps.image.outputs.version }}
