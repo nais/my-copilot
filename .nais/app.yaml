@@ -48,9 +48,11 @@ spec:
   liveness:
     path: "/"
     port: 3000
+    path: "/health"
   readiness:
     path: "/"
     port: 3000
+    path: "/health"
   replicas:
     min: 1
     max: 1
