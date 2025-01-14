@@ -13,8 +13,8 @@ type User = {
 
 const loginEndpoint = "/oauth2/login";
 
-const publicKey = process.env.AZURE_APP_JWK;
-if (!publicKey && process.env.NODE_ENV !== "development") {
+const publicKeyEndpoint = process.env.AZURE_OPENID_CONFIG_JWKS_URI;
+if (!publicKeyEndpoint && process.env.NODE_ENV !== "test") {
   throw new Error("Public key is not defined in environment variables");
 }
 
@@ -44,31 +44,27 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
     }
 
     // Verify the public key
-    if (!publicKey) {
-      throw new Error(`Public key is not defined in environment variables`);
+    if (!publicKeyEndpoint) {
+      throw new Error(`Public key endpoint is not defined in environment variables`);
     }
-
-    console.log(`Header: ${JSON.stringify(decodedHeader, null, 2)}`);
-    //console.log(`Payload: ${payload}`);
-    //console.log(`Public key: ${publicKey}`);
 
     // Verify the signature using Web Crypto API
     const data = `${header}.${payload}`;
-    const keyData = JSON.parse(publicKey);
-    console.log(`Key data: ${JSON.stringify(keyData)}`);
-    if (!keyData.kty || !keyData.n || !keyData.e || !keyData.alg) {
-      throw new Error(`Invalid JWK format. Expected: kty, n, e, alg properties, got: ${JSON.stringify(keyData)}`);
+    const response = await fetch(publicKeyEndpoint, {
+      headers: {
+        "Cache-Control": "max-age=3600"
+      }
+    });
+    const jwks = await response.json();
+    const keyData = jwks.keys.find((key: any) => key.kid === decodedHeader.kid);
+
+    if (!keyData) {
+      throw new Error("Public key not found in JWKS endpoint");
     }
-    const publicKeyData = {
-      kty: keyData.kty,
-      n: keyData.n,
-      e: keyData.e,
-      alg: keyData.alg,
-    };
-    console.log(`Public key data: ${JSON.stringify(publicKeyData)}`);
+
     const key = await crypto.subtle.importKey(
       "jwk",
-      publicKeyData,
+      keyData,
       { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } },
       true,
       ["verify"]
@@ -101,7 +97,7 @@ export async function isAuthenticated(): Promise<boolean> {
 }
 
 export async function getUser(shouldRedirect: boolean = true): Promise<User | null> {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "test") {
     return {
       firstName: "Ola Kari",
       lastName: "Nordmann",
@@ -116,8 +112,6 @@ export async function getUser(shouldRedirect: boolean = true): Promise<User | nu
     }
     return null;
   }
-
-  console.log(`Authorization header: ${authHeader}`);
 
   const token = authHeader.replace("Bearer ", "");
   const isValid = await validateJsonWebToken(token);

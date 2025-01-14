@@ -70,6 +70,7 @@ spec:
     outbound:
       rules:
         - application: flaky-service
+        - host: login.microsoftonline.com
   filesFrom:
     - emptyDir:
         medium: Memory
