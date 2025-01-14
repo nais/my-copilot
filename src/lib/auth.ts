@@ -11,10 +11,10 @@ type User = {
 // iss = AZURE_OPENID_CONFIG_ISSUER
 // oid = AZURE_APP_CLIENT_ID
 
-const loginEndpoint = '/oauth2/login';
+const loginEndpoint = "/oauth2/login";
 
-const publicKeys = process.env.AZURE_APP_JWKS;
-if (!publicKeys && process.env.NODE_ENV !== "development") {
+const publicKey = process.env.AZURE_APP_JWK;
+if (!publicKey && process.env.NODE_ENV !== "development") {
   throw new Error("Public key is not defined in environment variables");
 }
 
@@ -27,9 +27,6 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
 
     const decodedHeader = JSON.parse(Buffer.from(header, "base64").toString());
     const decodedPayload = JSON.parse(Buffer.from(payload, "base64").toString());
-
-    console.log("decodedHeader", decodedHeader);
-    console.log("decodedPayload", decodedPayload);
 
     // Verify the algorithm
     if (decodedHeader.alg !== "RS256") {
@@ -47,19 +44,13 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
     }
 
     // Verify the public key
-    if (!publicKeys) {
+    if (!publicKey) {
       throw new Error(`Public key is not defined in environment variables`);
     }
 
     // Verify the signature using Web Crypto API
     const data = `${header}.${payload}`;
-    const keysData = JSON.parse(publicKeys);
-
-    if (!Array.isArray(keysData.keys) || keysData.keys.length === 0) {
-      throw new Error("Invalid JWK format. Expected: keys array with at least one key");
-    }
-
-    const keyData = keysData.keys[0];
+    const keyData = JSON.parse(publicKey);
     if (!keyData.kty || !keyData.n || !keyData.e) {
       throw new Error(`Invalid JWK format. Expected: kty, n, e properties, got: ${JSON.stringify(keyData)}`);
     }
