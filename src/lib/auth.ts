@@ -48,18 +48,28 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
       throw new Error(`Public key is not defined in environment variables`);
     }
 
+    console.log(`Header: ${JSON.stringify(decodedHeader, null, 2)}`);
+    //console.log(`Payload: ${payload}`);
+    //console.log(`Public key: ${publicKey}`);
+
     // Verify the signature using Web Crypto API
     const data = `${header}.${payload}`;
     const keyData = JSON.parse(publicKey);
     if (!keyData.kty || !keyData.n || !keyData.e) {
       throw new Error(`Invalid JWK format. Expected: kty, n, e properties, got: ${JSON.stringify(keyData)}`);
     }
+    const publicKeyData = {
+      kty: keyData.kty,
+      n: keyData.n,
+      e: keyData.e,
+    };
+    console.log(`Public key data: ${JSON.stringify(publicKeyData)}`);
     const key = await crypto.subtle.importKey(
       "jwk",
-      keyData,
+      publicKeyData,
       { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } },
       true,
-      ["verify", "sign"]
+      ["verify"]
     );
     const isValid = await crypto.subtle.verify(
       { name: "RSASSA-PKCS1-v1_5" },
@@ -105,7 +115,7 @@ export async function getUser(shouldRedirect: boolean = true): Promise<User | nu
     return null;
   }
 
-  console.log("Auth header:", authHeader);
+  console.log(`Authorization header: ${authHeader}`);
 
   const token = authHeader.replace("Bearer ", "");
   const isValid = await validateJsonWebToken(token);
