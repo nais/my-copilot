@@ -56,8 +56,14 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
       }
     });
     const jwks = await response.json();
-    const keyData = jwks.keys.find((key: any) => key.kid === decodedHeader.kid);
+    type JwkKey = {
+      kid: string;
+      e: string;
+      kty: string;
+      n: string;
+    };
 
+    const keyData = jwks.keys.find((key: JwkKey) => key.kid === decodedHeader.kid);
     if (!keyData) {
       throw new Error("Public key not found in JWKS endpoint");
     }
