@@ -105,6 +105,8 @@ export async function getUser(shouldRedirect: boolean = true): Promise<User | nu
     return null;
   }
 
+  console.log("Auth header:", authHeader);
+
   const token = authHeader.replace("Bearer ", "");
   const isValid = await validateJsonWebToken(token);
   if (!isValid) {
