@@ -15,6 +15,24 @@ env:
   REGISTRY: europe-north1-docker.pkg.dev/nais-io/nais/images
 
 jobs:
+  lint_build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Run linter
+        run: npm run lint
+      - name: Build project
+        run: npm run build
+      - name: Run tests
+        run: npm test
+
   build_push_sign:
     runs-on: ubuntu-latest
     permissions:
@@ -31,20 +49,21 @@ jobs:
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
     outputs:
       version: ${{ steps.image.outputs.version }}
+
   rollout:
     permissions:
       id-token: write
     name: Deploy to NAIS
-    needs: ["build_push_sign"]
+    needs: ["lint_build_test", "build_push_sign"]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
-    - uses: actions/checkout@v4
-    - uses: nais/deploy/actions/deploy@v2
-      env:
-        CLUSTER: dev-gcp
-        TEAM: aura
-        PRINT_PAYLOAD: "true"
-        RESOURCE: ".nais/app.yaml"
-        VARS: ".nais/dev.yaml"
-        VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=aura
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          TEAM: aura
+          PRINT_PAYLOAD: "true"
+          RESOURCE: ".nais/app.yaml"
+          VARS: ".nais/dev.yaml"
+          VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=aura
