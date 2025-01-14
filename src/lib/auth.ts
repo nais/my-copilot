@@ -55,13 +55,15 @@ export async function validateJsonWebToken(token: string): Promise<boolean> {
     // Verify the signature using Web Crypto API
     const data = `${header}.${payload}`;
     const keyData = JSON.parse(publicKey);
-    if (!keyData.kty || !keyData.n || !keyData.e) {
-      throw new Error(`Invalid JWK format. Expected: kty, n, e properties, got: ${JSON.stringify(keyData)}`);
+    console.log(`Key data: ${JSON.stringify(keyData)}`);
+    if (!keyData.kty || !keyData.n || !keyData.e || !keyData.alg) {
+      throw new Error(`Invalid JWK format. Expected: kty, n, e, alg properties, got: ${JSON.stringify(keyData)}`);
     }
     const publicKeyData = {
       kty: keyData.kty,
       n: keyData.n,
       e: keyData.e,
+      alg: keyData.alg,
     };
     console.log(`Public key data: ${JSON.stringify(publicKeyData)}`);
     const key = await crypto.subtle.importKey(
