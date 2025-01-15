@@ -62,8 +62,8 @@ jobs:
       - uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
-          TEAM: aura
+          TEAM: nais
           PRINT_PAYLOAD: "true"
           RESOURCE: ".nais/app.yaml"
           VARS: ".nais/dev.yaml"
-          VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=aura
+          VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais
