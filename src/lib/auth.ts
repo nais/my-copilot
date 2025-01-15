@@ -61,8 +61,8 @@ export async function getUser(shouldRedirect: boolean = true): Promise<User | nu
     return null;
   }
 
-  const [lastName, firstName] = payload.name.split(", ");
-  const email = payload.preferred_username.toLowerCase();
+  const [lastName, firstName] = payload.name ? payload.name.split(", ") : ["", ""];
+  const email = (payload.preferred_username ?? "").toLowerCase();
   const groups = payload.groups ?? [];
 
   return {
