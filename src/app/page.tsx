@@ -1,6 +1,9 @@
 import { getUser } from "@/lib/auth";
 import { Button } from "@navikt/ds-react/Button";
 
+export async function getInitialProps() {
+  return { props: {} };
+}
 export default async function Home() {
   const user = await getUser(false);
 
