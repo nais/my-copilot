@@ -24,6 +24,7 @@ type User = {
   firstName: string;
   lastName: string;
   email: string;
+  groups: string[];
 };
 
 export async function isAuthenticated(): Promise<boolean> {
@@ -37,6 +38,7 @@ export async function getUser(shouldRedirect: boolean = true): Promise<User | nu
       firstName: "Ola Kari",
       lastName: "Nordmann",
       email: "dev@localhost",
+      groups: ["group1", "group2"],
     };
   }
 
@@ -50,30 +52,23 @@ export async function getUser(shouldRedirect: boolean = true): Promise<User | nu
 
   const token = authHeader.replace("Bearer ", "");
   // eslint-disable-next-line @typescript-eslint/no-extra-non-null-assertion
-  const { isValid, error } = await validate(token, AZURE_APP_CLIENT_ID!!, AZURE_OPENID_CONFIG_ISSUER!!, AZURE_OPENID_CONFIG_JWKS_URI!!);
-  if (!isValid) {
+  const { isValid, payload, error } = await validate(token, AZURE_APP_CLIENT_ID!!, AZURE_OPENID_CONFIG_ISSUER!!, AZURE_OPENID_CONFIG_JWKS_URI!!);
+  if (!isValid || !payload) {
     console.error("Authorization token validation failed:", error);
     if (shouldRedirect) {
       redirect(loginEndpoint);
     }
     return null;
   }
-  if (!isValid) {
-    if (shouldRedirect) {
-      redirect(loginEndpoint);
-    }
-    return null;
-  }
-
-  const jwtPayload = token.split(".")[1];
-  const payload = JSON.parse(Buffer.from(jwtPayload, "base64").toString());
 
   const [lastName, firstName] = payload.name.split(", ");
   const email = payload.preferred_username.toLowerCase();
+  const groups = payload.groups ?? [];
 
   return {
     firstName,
     lastName,
     email,
+    groups,
   };
 }

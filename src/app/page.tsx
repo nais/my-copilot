@@ -1,12 +1,15 @@
+import { getUser } from "@/lib/auth";
 import { Button } from "@navikt/ds-react/Button";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getUser(false);
+
   return (
     <main className="p-4 mx-4">
       <section className="mb-8">
         <h1 className="text-3xl font-bold mb-4">Copilot Abonnement</h1>
         <p className="mb-4">
-          GitHub Copilot er et AI-drevet kodefullføringsverktøy som hjelper deg med å skrive kode raskere og med færre feil.
+          GitHub Copilot er et AI-drevet kodefullføringsverktøy som hjelper deg med å skrive og forstå kode. Min Copoilot er et selvbetjeningsverktøy for administrasjon av ditt Copilot abonnement.
         </p>
 
         <div className="mb-4">
@@ -33,13 +36,21 @@ export default function Home() {
 
       <section className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Mitt Abonnement</h2>
-        <div className="border p-4 rounded-lg">
-          <h3 className="text-xl font-semibold mb-2">Abonnement Detaljer</h3>
-          <p className="mb-2"><strong>Plan:</strong> Individuell Plan</p>
-          <p className="mb-2"><strong>Pris:</strong> $10 per måned</p>
-          <p className="mb-2"><strong>Startdato:</strong> 01.01.2023</p>
-          <p className="mb-2"><strong>Status:</strong> Aktiv</p>
-          <Button variant="secondary">Administrer Abonnement</Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="border p-4 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2">Abonnement Detaljer</h3>
+            <p className="mb-2"><strong>Plan:</strong> Individuell Plan</p>
+            <p className="mb-2"><strong>Pris:</strong> $10 per måned</p>
+            <p className="mb-2"><strong>Startdato:</strong> 01.01.2023</p>
+            <p className="mb-2"><strong>Status:</strong> Aktiv</p>
+            <Button variant="secondary">Administrer Abonnement</Button>
+          </div>
+          <div className="border p-4 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2">Bruker Detaljer</h3>
+            <p className="mb-2"><strong>Navn:</strong> {user?.firstName} {user?.lastName}</p>
+            <p className="mb-2"><strong>E-post:</strong> {user?.email}</p>
+            <p className="mb-2"><strong>Grupper:</strong> {user?.groups.join(", ")}</p>
+          </div>
         </div>
       </section>
 

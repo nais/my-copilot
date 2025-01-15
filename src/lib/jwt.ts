@@ -5,7 +5,10 @@
  * @param clientId - The expected audience.
  * @param issuer - The expected issuer.
  * @param publicKeyEndpoint - The endpoint to fetch the JWKS.
- * @returns A promise that resolves to an object containing a boolean indicating whether the token is valid and an error message if invalid.
+ * @returns A promise that resolves to an object containing:
+ * - `isValid` (boolean): Indicates whether the token is valid.
+ * - `error` (string, optional): An error message if the token is invalid.
+ * - `payload` (object, optional): The decoded payload of the token if it is valid.
  *
  * The function performs the following checks:
  * - Splits the token into header, payload, and signature.
@@ -13,12 +16,34 @@
  * - Verifies that the algorithm is RS256.
  * - Verifies that the audience matches the expected audience.
  * - Verifies that the issuer matches the expected issuer.
+ * - Verifies that the token is not expired.
+ * - Verifies that the token is not used before its "nbf" (not before) time.
  * - Fetches and caches the JWKS from the public key endpoint.
  * - Finds the public key in the JWKS that matches the key ID in the token header.
  * - Imports the public key.
  * - Verifies the token signature using the public key.
  */
-export async function validate(token: string, clientId: string, issuer: string, publicKeyEndpoint: string): Promise<{ isValid: boolean, error?: string }> {
+interface ValidationResult {
+  isValid: boolean;
+  error?: string;
+  payload?: {
+    aud?: string;
+    iss?: string;
+    exp?: number;
+    nbf?: number;
+    iat?: number;
+    jti?: string;
+    sub?: string;
+    name?: string;
+    preferred_username?: string;
+    email?: string;
+    groups?: string[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  };
+}
+
+export async function validate(token: string, clientId: string, issuer: string, publicKeyEndpoint: string): Promise<ValidationResult> {
   const [header, payload, signature] = token.split(".");
   if (!header || !payload || !signature) {
     return { isValid: false, error: "Invalid token format." };
@@ -95,7 +120,6 @@ export async function validate(token: string, clientId: string, issuer: string, 
     return { isValid: false, error: `Error importing public key: ${error instanceof Error ? error.message : error}` };
   }
 
-
   let isValid;
   try {
     // Verify the signature
@@ -115,5 +139,5 @@ export async function validate(token: string, clientId: string, issuer: string, 
     return { isValid: false, error: "Invalid signature. The token's signature does not match the expected value." };
   }
 
-  return { isValid: true };
+  return { isValid: true, payload: decodedPayload };
 }

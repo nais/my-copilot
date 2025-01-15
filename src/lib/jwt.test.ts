@@ -110,7 +110,9 @@ describe("validate", () => {
       }
     );
     jest.spyOn(crypto.subtle, "verify").mockResolvedValueOnce(true);
-    const result = await validate(token, "clientId", "issuer", "publicKeyEndpoint");
-    expect(result).toEqual({ isValid: true });
+    const { isValid, error, payload } = await validate(token, "clientId", "issuer", "publicKeyEndpoint");
+    expect(isValid).toEqual(true);
+    expect(error).toBeUndefined();
+    expect(payload).toEqual({ aud: "clientId", iss: "issuer", nbf: expect.any(Number), exp: expect.any(Number) });
   });
 });
