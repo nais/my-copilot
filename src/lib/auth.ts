@@ -8,15 +8,15 @@ const AZURE_APP_CLIENT_ID = process.env.AZURE_APP_CLIENT_ID;
 const AZURE_OPENID_CONFIG_JWKS_URI = process.env.AZURE_OPENID_CONFIG_JWKS_URI;
 const AZURE_OPENID_CONFIG_ISSUER = process.env.AZURE_OPENID_CONFIG_ISSUER;
 
-if (!AZURE_APP_CLIENT_ID && process.env.NODE_ENV !== "test") {
+if (!AZURE_APP_CLIENT_ID && process.env.NODE_ENV !== "development") {
   throw new Error("Environment variable AZURE_APP_CLIENT_ID is not defined.");
 }
 
-if (!AZURE_OPENID_CONFIG_JWKS_URI && process.env.NODE_ENV !== "test") {
+if (!AZURE_OPENID_CONFIG_JWKS_URI && process.env.NODE_ENV !== "development") {
   throw new Error("Environment variable AZURE_OPENID_CONFIG_JWKS_URI is not defined.");
 }
 
-if (!AZURE_OPENID_CONFIG_ISSUER && process.env.NODE_ENV !== "test") {
+if (!AZURE_OPENID_CONFIG_ISSUER && process.env.NODE_ENV !== "development") {
   throw new Error("Environment variable AZURE_OPENID_CONFIG_ISSUER is not defined.");
 }
 
@@ -32,7 +32,7 @@ export async function isAuthenticated(): Promise<boolean> {
 }
 
 export async function getUser(shouldRedirect: boolean = true): Promise<User | null> {
-  if (process.env.NODE_ENV === "test") {
+  if (process.env.NODE_ENV === "development") {
     return {
       firstName: "Ola Kari",
       lastName: "Nordmann",

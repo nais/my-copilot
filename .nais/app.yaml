@@ -2,9 +2,9 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: "my-copilot"
-  namespace: "aura"
+  namespace: "nais"
   labels:
-    "team": "aura"
+    "team": "nais"
   annotations:
     "nais.io/run-as-group": "65532"
     "nais.io/run-as-user": "65532"
@@ -23,6 +23,11 @@ spec:
       - /_next/**
       - /*.svg
       - /favicon.ico
+      claims:
+        groups:
+          - id: 48120347-8582-4329-8673-7beb3ed6ca06
+          - id: 76e9ee7e-2cd1-4814-b199-6c0be007d7b4
+          - id: eb5c5556-6c9a-4e54-83fc-f70cae25358d
   observability:
     autoInstrumentation:
       enabled: true
