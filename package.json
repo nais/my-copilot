@@ -1,7 +1,6 @@
 {
   "name": "my-copilot",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build --experimental-build-mode compile",
@@ -12,13 +11,15 @@
   "dependencies": {
     "@navikt/ds-css": "^7.9.1",
     "@navikt/ds-react": "^7.9.1",
-    "@next/bundle-analyzer": "^15.1.4",
+    "@octokit/auth-app": "^7.1.4",
+    "@octokit/rest": "^21.1.0",
     "next": "15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.1.4",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22",

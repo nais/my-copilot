@@ -19,9 +19,9 @@ export async function isAuthenticated(): Promise<boolean> {
 export async function getUser(shouldRedirect: boolean = true): Promise<User | null> {
   if (process.env.NODE_ENV === "development") {
     return {
-      firstName: "Ola Kari",
-      lastName: "Nordmann",
-      email: "dev@localhost",
+      firstName: "Hans Kristian",
+      lastName: "Flaatten",
+      email: "hans.kristian.flaatten@nav.no",
       groups: ["group1", "group2"],
     };
   }

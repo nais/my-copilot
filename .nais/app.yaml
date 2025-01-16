@@ -35,9 +35,13 @@ spec:
     logging:
       destinations:
         - id: loki
+  envFrom:
+    - secret: my-copilot
   env:
     - name: "NODE_ENV"
       value: "production"
+    - name: "GITHUB_ORG"
+      value: "navikt"
     - name: "NEXT_TELEMETRY_DISABLED"
       value: "1"
     - name: OTEL_METRICS_EXPORTER
