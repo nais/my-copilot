@@ -4,7 +4,7 @@ import { validate } from "./jwt";
 
 const loginEndpoint = "/oauth2/login";
 
-type User = {
+export type User = {
   firstName: string;
   lastName: string;
   email: string;

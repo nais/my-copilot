@@ -37,24 +37,7 @@ export default async function Home() {
 
       <section className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Mitt Abonnement</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="border p-4 rounded-lg">
-            <SubscriptionDetails />
-          </div>
-          <div className="border p-4 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Brukerinformasjon</h3>
-            <p className="mb-2"><strong>Navn:</strong> {user?.firstName} {user?.lastName}</p>
-            <p className="mb-2"><strong>E-post:</strong> {user?.email}</p>
-            <div className="mb-2">
-              <strong>Grupper:</strong>
-              <ul className="list-disc list-inside ml-4">
-                {user?.groups.map((group, index) => (
-                  <li key={index}>{group}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
+        <SubscriptionDetails user={user!} />
       </section>
 
     </main>

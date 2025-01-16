@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@navikt/ds-react";
+import { User } from "@/lib/auth";
 
 interface SubscriptionDetailsProps {
   icanhazcopilot: boolean;
@@ -12,6 +13,7 @@ interface SubscriptionDetailsProps {
     last_activity_at: string | null;
     last_activity_editor: string;
   };
+  githubUsername: string | null;
 }
 
 async function updateCopilotSubscription(action: 'activate' | 'deactivate') {
@@ -46,9 +48,10 @@ const SubscriptionActionButton: React.FC<{ subscription: SubscriptionDetailsProp
   );
 };
 
-const SubscriptionDetails: React.FC = () => {
+const SubscriptionDetails: React.FC<{ user: User, showGroups?: boolean }> = ({ user, showGroups = false }) => {
   const [eligibility, setEligible] = useState<boolean>(false);
   const [subscription, setCopilotSubscription] = useState<SubscriptionDetailsProps['subscription'] | null>(null);
+  const [githubUsername, setGitHubUsername] = useState<string | null>(null);
 
   const fetchSubscription = async () => {
     try {
@@ -56,6 +59,7 @@ const SubscriptionDetails: React.FC = () => {
       const data = await response.json();
       setEligible(data.icanhazcopilot);
       setCopilotSubscription(data.subscription);
+      setGitHubUsername(data.githubUsername);
     } catch (error) {
       console.error('Error fetching subscription details:', error);
     }
@@ -102,40 +106,66 @@ const SubscriptionDetails: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      {subscription && eligibility ? (
-        <>
-          <p className="mb-2">
-            <strong>Plan:</strong> {subscription.plan_type === 'business' ? 'Bedriftsplan' : 'Individuell Plan'}
-          </p>
-          <p className="mb-2">
-            <strong>Status:</strong> {subscription.pending_cancellation_date ? 'Kansellering Pågår' : subscription.updated_at ? 'Aktiv' : 'Inaktiv'}
-          </p>
-          <p className="mb-2">
-            <strong>Sist Oppdatert:</strong> {new Date(subscription.updated_at ?? '').toLocaleDateString()}
-          </p>
-          <p className="mb-2">
-            <strong>Siste Aktivitet:</strong> {new Date(subscription.last_activity_at ?? '').toLocaleDateString()}
-          </p>
-          <p className="mb-2">
-            <strong>Siste Aktivitet Editor:</strong> {subscription.last_activity_editor}
-          </p>
-          <SubscriptionActionButton subscription={subscription} onClick={handleClick} />
-        </>
-      ) : subscription && !eligibility ? (
-        <p>Du har ikke tilgang til å få GitHub Copilot nå. GitHub Copilot er bare tilgjengelig for ansatte og konsulenter i Utvikling og Data.</p>
-      ) : (
-        <div role="status" className="max-w-sm animate-pulse">
-          <div className="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-          <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
-          <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-          <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
-          <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
-          <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
-          <span className="sr-only">Loading...</span>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="border p-4 rounded-lg">
+        {subscription && eligibility ? (
+          <>
+            <p className="mb-2">
+              <strong>Plan:</strong> {subscription.plan_type === 'business' ? 'Bedriftsplan' : 'Individuell Plan'}
+            </p>
+            <p className="mb-2">
+              <strong>Status:</strong> {subscription.pending_cancellation_date ? 'Kansellering Pågår' : subscription.updated_at ? 'Aktiv' : 'Inaktiv'}
+            </p>
+            <p className="mb-2">
+              <strong>Sist Oppdatert:</strong> {new Date(subscription.updated_at ?? '').toLocaleDateString()}
+            </p>
+            <p className="mb-2">
+              <strong>Siste Aktivitet:</strong> {new Date(subscription.last_activity_at ?? '').toLocaleDateString()}
+            </p>
+            <p className="mb-2">
+              <strong>Siste Editor:</strong> {subscription.last_activity_editor}
+            </p>
+            <SubscriptionActionButton subscription={subscription} onClick={handleClick} />
+          </>
+        ) : subscription && !eligibility ? (
+          <p>Du har ikke tilgang til å få GitHub Copilot nå. GitHub Copilot er bare tilgjengelig for ansatte og konsulenter i Utvikling og Data.</p>
+        ) : (
+          <div role="status" className="max-w-sm animate-pulse">
+            <div className="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+            <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+            <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+            <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+            <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+            <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+            <span className="sr-only">Loading...</span>
+          </div>
+        )}
+      </div>
+      <div className="border p-4 rounded-lg">
+        <h3 className="text-xl font-semibold mb-2">Brukerinformasjon</h3>
+        <p className="mb-2"><strong>Navn:</strong> {user.firstName} {user.lastName}</p>
+        <p className="mb-2"><strong>E-post:</strong> {user.email}</p>
+        <div className="mb-2"><strong>GitHub:</strong>
+          {githubUsername ? (
+            <span> <a href={`https://github.com/${githubUsername}`}>{githubUsername}</a></span>
+          ) : (
+            <div role="status" className="inline-block animate-pulse ml-2">
+              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 w-32"></div>
+            </div>
+          )}
         </div>
-      )}
-    </div >
+        {showGroups && (
+          <div className="mb-2">
+            <strong>Grupper:</strong>
+            <ul className="list-disc list-inside ml-4">
+              {user.groups.map((group, index) => (
+                <li key={index}>{group}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
