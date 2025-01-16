@@ -1,6 +1,8 @@
 import { getUser } from '@/lib/auth';
 import InMemoryCache from '@/lib/cache';
 import { assignUserToCopilot, getCopilotSubscription, getUsernameBySamlIdentity, unassignUserFromCopilot } from '@/lib/github';
+import { getLoggerWithTraceContext } from '@/lib/logger';
+import { context } from '@opentelemetry/api';
 import { NextResponse } from 'next/server';
 
 const cache = new InMemoryCache();
@@ -30,36 +32,48 @@ async function getCachedCopilotStatus(githubUsername: string, gitHubOrg: string,
 }
 
 export async function GET() {
+  const log = getLoggerWithTraceContext(context.active());
+
   const org = 'navikt';
   const user = await getUser(false);
 
+  const error = (message: string, status: number) => {
+    if (status >= 500) {
+      log.error(message);
+    } else {
+      log.warn(message);
+    }
+
+    return NextResponse.json({ error: message }, { status });
+  }
+
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return error('User is not authenticated', 401);
   }
 
   if (!user.email) {
-    return NextResponse.json({ error: 'User email not found' }, { status: 500 });
+    return error('User email not found', 500);
   }
 
   // Get the GitHub username for the user
   const { user: githubUsername, error: githubError } = await getCachedGitHubUsername(user.email, org, cache);
 
   if (githubError) {
-    console.error(githubError);
-    return NextResponse.json({ error: githubError }, { status: 500 });
+    return error(githubError, 500);
   }
 
   if (!githubUsername) {
-    return NextResponse.json({ error: 'GitHub username not found' }, { status: 500 });
+    return error('GitHub username was not found for user email', 400);
   }
 
   // Get the Copilot subscription status for the user
   const { subscription, error: copilotError } = await getCachedCopilotStatus(githubUsername, org, cache);
 
   if (copilotError) {
-    console.error(copilotError);
-    return NextResponse.json({ error: copilotError }, { status: 500 });
+    return error(copilotError, 500);
   }
+
+  log.info({ email: user.email }, 'User Copilot subscription status');
 
   return NextResponse.json({
     icanhazcopilot: user.groups.length > 0,
@@ -74,40 +88,51 @@ enum Action {
 }
 
 export async function POST(request: Request) {
+  const log = getLoggerWithTraceContext(context.active());
+
   const org = 'navikt';
   const user = await getUser(false);
 
+  const error = (message: string, status: number) => {
+    if (status >= 500) {
+      log.error(message);
+    } else {
+      log.warn(message);
+    }
+
+    return NextResponse.json({ error: message }, { status });
+  }
+
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return error('User is not authenticated', 401);
   }
 
   if (!user.email) {
-    return NextResponse.json({ error: 'User email not found' }, { status: 500 });
+    return error('User email not found', 500);
   }
 
   // Check if user is eligible to get Copilot. This is done by checking if the
   // user is a member of any groups on the JWT token, groups are set when the
   // user logs in.
   if (user.groups.length === 0) {
-    return NextResponse.json({ error: 'User is not a member of any groups' }, { status: 403 });
+    return error('User is not a member of any groups', 403);
   }
 
   const { action } = await request.json();
 
   if (!action) {
-    return NextResponse.json({ error: 'Action is required' }, { status: 400 });
+    return error('Action is required', 400);
   }
 
   // Get the GitHub username for the user
   const { user: githubUsername, error: githubError } = await getCachedGitHubUsername(user.email, org, cache);
 
   if (githubError) {
-    console.error(githubError);
-    return NextResponse.json({ error: githubError }, { status: 500 });
+    return error(githubError, 500);
   }
 
   if (!githubUsername) {
-    return NextResponse.json({ error: 'GitHub username not found' }, { status: 500 });
+    return error('GitHub username was not found for user email', 400);
   }
 
   // @TODO use the subscription to determine valid actions
@@ -120,20 +145,30 @@ export async function POST(request: Request) {
   //   return NextResponse.json({ error: copilotError }, { status: 500 });
   // }
 
+  log.info({ email: user.email, action }, 'User action on Copilot subscription');
+
   switch (action) {
     case Action.Activate:
-      const { seats_created, error } = await assignUserToCopilot(org, githubUsername);
+      const { seats_created, error: activateError } = await assignUserToCopilot(org, githubUsername);
 
       cache.delete(`copilotStatus_${githubUsername}`);
 
-      return NextResponse.json({ seats_created, error }, { status: error ? 500 : 201 });
+      if (activateError) {
+        return error(activateError, 500);
+      }
+
+      return NextResponse.json({ seats_created }, { status: 201 });
     case Action.Deactivate:
-      const { seats_cancelled, error: cancelError } = await unassignUserFromCopilot(org, githubUsername);
+      const { seats_cancelled, error: deactivateError } = await unassignUserFromCopilot(org, githubUsername);
 
       cache.delete(`copilotStatus_${githubUsername}`);
 
-      return NextResponse.json({ seats_cancelled, error: cancelError }, { status: cancelError ? 500 : 200 });
+      if (deactivateError) {
+        return error(deactivateError, 500);
+      }
+
+      return NextResponse.json({ seats_cancelled }, { status: 200 });
     default:
-      return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+      return error('Unknown action', 400);
   }
 }
