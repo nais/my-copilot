@@ -160,3 +160,37 @@ export async function unassignUserFromCopilot(org: string, username: string): Pr
     return { seats_cancelled: null, error: (error instanceof Error ? error.message : String(error)) };
   }
 }
+
+export type CopilotUsage = {
+  day: string;
+  total_suggestions_count?: number | undefined;
+  total_acceptances_count?: number | undefined;
+  total_lines_suggested?: number | undefined;
+  total_lines_accepted?: number | undefined;
+  total_active_users?: number | undefined;
+  total_chat_acceptances?: number | undefined;
+  total_chat_turns?: number | undefined;
+  total_active_chat_users?: number | undefined;
+  breakdown: Array<{
+    language?: string | undefined;
+    editor?: string | undefined;
+    suggestions_count?: number | undefined;
+    acceptances_count?: number | undefined;
+    lines_suggested?: number | undefined;
+    lines_accepted?: number | undefined;
+    active_users?: number | undefined;
+    [key: string]: unknown;
+  }> | null
+}
+
+export async function getCopilotUsage(org: string): Promise<{ usage: CopilotUsage[] | null, error: string | null }> {
+  try {
+    const { data } = await octokit.request('GET /orgs/{org}/copilot/usage', {
+      org
+    });
+
+    return { usage: data, error: null };
+  } catch (error) {
+    return { usage: null, error: (error instanceof Error ? error.message : String(error)) };
+  }
+}
