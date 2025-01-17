@@ -26,17 +26,17 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+      <body className={`${inter.className} bg-gray-800`}>
         <InternalHeader>
           <InternalHeaderTitle as="a" href="/">Min Copilot</InternalHeaderTitle>
           <InternalHeaderButton as="a" href="/usage">Statistikk</InternalHeaderButton>
           <Spacer />
           <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} />
         </InternalHeader>
-        <div className="bg-white">
+        <div className="bg-gray-100">
           {children}
         </div>
-        <footer className="bg-gray-800 text-white py-4 px-4 text-left text-md pb-10 pt-10">
+        <footer className="text-white py-4 px-4 text-left text-md pb-10 pt-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p>Bygget med GitHub Copilot</p>

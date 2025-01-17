@@ -8,7 +8,7 @@ export default async function Usage() {
 
   return (
     <main className="p-4 mx-4">
-      <h1 className="text-3xl font-bold mb-4">Copilot Usage Stats</h1>
+      <h1 className="text-3xl font-bold mb-4">Copilot Bruksstatistikk</h1>
       {error ? (
         <p className="text-red-500">Error fetching usage data: {error}</p>
       ) : (
