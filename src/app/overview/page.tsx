@@ -34,7 +34,7 @@ export default async function Users() {
                 <td className="px-6 py-4 whitespace-nowrap">{billing.seat_breakdown.total}</td>
               </tr>
               <tr>
-                <td className="px-6 py-4 whitespace-nowrap">Lagt til denne syklusen</td>
+                <td className="px-6 py-4 whitespace-nowrap">Lagt til denne perioden</td>
                 <td className="px-6 py-4 whitespace-nowrap">{billing.seat_breakdown.added_this_cycle}</td>
               </tr>
               <tr>
@@ -46,11 +46,11 @@ export default async function Users() {
                 <td className="px-6 py-4 whitespace-nowrap">{billing.seat_breakdown.pending_cancellation}</td>
               </tr>
               <tr>
-                <td className="px-6 py-4 whitespace-nowrap">Aktiv denne syklusen</td>
+                <td className="px-6 py-4 whitespace-nowrap">Aktiv denne perioden</td>
                 <td className="px-6 py-4 whitespace-nowrap">{billing.seat_breakdown.active_this_cycle}</td>
               </tr>
               <tr>
-                <td className="px-6 py-4 whitespace-nowrap">Inaktiv denne syklusen</td>
+                <td className="px-6 py-4 whitespace-nowrap">Inaktiv denne perioden</td>
                 <td className="px-6 py-4 whitespace-nowrap">{billing.seat_breakdown.inactive_this_cycle}</td>
               </tr>
               <tr>
