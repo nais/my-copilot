@@ -30,6 +30,7 @@ export default async function RootLayout({
         <InternalHeader>
           <InternalHeaderTitle as="a" href="/">Min Copilot</InternalHeaderTitle>
           <InternalHeaderButton as="a" href="/usage">Statistikk</InternalHeaderButton>
+          <InternalHeaderButton as="a" href="/overview">Oversikt</InternalHeaderButton>
           <Spacer />
           <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} />
         </InternalHeader>

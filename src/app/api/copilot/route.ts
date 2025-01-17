@@ -1,6 +1,6 @@
 import { getUser } from '@/lib/auth';
 import InMemoryCache from '@/lib/cache';
-import { assignUserToCopilot, getCopilotSubscription, getUsernameBySamlIdentity, unassignUserFromCopilot } from '@/lib/github';
+import { assignUserToCopilot, getCopilotSeat, getUsernameBySamlIdentity, unassignUserFromCopilot } from '@/lib/github';
 import { getLoggerWithTraceContext } from '@/lib/logger';
 import { context } from '@opentelemetry/api';
 import { NextResponse } from 'next/server';
@@ -23,7 +23,7 @@ async function getCachedCopilotStatus(githubUsername: string, gitHubOrg: string,
   const { copilot: subscription, error } = await cache.get(
     `copilotStatus_${githubUsername}`,
     async () => {
-      return await getCopilotSubscription(gitHubOrg, githubUsername);
+      return await getCopilotSeat(gitHubOrg, githubUsername);
     },
     60000 // Cache for 60 seconds
   )

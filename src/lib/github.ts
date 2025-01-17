@@ -105,11 +105,39 @@ export async function getUsernameBySamlIdentity(identity: string, organization: 
   }
 }
 
+type CopilotBilling = {
+  seat_breakdown: {
+    total?: number | undefined,
+    added_this_cycle?: number | undefined,
+    pending_invitation?: number | undefined,
+    pending_cancellation?: number | undefined,
+    active_this_cycle?: number | undefined,
+    inactive_this_cycle?: number | undefined
+  },
+  seat_management_setting?: string | undefined,
+  ide_chat?: string | undefined,
+  platform_chat?: string | undefined,
+  cli?: string | undefined,
+  public_code_suggestions?: string | undefined
+}
+
+export async function getCopilotBilling(org: string): Promise<{ billing: CopilotBilling, error: string | null }> {
+  try {
+    const { data } = await octokit.request('GET /orgs/{org}/copilot/billing', {
+      org
+    });
+
+    return { billing: data, error: null };
+  } catch (error) {
+    return { billing: {} as CopilotBilling, error: (error instanceof Error ? error.message : String(error)) };
+  }
+}
+
 type CopilotAssignee = {
   login: string;
 };
 
-type CopilotStatus = {
+type CopilotSeat = {
   created_at: string;
   assignee: CopilotAssignee;
   pending_cancellation_date?: string | null;
@@ -119,7 +147,22 @@ type CopilotStatus = {
   last_activity_editor?: string | null;
 };
 
-export async function getCopilotSubscription(org: string, username: string): Promise<{ copilot: CopilotStatus | null, error: string | null }> {
+export async function getCopilotSeats(org: string): Promise<{ total_seats: number | undefined, seats: CopilotSeat[] | undefined, error: string | null }> {
+  try {
+    const { data } = await octokit.request('GET /orgs/{org}/copilot/billing/seats', {
+      org
+    });
+
+    const total_seats = data.total_seats;
+    const seats = data.seats;
+
+    return { total_seats, seats, error: null };
+  } catch (error) {
+    return { total_seats: undefined, seats: undefined, error: (error instanceof Error ? error.message : String(error)) };
+  }
+}
+
+export async function getCopilotSeat(org: string, username: string): Promise<{ copilot: CopilotSeat | null, error: string | null }> {
   try {
     const { data } = await octokit.request('GET /orgs/{org}/members/{username}/copilot', {
       org,
@@ -130,7 +173,7 @@ export async function getCopilotSubscription(org: string, username: string): Pro
     // 404 means the user has not been assigned to Copilot yet
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((error as any).status === 404) {
-      return { copilot: {} as CopilotStatus, error: null };
+      return { copilot: {} as CopilotSeat, error: null };
     }
     return { copilot: null, error: (error instanceof Error ? error.message : String(error)) };
   }
