@@ -99,7 +99,7 @@ export async function getUsernameBySamlIdentity(identity: string, organization: 
       cursor = response.organization.samlIdentityProvider.externalIdentities.pageInfo.endCursor;
     }
 
-    return { user: null, error: `No user found for SAML identity ${identity}` };
+    return { user: null, error: `No user found for SAML identity ${identity} in the ${organization} GitHub organization.` };
   } catch (error) {
     return { user: null, error: (error instanceof Error ? error.message : String(error)) };
   }
@@ -127,6 +127,11 @@ export async function getCopilotSubscription(org: string, username: string): Pro
     });
     return { copilot: data, error: null };
   } catch (error) {
+    // 404 means the user has not been assigned to Copilot yet
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any).status === 404) {
+      return { copilot: {} as CopilotStatus, error: null };
+    }
     return { copilot: null, error: (error instanceof Error ? error.message : String(error)) };
   }
 }
