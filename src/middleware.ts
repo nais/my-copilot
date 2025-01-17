@@ -18,7 +18,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      * - /health (health check endpoint)
+     * - /metrics (metrics endpoint)
      */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|health).*)',
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|health|metrics).*)',
   ],
 }
