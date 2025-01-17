@@ -57,13 +57,16 @@ jobs:
     needs: ["lint_build_test", "build_push_sign"]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        cluster: [dev-gcp, prod-gcp]
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
         env:
-          CLUSTER: dev-gcp
+          CLUSTER: ${{ matrix.cluster }}
           TEAM: nais
           PRINT_PAYLOAD: "true"
           RESOURCE: ".nais/app.yaml"
-          VARS: ".nais/dev.yaml"
+          VARS: ".nais/${{ matrix.cluster }}.yaml"
           VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais

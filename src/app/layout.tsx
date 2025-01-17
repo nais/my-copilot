@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@navikt/ds-css";
 import "./globals.css";
-import { InternalHeader, InternalHeaderTitle, InternalHeaderUser } from "@navikt/ds-react/InternalHeader";
+import { InternalHeader, InternalHeaderButton, InternalHeaderTitle, InternalHeaderUser } from "@navikt/ds-react/InternalHeader";
 import { Spacer } from "@navikt/ds-react";
 import { getUser } from "@/lib/auth";
 
@@ -28,7 +28,8 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${inter.className}`}>
         <InternalHeader>
-          <InternalHeaderTitle as="h1">Min Copilot</InternalHeaderTitle>
+          <InternalHeaderTitle as="a" href="/">Min Copilot</InternalHeaderTitle>
+          <InternalHeaderButton as="a" href="/usage">Statistkk</InternalHeaderButton>
           <Spacer />
           <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} />
         </InternalHeader>
