@@ -29,7 +29,7 @@ export default async function RootLayout({
       <body className={`${inter.className}`}>
         <InternalHeader>
           <InternalHeaderTitle as="a" href="/">Min Copilot</InternalHeaderTitle>
-          <InternalHeaderButton as="a" href="/usage">Statistkk</InternalHeaderButton>
+          <InternalHeaderButton as="a" href="/usage">Statistikk</InternalHeaderButton>
           <Spacer />
           <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} />
         </InternalHeader>
