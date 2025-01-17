@@ -11,18 +11,18 @@ export default async function Usage() {
       <section className="mb-8">
         <h1 className="text-3xl font-bold mb-4">Copilot Bruksstatistikk</h1>
         {error ? (
-          <p className="text-red-500">Error fetching usage data: {error}</p>
+          <p className="text-red-500">Feil ved henting av bruksdata: {error}</p>
         ) : (
           <><div className="m-4">
             {usage && usage.length > 0 && (
               <div className="flex space-x-4 overflow-x-auto">
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
                   <p className="text-2xl font-bold">{usage[usage.length - 1].total_active_users || 0}</p>
-                  <p><strong>Active Users</strong></p>
+                  <p><strong>Aktive Brukere</strong></p>
                 </div>
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
                   <p className="text-2xl font-bold">{usage[usage.length - 1].total_active_chat_users || 0}</p>
-                  <p><strong>Active Chat Users</strong></p>
+                  <p><strong>Aktive Chat Brukere</strong></p>
                 </div>
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
                   <p className="text-2xl font-bold">
@@ -46,7 +46,7 @@ export default async function Usage() {
                       return topLanguage || 'N/A';
                     })()}
                   </p>
-                  <p><strong>Top Language</strong></p>
+                  <p><strong>Mest Brukte Språk</strong></p>
                 </div>
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
                   <p className="text-2xl font-bold">
@@ -70,7 +70,7 @@ export default async function Usage() {
                       return topEditor || 'N/A';
                     })()}
                   </p>
-                  <p><strong>Top Editor</strong></p>
+                  <p><strong>Mest Brukte Editor</strong></p>
                 </div>
               </div>
             )}
