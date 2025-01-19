@@ -71,6 +71,11 @@ export default async function RootLayout({
                     github.com/nais/my-copilot
                   </a>
                 </li>
+                <li>
+                  <a href="https://grafana.nav.cloud.nais.io/d/min-copilot" className="text-blue-400 hover:underline">
+                    Grafana Dashboard
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
