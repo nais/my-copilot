@@ -5,6 +5,7 @@ import "./globals.css";
 import { InternalHeader, InternalHeaderButton, InternalHeaderTitle, InternalHeaderUser } from "@navikt/ds-react/InternalHeader";
 import { Spacer } from "@navikt/ds-react";
 import { getUser } from "@/lib/auth";
+import Faro from "@/components/faro";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -75,6 +76,7 @@ export default async function RootLayout({
           </div>
         </footer>
       </body>
+      <Faro />
     </html>
   );
 }
