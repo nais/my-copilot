@@ -2,8 +2,9 @@ import { Faro, getWebInstrumentations, initializeFaro } from '@grafana/faro-web-
 import { TracingInstrumentation } from '@grafana/faro-web-tracing'
 
 let faro: Faro | null = null
+
 export function initInstrumentation(): void {
-  if (typeof window === 'undefined' || faro !== null || process.env.nodeEnv !== "production") return
+  if (typeof window === 'undefined' || faro !== null || process.env.NODE_ENV !== "production") return
   console.log('Initializing Faro')
 
   getFaro()
@@ -12,10 +13,10 @@ export function initInstrumentation(): void {
 export function getFaro(): Faro {
   if (faro != null) return faro
   faro = initializeFaro({
-    url: process.env.faroUrl,
+    url: process.env.NEXT_PUBLIC_FARO_URL,
     app: {
-      name: process.env.faroAppName,
-      namespace: process.env.faroNamespace,
+      name: process.env.NEXT_PUBLIC_FARO_APP_NAME,
+      namespace: process.env.NEXT_PUBLIC_FARO_NAMESPACE,
     },
     instrumentations: [
       ...getWebInstrumentations({
