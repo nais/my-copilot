@@ -9,8 +9,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@grafana/faro-web-sdk": "^1.13.1",
-    "@grafana/faro-web-tracing": "^1.13.1",
+    "@grafana/faro-web-sdk": "^1.13.2",
+    "@grafana/faro-web-tracing": "^1.13.2",
     "@navikt/ds-css": "^7.12.2",
     "@navikt/ds-react": "^7.12.2",
     "@octokit/auth-app": "^7.1.4",
