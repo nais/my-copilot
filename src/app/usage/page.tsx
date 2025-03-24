@@ -16,11 +16,11 @@ export default async function Usage() {
             {usage && usage.length > 0 && (
               <div className="flex space-x-4 overflow-x-auto">
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
-                  <p className="text-2xl font-bold">{usage[usage.length - 2].total_active_users || 0}</p>
+                  <p className="text-2xl font-bold">{usage[usage.length - 1].total_active_users || 0}</p>
                   <p><strong>Aktive Brukere</strong></p>
                 </div>
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
-                  <p className="text-2xl font-bold">{usage[usage.length - 2].total_engaged_users || 0}</p>
+                  <p className="text-2xl font-bold">{usage[usage.length - 1].total_engaged_users || 0}</p>
                   <p><strong>Engasjerte Brukere</strong></p>
                 </div>
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
@@ -28,7 +28,7 @@ export default async function Usage() {
                     {(() => {
                       const languageCount: Record<string, number> = {};
 
-                      usage[usage.length - 2].copilot_ide_code_completions?.languages?.forEach((language) => {
+                      usage[usage.length - 1].copilot_ide_code_completions?.languages?.forEach((language) => {
                         if (language.name) {
                           if (!languageCount[language.name]) {
                             languageCount[language.name] = 0;
@@ -52,7 +52,7 @@ export default async function Usage() {
                     {(() => {
                       const editorCount: Record<string, number> = {};
 
-                      usage[usage.length - 2].copilot_ide_code_completions?.editors?.forEach((editor) => {
+                      usage[usage.length - 1].copilot_ide_code_completions?.editors?.forEach((editor) => {
                         if (editor.name) {
                           if (!editorCount[editor.name]) {
                             editorCount[editor.name] = 0;
