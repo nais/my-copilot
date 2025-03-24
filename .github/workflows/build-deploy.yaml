@@ -45,7 +45,7 @@ jobs:
         with:
           name: my-copilot
           google_service_account: gh-my-copilot
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
     outputs:
       version: ${{ steps.image.outputs.version }}
@@ -70,3 +70,53 @@ jobs:
           RESOURCE: ".nais/app.yaml"
           VARS: ".nais/${{ matrix.cluster }}.yaml"
           VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais
+
+  rollout_pr:
+    permissions:
+      id-token: write
+      contents: read
+      issues: write
+    name: Deploy PR to dev-gcp
+    needs: ["lint_build_test", "build_push_sign"]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          TEAM: nais
+          PRINT_PAYLOAD: "true"
+          RESOURCE: ".nais/app.yaml"
+          VARS: ".nais/dev-gcp.yaml"
+          VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais
+      - name: Post comment with link to PR deployment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              const token = core.getInput('github-token', { required: true });
+              const github = new GitHub(token);
+              const prNumber = context.payload.pull_request.number;
+              const comment = `Deployed to [dev-gcp](https://min-copilot.intern.dev.nav.no/)`;
+
+              const comments = await github.issues.listComments({
+                ...context.repo,
+                issue_number: prNumber,
+              });
+
+              if (comments && comments.data) {
+                const existingComment = comments.data.find(comment => comment.body.includes('Deployed to [dev-gcp](https://min-copilot.intern.dev.nav.no/)'));
+                if (!existingComment) {
+                  await github.issues.createComment({
+                    ...context.repo,
+                    issue_number: prNumber,
+                    body: comment
+                  });
+                }
+              } else {
+                console.error('Failed to fetch comments or no comments data found.');
+              }
+            } catch (error) {
+              console.error(`An error occurred: ${error.message}`);
+            }
