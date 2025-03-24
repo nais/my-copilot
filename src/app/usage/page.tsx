@@ -1,5 +1,5 @@
 import React from "react";
-import { getCopilotUsage } from "@/lib/github";
+import { getCopilotUsage, CopilotMetrics } from "@/lib/github";
 import UsageChart from "@/components/usage";
 
 export default async function Usage() {

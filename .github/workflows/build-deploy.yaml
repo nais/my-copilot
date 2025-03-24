@@ -45,7 +45,7 @@ jobs:
         with:
           name: my-copilot
           google_service_account: gh-my-copilot
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
     outputs:
       version: ${{ steps.image.outputs.version }}
@@ -69,4 +69,22 @@ jobs:
           PRINT_PAYLOAD: "true"
           RESOURCE: ".nais/app.yaml"
           VARS: ".nais/${{ matrix.cluster }}.yaml"
+          VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais
+
+  rollout_pr:
+    permissions:
+      id-token: write
+    name: Deploy PR to dev-gcp
+    needs: ["lint_build_test", "build_push_sign"]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          TEAM: nais
+          PRINT_PAYLOAD: "true"
+          RESOURCE: ".nais/app.yaml"
+          VARS: ".nais/dev-gcp.yaml"
           VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais
