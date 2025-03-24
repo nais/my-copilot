@@ -20,8 +20,8 @@ export default async function Usage() {
                   <p><strong>Aktive Brukere</strong></p>
                 </div>
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
-                  <p className="text-2xl font-bold">{usage[usage.length - 2].copilot_ide_chat?.total_engaged_users || 0}</p>
-                  <p><strong>Aktive Chat Brukere</strong></p>
+                  <p className="text-2xl font-bold">{usage[usage.length - 2].total_engaged_users || 0}</p>
+                  <p><strong>Engasjerte Brukere</strong></p>
                 </div>
                 <div className="bg-white shadow-md rounded-lg p-4 w-64 border border-gray-300 text-center">
                   <p className="text-2xl font-bold">
