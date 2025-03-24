@@ -209,31 +209,80 @@ export async function unassignUserFromCopilot(org: string, username: string): Pr
   }
 }
 
-export type CopilotUsage = {
-  day: string;
-  total_suggestions_count?: number | undefined;
-  total_acceptances_count?: number | undefined;
-  total_lines_suggested?: number | undefined;
-  total_lines_accepted?: number | undefined;
+export type CopilotMetrics = {
+  date: string;
   total_active_users?: number | undefined;
-  total_chat_acceptances?: number | undefined;
-  total_chat_turns?: number | undefined;
-  total_active_chat_users?: number | undefined;
-  breakdown: Array<{
-    language?: string | undefined;
-    editor?: string | undefined;
-    suggestions_count?: number | undefined;
-    acceptances_count?: number | undefined;
-    lines_suggested?: number | undefined;
-    lines_accepted?: number | undefined;
-    active_users?: number | undefined;
-    [key: string]: unknown;
-  }> | null
-}
+  total_engaged_users?: number | undefined;
+  copilot_ide_code_completions?: {
+    total_engaged_users?: number | undefined;
+    languages?: Array<{
+      name?: string | undefined;
+      total_engaged_users?: number | undefined;
+    }> | undefined;
+    editors?: Array<{
+      name?: string | undefined;
+      total_engaged_users?: number | undefined;
+      models?: Array<{
+        name?: string | undefined;
+        is_custom_model?: boolean | undefined;
+        custom_model_training_date?: string | null | undefined;
+        total_engaged_users?: number | undefined;
+        languages?: Array<{
+          name?: string | undefined;
+          total_engaged_users?: number | undefined;
+          total_code_suggestions?: number | undefined;
+          total_code_acceptances?: number | undefined;
+          total_code_lines_suggested?: number | undefined;
+          total_code_lines_accepted?: number | undefined;
+        }> | undefined;
+      }> | undefined;
+    }> | undefined;
+  } | null | undefined;
+  copilot_ide_chat?: {
+    total_engaged_users?: number | undefined;
+    editors?: Array<{
+      name?: string | undefined;
+      total_engaged_users?: number | undefined;
+      models?: Array<{
+        name?: string | undefined;
+        is_custom_model?: boolean | undefined;
+        custom_model_training_date?: string | null | undefined;
+        total_engaged_users?: number | undefined;
+        total_chats?: number | undefined;
+        total_chat_insertion_events?: number | undefined;
+        total_chat_copy_events?: number | undefined;
+      }> | undefined;
+    }> | undefined;
+  } | null | undefined;
+  copilot_dotcom_chat?: {
+    total_engaged_users?: number | undefined;
+    models?: Array<{
+      name?: string | undefined;
+      is_custom_model?: boolean | undefined;
+      custom_model_training_date?: string | null | undefined;
+      total_engaged_users?: number | undefined;
+      total_chats?: number | undefined;
+    }> | undefined;
+  } | null | undefined;
+  copilot_dotcom_pull_requests?: {
+    total_engaged_users?: number | undefined;
+    repositories?: Array<{
+      name?: string | undefined;
+      total_engaged_users?: number | undefined;
+      models?: Array<{
+        name?: string | undefined;
+        is_custom_model?: boolean | undefined;
+        custom_model_training_date?: string | null | undefined;
+        total_pr_summaries_created?: number | undefined;
+        total_engaged_users?: number | undefined;
+      }> | undefined;
+    }> | undefined;
+  } | null | undefined;
+};
 
-export async function getCopilotUsage(org: string): Promise<{ usage: CopilotUsage[] | null, error: string | null }> {
+export async function getCopilotUsage(org: string): Promise<{ usage: CopilotMetrics[] | null, error: string | null }> {
   try {
-    const { data } = await octokit.request('GET /orgs/{org}/copilot/usage', {
+    const { data } = await octokit.request('GET /orgs/{org}/copilot/metrics', {
       org
     });
 
