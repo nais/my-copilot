@@ -88,3 +88,21 @@ jobs:
           RESOURCE: ".nais/app.yaml"
           VARS: ".nais/dev-gcp.yaml"
           VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais
+      - name: Post comment with link to PR deployment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const comment = `Deployed to [dev-gcp](https://min-copilot.intern.dev.nav.no/)`;
+            const comments = await github.issues.listComments({
+              ...context.repo,
+              issue_number: prNumber,
+            });
+            const existingComment = comments.data.find(comment => comment.body.includes('Deployed to [dev-gcp](https://min-copilot.intern.dev.nav.no/)'));
+            if (!existingComment) {
+              await github.issues.createComment({
+                ...context.repo,
+                issue_number: prNumber,
+                body: comment
+              });
+            }
