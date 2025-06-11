@@ -6,6 +6,7 @@
     "build": "next build --experimental-build-mode compile",
     "start": "node .next/standalone/server.js",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "test": "jest"
   },
   "dependencies": {

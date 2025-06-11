@@ -119,7 +119,7 @@ type CopilotAssignee = {
 
 type CopilotSeat = {
   created_at: string;
-  assignee: CopilotAssignee;
+  assignee?: CopilotAssignee | null;
   pending_cancellation_date?: string | null;
   plan_type?: string;
   updated_at?: string;
@@ -153,7 +153,7 @@ export async function getCopilotSeat(org: string, username: string): Promise<{ c
     // 404 means the user has not been assigned to Copilot yet
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((error as any).status === 404) {
-      return { copilot: {} as CopilotSeat, error: null };
+      return { copilot: null, error: null };
     }
     return { copilot: null, error: (error instanceof Error ? error.message : String(error)) };
   }
