@@ -24,14 +24,10 @@ const octokit = new Octokit({
 
 export async function getUsernameBySamlIdentity(identity: string, organization: string): Promise<{ user: string | null, error: string | null }> {
   const query = `
-    query($organization: String!, $cursor: String) {
+    query($organization: String!, $identity: String!) {
       organization(login: $organization) {
         samlIdentityProvider {
-          externalIdentities(first: 100, after: $cursor) {
-            pageInfo {
-              endCursor
-              hasNextPage
-            }
+          externalIdentities(first: 1, userName: $identity) {
             edges {
               node {
                 guid
@@ -50,53 +46,37 @@ export async function getUsernameBySamlIdentity(identity: string, organization: 
     }
   `;
 
-  let cursor: string | null = null;
-
   try {
-    while (true) {
-      const variables = {
-        organization,
-        cursor,
-      };
+    const variables = {
+      organization,
+      identity,
+    };
 
-      const response = await octokit.graphql(query, variables) as {
-        organization: {
-          samlIdentityProvider: {
-            externalIdentities: {
-              pageInfo: {
-                endCursor: string;
-                hasNextPage: boolean;
-              };
-              edges: Array<{
-                node: {
-                  guid: string;
-                  samlIdentity: {
-                    nameId: string;
-                    username: string;
-                  };
-                  user: {
-                    login: string;
-                  };
+    const response = await octokit.graphql(query, variables) as {
+      organization: {
+        samlIdentityProvider: {
+          externalIdentities: {
+            edges: Array<{
+              node: {
+                guid: string;
+                samlIdentity: {
+                  nameId: string;
+                  username: string;
                 };
-              }>;
-            };
+                user: {
+                  login: string;
+                };
+              };
+            }>;
           };
         };
       };
+    };
 
-      const externalIdentities = response.organization.samlIdentityProvider.externalIdentities.edges;
+    const externalIdentities = response.organization.samlIdentityProvider.externalIdentities.edges;
 
-      for (const edge of externalIdentities) {
-        if (edge.node.samlIdentity.username && edge.node.samlIdentity.username.toLowerCase() === identity.toLowerCase()) {
-          return { user: edge.node.user.login, error: null };
-        }
-      }
-
-      if (!response.organization.samlIdentityProvider.externalIdentities.pageInfo.hasNextPage) {
-        break;
-      }
-
-      cursor = response.organization.samlIdentityProvider.externalIdentities.pageInfo.endCursor;
+    if (externalIdentities.length > 0) {
+      return { user: externalIdentities[0].node.user.login, error: null };
     }
 
     return { user: null, error: `No user found for SAML identity ${identity} in the ${organization} GitHub organization.` };
