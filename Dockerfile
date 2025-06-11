@@ -4,6 +4,11 @@ FROM node:22 AS base
 FROM base AS deps
 WORKDIR /app
 
+RUN npm set registry https://registry.npmjs.org/
+RUN npm set @navikt:registry https://npm.pkg.github.com
+RUN --mount=type=secret,id=reader_token \
+    npm config set //npm.pkg.github.com/:_authToken=$(cat /run/secrets/reader_token)
+
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \
