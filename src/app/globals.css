@@ -1,5 +1,8 @@
 @import 'tailwindcss';
-@import '@navikt/ds-css';
+
+@layer components {
+  @import '@navikt/ds-css';
+}
 
 @theme {
   --color-background: var(--background);

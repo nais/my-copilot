@@ -30,8 +30,8 @@ export default async function RootLayout({
       <body className={`${inter.className} bg-gray-800`}>
         <InternalHeader>
           <InternalHeaderTitle as="a" href="/">Min Copilot</InternalHeaderTitle>
-          <InternalHeaderButton as="a" href="/usage">Statistikk</InternalHeaderButton>
-          <InternalHeaderButton as="a" href="/overview">Oversikt</InternalHeaderButton>
+          <InternalHeaderButton as="a" href="/usage">Bruksstatistikk</InternalHeaderButton>
+          <InternalHeaderButton as="a" href="/overview">Lisensoversikt</InternalHeaderButton>
           <Spacer />
           <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} />
         </InternalHeader>
