@@ -1,4 +1,7 @@
-@import 'tailwindcss/base';
+@import 'tailwindcss';
 @import '@navikt/ds-css';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
