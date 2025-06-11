@@ -4,10 +4,16 @@ FROM node:22 AS base
 FROM base AS deps
 WORKDIR /app
 
+# Accept build arg for npm authentication
+ARG READER_TOKEN
+
 RUN npm set registry https://registry.npmjs.org/
 RUN npm set @navikt:registry https://npm.pkg.github.com
-RUN --mount=type=secret,id=reader_token \
-    npm config set //npm.pkg.github.com/:_authToken=$(cat /run/secrets/reader_token)
+RUN if [ -n "$READER_TOKEN" ]; then \
+        npm config set //npm.pkg.github.com/:_authToken=$READER_TOKEN; \
+    else \
+        echo "Warning: READER_TOKEN not provided, skipping npm authentication for @navikt packages"; \
+    fi
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./

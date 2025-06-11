@@ -50,6 +50,8 @@ jobs:
           google_service_account: gh-my-copilot
           push: true
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
+          build_args: |
+            READER_TOKEN=${{ secrets.READER_TOKEN }}
     outputs:
       version: ${{ steps.image.outputs.version }}
 
