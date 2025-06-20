@@ -13,10 +13,10 @@ export function initInstrumentation(): void {
 export function getFaro(): Faro {
   if (faro != null) return faro
   faro = initializeFaro({
-    url: process.env.NEXT_PUBLIC_FARO_URL,
+    url: process.env.NEXT_PUBLIC_FARO_URL || "https://telemetry.ekstern.dev.nav.no/collect",
     app: {
-      name: process.env.NEXT_PUBLIC_FARO_APP_NAME,
-      namespace: process.env.NEXT_PUBLIC_FARO_NAMESPACE,
+      name: process.env.NEXT_PUBLIC_FARO_APP_NAME || "min-copilot",
+      namespace: process.env.NEXT_PUBLIC_FARO_NAMESPACE || "nais",
     },
     instrumentations: [
       ...getWebInstrumentations({
