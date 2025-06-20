@@ -142,7 +142,7 @@ export async function getCopilotSeats(org: string): Promise<{ total_seats: numbe
   }
 }
 
-export async function getCopilotSeat(org: string, username: string): Promise<{ copilot: CopilotSeat | null, error: string | null }> {
+export async function getCopilotSeat(org: string, username: string): Promise<{ copilot: CopilotSeat | object, error: string | null }> {
   try {
     const { data } = await octokit.request('GET /orgs/{org}/members/{username}/copilot', {
       org,
@@ -153,9 +153,9 @@ export async function getCopilotSeat(org: string, username: string): Promise<{ c
     // 404 means the user has not been assigned to Copilot yet
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((error as any).status === 404) {
-      return { copilot: null, error: null };
+      return { copilot: {}, error: null };
     }
-    return { copilot: null, error: (error instanceof Error ? error.message : String(error)) };
+    return { copilot: {}, error: (error instanceof Error ? error.message : String(error)) };
   }
 }
 
