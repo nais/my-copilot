@@ -1,4 +1,4 @@
-FROM node:22 AS base
+FROM node:24 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -35,8 +35,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN yarn build
 
-# Production image, copy all the files and run next
-FROM gcr.io/distroless/nodejs22:nonroot AS runner
+FROM gcr.io/distroless/nodejs24:nonroot AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
