@@ -25,9 +25,15 @@ import {
   getLinesOfCodeMetrics,
   getPRSummaryMetrics,
   getFeatureAdoptionMetrics,
-  getModelUsageMetrics
+  getModelUsageMetrics,
+  getDateRange,
+  getAggregatedMetrics,
+  getAggregatedChatStats,
+  getAggregatedFeatureAdoption,
+  getAggregatedPRSummary
 } from "@/lib/data-utils";
 import { LanguageData, EditorData, RepositoryData, ModelData } from "@/lib/types";
+import { formatNumber } from "@/lib/format";
 
 export default async function Usage() {
   const { usage, error } = await getCopilotUsage("navikt");
@@ -54,8 +60,9 @@ export default async function Usage() {
     );
   }
 
+  const dateRange = getDateRange(usage);
   const latestUsage = getLatestUsage(usage);
-  if (!latestUsage) {
+  if (!latestUsage || !dateRange) {
     return (
       <main className="p-6 mx-4 max-w-7xl">
         <section className="mb-8">
@@ -66,16 +73,18 @@ export default async function Usage() {
     );
   }
 
+  // Use aggregated metrics across entire period
+  const aggregatedMetrics = getAggregatedMetrics(usage);
   const topLanguages = getTopLanguages(usage);
   const editorStats = getEditorStats(usage);
-  const chatStats = getChatStats(usage);
+  const chatStats = getAggregatedChatStats(usage);
   const overallMetrics = getOverallMetrics(usage);
   const linesMetrics = getLinesOfCodeMetrics(usage);
-  const prSummaryMetrics = getPRSummaryMetrics(usage);
-  const featureAdoptionMetrics = getFeatureAdoptionMetrics(usage);
+  const prSummaryMetrics = getAggregatedPRSummary(usage);
+  const featureAdoptionMetrics = getAggregatedFeatureAdoption(usage);
   const modelUsageMetrics = getModelUsageMetrics(usage);
 
-  if (!overallMetrics) {
+  if (!aggregatedMetrics) {
     return (
       <main className="p-6 mx-4 max-w-7xl">
         <section className="mb-8">
@@ -96,19 +105,19 @@ export default async function Usage() {
       <HGrid columns={4} gap="4">
         <Box background="surface-action-selected" padding="6" borderRadius="large">
           <div className="text-white">
-            <Heading size="xlarge" level="2" className="mb-2 text-white">{latestUsage.total_active_users}</Heading>
+            <Heading size="xlarge" level="2" className="mb-2 text-white">{formatNumber(aggregatedMetrics.totalActiveUsers)}</Heading>
             <div className="flex items-center gap-2">            <BodyShort className="text-blue-100">
-              Totalt aktive brukere
+              Aktive brukere
             </BodyShort>
               <HelpText title="Aktive brukere" placement="top">
-                Unike brukere som har brukt GitHub Copilot i organisasjonen i løpet av den siste perioden.
+                Unike brukere som har brukt GitHub Copilot i organisasjonen i løpet av hele perioden.
               </HelpText>
             </div>
           </div>
         </Box>
         <Box background="surface-success" padding="6" borderRadius="large">
           <div className="text-white">
-            <Heading size="xlarge" level="2" className="mb-2 text-white">{latestUsage.total_engaged_users}</Heading>
+            <Heading size="xlarge" level="2" className="mb-2 text-white">{formatNumber(aggregatedMetrics.totalEngagedUsers)}</Heading>
             <div className="flex items-center gap-2">            <BodyShort className="text-green-100">
               Engasjerte brukere
             </BodyShort>
@@ -120,25 +129,25 @@ export default async function Usage() {
         </Box>
         <Box background="surface-info" padding="6" borderRadius="large">
           <div className="text-white">
-            <Heading size="xlarge" level="2" className="mb-2 text-white">{overallMetrics.overallAcceptanceRate}%</Heading>
+            <Heading size="xlarge" level="2" className="mb-2 text-white">{aggregatedMetrics.overallAcceptanceRate}%</Heading>
             <div className="flex items-center gap-2">
               <BodyShort className="text-purple-100">
                 Aksepteringsrate
               </BodyShort>
               <HelpText title="Aksepteringsrate" placement="top">
-                Prosentandel av Copilots kodeforslag som blir akseptert av utviklerne. Typisk ligger gode rater mellom 20-40%.
+                Prosentandel av Copilots kodeforslag som blir akseptert av utviklerne over hele perioden. Typisk ligger gode rater mellom 20-40%.
               </HelpText>
             </div>
           </div>
         </Box>
         <Box background="surface-warning" padding="6" borderRadius="large">
           <div className="text-white">
-            <Heading size="xlarge" level="2" className="mb-2 text-white">{overallMetrics.totalSuggestions.toLocaleString()}</Heading>
+            <Heading size="xlarge" level="2" className="mb-2 text-white">{formatNumber(aggregatedMetrics.totalSuggestions)}</Heading>
             <div className="flex items-center gap-2">            <BodyShort className="text-orange-100">
               Totale kodeforslag
             </BodyShort>
               <HelpText title="Totale kodeforslag" placement="top">
-                Det totale antallet kodeforslag som Copilot har generert, inkludert både aksepterte og avviste forslag.
+                Totalt antall kodeforslag som Copilot har generert over hele perioden, inkludert både aksepterte og avviste forslag.
               </HelpText>
             </div>
           </div>
@@ -150,21 +159,21 @@ export default async function Usage() {
         <Box background="surface-subtle" padding="6" borderRadius="large">
           <Heading size="medium" level="3" className="mb-4">Chat-funksjoner</Heading>
           <BodyShort className="text-gray-600 mb-4">
-            Oversikt over hvordan GitHub Copilot Chat blir brukt i organisasjonen. Dette inkluderer samtaler i IDE-er og på GitHub.com, samt hvordan brukerne interagerer med chat-svarene.
+            Oversikt over hvordan GitHub Copilot Chat brukes i organisasjonen. Dette inkluderer samtaler i IDE-er og på GitHub.com, samt hvordan brukerne interagerer med chat-svarene.
           </BodyShort>
           <HGrid columns={4} gap="4">
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-blue-600">{chatStats.totalChats}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-blue-600">{formatNumber(chatStats.totalChats)}</Heading>
               <div className="flex items-center justify-center gap-1">              <BodyShort className="text-gray-600">
                 Totale samtaler
               </BodyShort>
                 <HelpText title="Totale samtaler" placement="top">
-                  Antall chat-samtaler som er startet med Copilot, både i IDE-er og på GitHub.com.
+                  Antall chat-samtaler som har blitt startet med Copilot, både i IDE-er og på GitHub.com.
                 </HelpText>
               </div>
             </div>
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-green-600">{chatStats.totalCopyEvents}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-green-600">{formatNumber(chatStats.totalCopyEvents)}</Heading>
               <div className="flex items-center justify-center gap-1">
                 <BodyShort className="text-gray-600">
                   Kopieringshendelser
@@ -175,7 +184,7 @@ export default async function Usage() {
               </div>
             </div>
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-purple-600">{chatStats.totalInsertionEvents}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-purple-600">{formatNumber(chatStats.totalInsertionEvents)}</Heading>
               <div className="flex items-center justify-center gap-1">
                 <BodyShort className="text-gray-600">
                   Innsettingshendelser
@@ -186,7 +195,7 @@ export default async function Usage() {
               </div>
             </div>
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-orange-600">{chatStats.ideUsers + chatStats.dotcomUsers}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-orange-600">{formatNumber(chatStats.ideUsers + chatStats.dotcomUsers)}</Heading>
               <div className="flex items-center justify-center gap-1">              <BodyShort className="text-gray-600">
                 Chat-brukere
               </BodyShort>
@@ -208,38 +217,38 @@ export default async function Usage() {
 
       {/* Code Completion Details */}
       <Box background="surface-subtle" padding="6" borderRadius="large">
-        <Heading size="medium" level="3" className="mb-4">Kodeforslag detaljer</Heading>
+        <Heading size="medium" level="3" className="mb-4">Detaljer om kodeforslag</Heading>
         <BodyShort className="text-gray-600 mb-4">
-          Detaljert statistikk over GitHub Copilots kodeforslag-funksjon, som viser hvor effektivt AI-assistenten bidrar til kodeutviklingen i organisasjonen.
+          Detaljert statistikk over GitHub Copilots funksjon for kodeforslag, som viser hvor effektivt AI-assistenten bidrar til kodeutviklingen i organisasjonen over hele perioden.
         </BodyShort>
         <HGrid columns={3} gap="4">
           <Box background="surface-info-subtle" padding="4" borderRadius="medium">
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-blue-600">{overallMetrics.totalAcceptances.toLocaleString()}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-blue-600">{formatNumber(aggregatedMetrics.totalAcceptances)}</Heading>
               <div className="flex items-center justify-center gap-1">                <BodyShort className="text-gray-600">
                 Aksepterte forslag
               </BodyShort>
                 <HelpText title="Aksepterte forslag" placement="top">
-                  Antall kodeforslag fra Copilot som utviklerne har akseptert og tatt i bruk.
+                  Antall kodeforslag fra Copilot som utviklerne har akseptert og tatt i bruk over hele perioden.
                 </HelpText>
               </div>
             </div>
           </Box>
           <Box background="surface-neutral-subtle" padding="4" borderRadius="medium">
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-gray-600">{overallMetrics.totalSuggestions.toLocaleString()}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-gray-600">{formatNumber(aggregatedMetrics.totalSuggestions)}</Heading>
               <div className="flex items-center justify-center gap-1">                <BodyShort className="text-gray-600">
                 Totale forslag
               </BodyShort>
                 <HelpText title="Totale forslag" placement="top">
-                  Det totale antallet kodeforslag som Copilot har generert, inkludert både aksepterte og avviste.
+                  Totalt antall kodeforslag som Copilot har generert over hele perioden, inkludert både aksepterte og avviste forslag.
                 </HelpText>
               </div>
             </div>
           </Box>
           <Box background="surface-success-subtle" padding="4" borderRadius="medium">
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-green-600">{latestUsage.copilot_ide_code_completions?.total_engaged_users || 0}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-green-600">{formatNumber(aggregatedMetrics.codeCompletionUsers)}</Heading>
               <div className="flex items-center justify-center gap-1">                <BodyShort className="text-gray-600">
                 Aktive utviklere
               </BodyShort>
@@ -264,7 +273,7 @@ export default async function Usage() {
     <div className="space-y-6">
       {/* Programming Languages Table */}
       <div className="overflow-hidden">
-        <Heading size="medium" level="3" className="mb-4">Programmeringsspråk statistikk</Heading>
+        <Heading size="medium" level="3" className="mb-4">Statistikk for programmeringsspråk</Heading>
         <Table>
           <TableHeader>
             <TableRow>
@@ -289,7 +298,7 @@ export default async function Usage() {
                 <div className="flex items-center gap-1">
                   Aksepteringsrate
                   <HelpText title="Aksepteringsrate" placement="top">
-                    Hvor stor andel av Copilots forslag som blir akseptert for dette språket.
+                    Hvor stor andel av Copilots forslag som aksepteres for dette språket.
                   </HelpText>
                 </div>
               </TableHeaderCell>
@@ -321,13 +330,13 @@ export default async function Usage() {
                     <BodyShort weight="semibold" className="capitalize">{language.name}</BodyShort>
                   </TableDataCell>
                   <TableDataCell>
-                    <BodyShort>{language.total_engaged_users}</BodyShort>
+                    <BodyShort>{formatNumber(language.total_engaged_users)}</BodyShort>
                   </TableDataCell>
                   <TableDataCell>
                     <BodyShort weight="semibold">{acceptanceRate}%</BodyShort>
                   </TableDataCell>
                   <TableDataCell>
-                    <BodyShort>{acceptances.toLocaleString()} / {suggestions.toLocaleString()}</BodyShort>
+                    <BodyShort>{formatNumber(acceptances)} / {formatNumber(suggestions)}</BodyShort>
                   </TableDataCell>
                 </TableRow>
               );
@@ -338,7 +347,7 @@ export default async function Usage() {
 
       {/* Languages Chart */}
       <div className="mt-8">
-        <Heading size="medium" level="3" className="mb-4">Språktrend over tid</Heading>
+        <Heading size="medium" level="3" className="mb-4">Språkutvikling over tid</Heading>
         <LanguagesChart usage={usage} />
       </div>
     </div>
@@ -348,7 +357,7 @@ export default async function Usage() {
     <div className="space-y-6">
       {/* Editor Statistics Table */}
       <div className="overflow-hidden">
-        <Heading size="medium" level="3" className="mb-4">Editor statistikk</Heading>
+        <Heading size="medium" level="3" className="mb-4">Statistikk for editorer</Heading>
         <Table>
           <TableHeader>
             <TableRow>
@@ -401,13 +410,13 @@ export default async function Usage() {
                   <BodyShort weight="semibold">{editor.name}</BodyShort>
                 </TableDataCell>
                 <TableDataCell>
-                  <BodyShort>{editor.users}</BodyShort>
+                  <BodyShort>{formatNumber(editor.users)}</BodyShort>
                 </TableDataCell>
                 <TableDataCell>
                   <BodyShort weight="semibold">{editor.acceptanceRate}%</BodyShort>
                 </TableDataCell>
                 <TableDataCell>
-                  <BodyShort>{editor.acceptances.toLocaleString()} / {editor.suggestions.toLocaleString()}</BodyShort>
+                  <BodyShort>{formatNumber(editor.acceptances)} / {formatNumber(editor.suggestions)}</BodyShort>
                 </TableDataCell>
               </TableRow>
             ))}
@@ -417,7 +426,7 @@ export default async function Usage() {
 
       {/* Editors Chart */}
       <div className="mt-8">
-        <Heading size="medium" level="3" className="mb-4">Editor bruk over tid</Heading>
+        <Heading size="medium" level="3" className="mb-4">Editorbruk over tid</Heading>
         <EditorsChart usage={usage} />
       </div>
     </div>
@@ -426,48 +435,48 @@ export default async function Usage() {
   const advancedMetricsContent = (
     <div className="space-y-6">
       {/* Lines of Code Metrics */}
-      {linesMetrics && (
+      {aggregatedMetrics && (
         <Box background="surface-subtle" padding="6" borderRadius="large">
-          <Heading size="medium" level="3" className="mb-4">Linjer med kode</Heading>
+          <Heading size="medium" level="3" className="mb-4">Kodelinjer</Heading>
           <BodyShort className="text-gray-600 mb-4">
-            Detaljert oversikt over linjer med kode som er foreslått og akseptert av Copilot. Dette gir et mer granulært bilde av kodeproduksjonen enn bare antall forslag.
+            Detaljert oversikt over kodelinjer som er foreslått og akseptert av Copilot over hele perioden. Dette gir et mer detaljert bilde av kodeproduksjonen enn bare antall forslag.
           </BodyShort>
           <HGrid columns={3} gap="4">
             <Box background="surface-info-subtle" padding="4" borderRadius="medium">
               <div className="text-center">
-                <Heading size="large" level="4" className="mb-2 text-blue-600">{linesMetrics.totalLinesSuggested.toLocaleString()}</Heading>
+                <Heading size="large" level="4" className="mb-2 text-blue-600">{formatNumber(aggregatedMetrics.totalLinesSuggested)}</Heading>
                 <div className="flex items-center justify-center gap-1">
                   <BodyShort className="text-gray-600">
                     Foreslåtte linjer
                   </BodyShort>
                   <HelpText title="Foreslåtte linjer" placement="top">
-                    Totalt antall kodelinjer som Copilot har foreslått i løpet av perioden.
+                    Totalt antall kodelinjer som Copilot har foreslått gjennom hele perioden.
                   </HelpText>
                 </div>
               </div>
             </Box>
             <Box background="surface-success-subtle" padding="4" borderRadius="medium">
               <div className="text-center">
-                <Heading size="large" level="4" className="mb-2 text-green-600">{linesMetrics.totalLinesAccepted.toLocaleString()}</Heading>
+                <Heading size="large" level="4" className="mb-2 text-green-600">{formatNumber(aggregatedMetrics.totalLinesAccepted)}</Heading>
                 <div className="flex items-center justify-center gap-1">
                   <BodyShort className="text-gray-600">
                     Aksepterte linjer
                   </BodyShort>
                   <HelpText title="Aksepterte linjer" placement="top">
-                    Antall kodelinjer fra Copilot som utviklerne har akseptert og tatt i bruk.
+                    Antall kodelinjer fra Copilot som utviklerne har akseptert og tatt i bruk over hele perioden.
                   </HelpText>
                 </div>
               </div>
             </Box>
             <Box background="surface-warning-subtle" padding="4" borderRadius="medium">
               <div className="text-center">
-                <Heading size="large" level="4" className="mb-2 text-orange-600">{linesMetrics.linesAcceptanceRate}%</Heading>
+                <Heading size="large" level="4" className="mb-2 text-orange-600">{aggregatedMetrics.linesAcceptanceRate}%</Heading>
                 <div className="flex items-center justify-center gap-1">
                   <BodyShort className="text-gray-600">
                     Linjeaksepteringsrate
                   </BodyShort>
                   <HelpText title="Linjeaksepteringsrate" placement="top">
-                    Prosentandel av foreslåtte kodelinjer som ble akseptert. Dette kan avvike fra forslags-aksepteringsraten.
+                    Prosentandel av foreslåtte kodelinjer som ble akseptert over hele perioden. Dette kan avvike fra forslags-aksepteringsraten.
                   </HelpText>
                 </div>
               </div>
@@ -479,28 +488,28 @@ export default async function Usage() {
       {/* Feature Adoption Breakdown */}
       {featureAdoptionMetrics && (
         <Box background="surface-subtle" padding="6" borderRadius="large">
-          <Heading size="medium" level="3" className="mb-4">Funksjonsadopsjon</Heading>
+          <Heading size="medium" level="3" className="mb-4">Funksjonsbruk</Heading>
           <BodyShort className="text-gray-600 mb-4">
-            Oversikt over hvor mange brukere som benytter de ulike Copilot-funksjonene. Dette hjelper med å forstå hvilke funksjoner som gir mest verdi.
+            Oversikt over hvor mange brukere som benytter de ulike Copilot-funksjonene. Dette hjelper deg å forstå hvilke funksjoner som gir mest verdi.
           </BodyShort>
           <HGrid columns={4} gap="4">
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-blue-600">{featureAdoptionMetrics.codeCompletionUsers}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-blue-600">{formatNumber(featureAdoptionMetrics.codeCompletionUsers)}</Heading>
               <BodyShort className="text-gray-600 mb-1">Kodeforslag</BodyShort>
               <BodyShort className="text-sm text-gray-500">({featureAdoptionMetrics.adoptionRates.codeCompletion}% av aktive)</BodyShort>
             </div>
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-green-600">{featureAdoptionMetrics.ideChatUsers}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-green-600">{formatNumber(featureAdoptionMetrics.ideChatUsers)}</Heading>
               <BodyShort className="text-gray-600 mb-1">IDE Chat</BodyShort>
               <BodyShort className="text-sm text-gray-500">({featureAdoptionMetrics.adoptionRates.ideChat}% av aktive)</BodyShort>
             </div>
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-purple-600">{featureAdoptionMetrics.dotcomChatUsers}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-purple-600">{formatNumber(featureAdoptionMetrics.dotcomChatUsers)}</Heading>
               <BodyShort className="text-gray-600 mb-1">GitHub Chat</BodyShort>
               <BodyShort className="text-sm text-gray-500">({featureAdoptionMetrics.adoptionRates.dotcomChat}% av aktive)</BodyShort>
             </div>
             <div className="text-center">
-              <Heading size="large" level="4" className="mb-2 text-orange-600">{featureAdoptionMetrics.prSummaryUsers}</Heading>
+              <Heading size="large" level="4" className="mb-2 text-orange-600">{formatNumber(featureAdoptionMetrics.prSummaryUsers)}</Heading>
               <BodyShort className="text-gray-600 mb-1">PR Sammendrag</BodyShort>
               <BodyShort className="text-sm text-gray-500">({featureAdoptionMetrics.adoptionRates.prSummary}% av aktive)</BodyShort>
             </div>
@@ -511,27 +520,27 @@ export default async function Usage() {
       {/* PR Summary Metrics */}
       {prSummaryMetrics && prSummaryMetrics.totalPRSummaries > 0 && (
         <div className="space-y-4">
-          <Heading size="medium" level="3">Pull Request sammendrag</Heading>
+          <Heading size="medium" level="3">Pull request-sammendrag</Heading>
           <BodyShort className="text-gray-600">
-            GitHub Copilot kan automatisk generere sammendrag for pull requests. Her ser du hvordan denne funksjonen brukes på tvers av repositorier.
+            GitHub Copilot kan automatisk generere sammendrag for pull requests. Her ser du hvordan denne funksjonen brukes på tvers av repoer.
           </BodyShort>
 
           <HGrid columns={3} gap="4" className="mb-6">
             <Box background="surface-action-subtle" padding="4" borderRadius="medium">
               <div className="text-center">
-                <Heading size="large" level="4" className="mb-2 text-blue-600">{prSummaryMetrics.totalEngagedUsers}</Heading>
+                <Heading size="large" level="4" className="mb-2 text-blue-600">{formatNumber(prSummaryMetrics.totalEngagedUsers)}</Heading>
                 <BodyShort className="text-gray-600">Aktive brukere</BodyShort>
               </div>
             </Box>
             <Box background="surface-success-subtle" padding="4" borderRadius="medium">
               <div className="text-center">
-                <Heading size="large" level="4" className="mb-2 text-green-600">{prSummaryMetrics.totalPRSummaries}</Heading>
+                <Heading size="large" level="4" className="mb-2 text-green-600">{formatNumber(prSummaryMetrics.totalPRSummaries)}</Heading>
                 <BodyShort className="text-gray-600">Genererte sammendrag</BodyShort>
               </div>
             </Box>
             <Box background="surface-info-subtle" padding="4" borderRadius="medium">
               <div className="text-center">
-                <Heading size="large" level="4" className="mb-2 text-purple-600">{prSummaryMetrics.repositoryStats.length}</Heading>
+                <Heading size="large" level="4" className="mb-2 text-purple-600">{formatNumber(prSummaryMetrics.repositoryStats.length)}</Heading>
                 <BodyShort className="text-gray-600">Repositorier</BodyShort>
               </div>
             </Box>
@@ -539,7 +548,7 @@ export default async function Usage() {
 
           {prSummaryMetrics.repositoryStats.length > 0 && (
             <div className="overflow-hidden">
-              <Heading size="small" level="4" className="mb-4">Topp repositorier</Heading>
+              <Heading size="small" level="4" className="mb-4">Topp-repoer</Heading>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -555,10 +564,10 @@ export default async function Usage() {
                         <BodyShort weight="semibold">{repo.name}</BodyShort>
                       </TableDataCell>
                       <TableDataCell>
-                        <BodyShort>{repo.users}</BodyShort>
+                        <BodyShort>{formatNumber(repo.users)}</BodyShort>
                       </TableDataCell>
                       <TableDataCell>
-                        <BodyShort>{repo.summaries}</BodyShort>
+                        <BodyShort>{formatNumber(repo.summaries)}</BodyShort>
                       </TableDataCell>
                     </TableRow>
                   ))}
@@ -574,7 +583,7 @@ export default async function Usage() {
         <div className="space-y-4">
           <Heading size="medium" level="3">AI-modeller i bruk</Heading>
           <BodyShort className="text-gray-600">
-            Oversikt over hvilke AI-modeller som brukes og hvilke funksjoner de støtter. Dette kan inkludere både standard GitHub-modeller og tilpassede modeller.
+            Oversikt over hvilke AI-modeller som brukes og hvilke funksjoner de støtter. Dette inkluderer både standard GitHub-modeller og tilpassede modeller.
           </BodyShort>
 
           <div className="overflow-hidden">
@@ -599,7 +608,7 @@ export default async function Usage() {
                       </BodyShort>
                     </TableDataCell>
                     <TableDataCell>
-                      <BodyShort>{model.users}</BodyShort>
+                      <BodyShort>{formatNumber(model.users)}</BodyShort>
                     </TableDataCell>
                     <TableDataCell>
                       <BodyShort className="text-sm">{model.features.join(", ")}</BodyShort>
@@ -616,9 +625,9 @@ export default async function Usage() {
 
   const tabs = [
     { id: 'overview', label: 'Oversikt', content: overviewContent },
-    { id: 'languages', label: 'Språk & Teknologier', content: languagesContent },
+    { id: 'languages', label: 'Språk og teknologier', content: languagesContent },
     { id: 'editors', label: 'Utviklingsverktøy', content: editorsContent },
-    { id: 'advanced', label: 'Avanserte Målinger', content: advancedMetricsContent },
+    { id: 'advanced', label: 'Avanserte målinger', content: advancedMetricsContent },
   ];
 
   return (
@@ -626,13 +635,15 @@ export default async function Usage() {
       <section className="mb-8">
         <Heading size="xlarge" level="1" className="mb-6">Copilot Bruksstatistikk</Heading>
         <div className="space-y-3 mb-8">
-          <BodyShort className="text-gray-600">Siste oppdatering: {latestUsage.date}</BodyShort>
+          <BodyShort className="text-gray-600">
+            Periode: {dateRange.start} - {dateRange.end} ({formatNumber(usage.length)} dager)
+          </BodyShort>
           <BodyShort className="text-gray-700">
-            Dette dashbordet gir deg en omfattende oversikt over hvordan GitHub Copilot brukes i organisasjonen.
+            Dette dashbordet gir deg en omfattende oversikt over hvordan GitHub Copilot brukes i organisasjonen gjennom hele perioden.
             Tallene inkluderer både kodeforslag (code completion) og chat-funksjoner på tvers av ulike editorer og programmeringsspråk.
           </BodyShort>
           <BodyShort className="text-gray-700">
-            Bruk fanene under for å utforske detaljert statistikk, språk- og verktøyfordeling, samt trendanalyser over tid.
+            Bruk fanene nedenfor for å utforske detaljert statistikk, språk- og verktøyfordeling, samt trendanalyser over tid.
           </BodyShort>
         </div>
 
