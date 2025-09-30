@@ -5,6 +5,7 @@
     "dev": "next dev",
     "build": "next build --experimental-build-mode compile",
     "start": "node .next/standalone/server.js",
+    "check": "npm run lint && npm run typecheck && npm run test",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "jest"
