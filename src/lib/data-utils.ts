@@ -10,18 +10,15 @@ import {
   ModelData
 } from "./types";
 
-// Helper function to calculate acceptance rate
 export const calculateAcceptanceRate = (accepted: number, suggested: number): number => {
   return suggested > 0 ? Math.round((accepted / suggested) * 100) : 0;
 };
 
-// Helper function to get latest usage data
 export const getLatestUsage = (usage: CopilotMetrics[]): CopilotMetrics | null => {
   if (!usage || usage.length === 0) return null;
   return usage[usage.length - 1];
 };
 
-// Helper function to get date range from usage data
 export const getDateRange = (usage: CopilotMetrics[]): { start: string; end: string } | null => {
   if (!usage || usage.length === 0) return null;
   return {
@@ -30,15 +27,12 @@ export const getDateRange = (usage: CopilotMetrics[]): { start: string; end: str
   };
 };
 
-// Helper function to get aggregated metrics across entire period
 export const getAggregatedMetrics = (usage: CopilotMetrics[]) => {
   if (!usage || usage.length === 0) return null;
 
-  // Get unique users across all days (max value seen)
   const maxActiveUsers = Math.max(...usage.map(u => u.total_active_users || 0));
   const maxEngagedUsers = Math.max(...usage.map(u => u.total_engaged_users || 0));
 
-  // Sum up all suggestions and acceptances across the period
   let totalSuggestions = 0;
   let totalAcceptances = 0;
   let totalLinesSuggested = 0;
@@ -84,7 +78,6 @@ export const getAggregatedMetrics = (usage: CopilotMetrics[]) => {
   };
 };
 
-// Helper function to get aggregated chat statistics
 export const getAggregatedChatStats = (usage: CopilotMetrics[]): ChatStats | null => {
   if (!usage || usage.length === 0) return null;
 
@@ -124,7 +117,6 @@ export const getAggregatedChatStats = (usage: CopilotMetrics[]): ChatStats | nul
   };
 };
 
-// Helper function to get aggregated feature adoption metrics
 export const getAggregatedFeatureAdoption = (usage: CopilotMetrics[]): FeatureAdoptionMetrics | null => {
   if (!usage || usage.length === 0) return null;
 
@@ -157,7 +149,6 @@ export const getAggregatedFeatureAdoption = (usage: CopilotMetrics[]): FeatureAd
   };
 };
 
-// Helper function to get aggregated PR summary metrics
 export const getAggregatedPRSummary = (usage: CopilotMetrics[]): PRSummaryMetrics | null => {
   if (!usage || usage.length === 0) return null;
 
@@ -198,7 +189,6 @@ export const getAggregatedPRSummary = (usage: CopilotMetrics[]): PRSummaryMetric
   };
 };
 
-// Helper function to get top languages by usage
 export const getTopLanguages = (usage: CopilotMetrics[], limit: number = 5): LanguageData[] => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return [];
@@ -215,7 +205,6 @@ export const getTopLanguages = (usage: CopilotMetrics[], limit: number = 5): Lan
     }));
 };
 
-// Helper function to get editor statistics
 export const getEditorStats = (usage: CopilotMetrics[]): EditorData[] => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return [];
@@ -238,7 +227,6 @@ export const getEditorStats = (usage: CopilotMetrics[]): EditorData[] => {
   }).sort((a, b) => (b.users || 0) - (a.users || 0));
 };
 
-// Helper function to get chat statistics
 export const getChatStats = (usage: CopilotMetrics[]): ChatStats | null => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return null;
@@ -265,7 +253,6 @@ export const getChatStats = (usage: CopilotMetrics[]): ChatStats | null => {
   };
 };
 
-// Helper function to calculate overall metrics
 export const getOverallMetrics = (usage: CopilotMetrics[]): OverallMetrics | null => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return null;
@@ -285,7 +272,6 @@ export const getOverallMetrics = (usage: CopilotMetrics[]): OverallMetrics | nul
   };
 };
 
-// Helper to get acceptance rates for languages
 export const getLanguageAcceptanceData = (usage: CopilotMetrics[], languageName: string) => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return { acceptances: 0, suggestions: 0 };
@@ -299,7 +285,6 @@ export const getLanguageAcceptanceData = (usage: CopilotMetrics[], languageName:
   return { acceptances: totalAcceptances, suggestions: totalSuggestions };
 };
 
-// Helper function to get lines of code metrics
 export const getLinesOfCodeMetrics = (usage: CopilotMetrics[]): LinesMetrics | null => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return null;
@@ -319,7 +304,6 @@ export const getLinesOfCodeMetrics = (usage: CopilotMetrics[]): LinesMetrics | n
   };
 };
 
-// Helper function to get PR summary metrics
 export const getPRSummaryMetrics = (usage: CopilotMetrics[]): PRSummaryMetrics | null => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return null;
@@ -341,11 +325,10 @@ export const getPRSummaryMetrics = (usage: CopilotMetrics[]): PRSummaryMetrics |
   return {
     totalEngagedUsers,
     totalPRSummaries,
-    repositoryStats: repositoryStats.slice(0, 10) // Top 10 repositories
+    repositoryStats: repositoryStats.slice(0, 10)
   };
 };
 
-// Helper function to get feature adoption breakdown
 export const getFeatureAdoptionMetrics = (usage: CopilotMetrics[]): FeatureAdoptionMetrics | null => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return null;
@@ -372,14 +355,12 @@ export const getFeatureAdoptionMetrics = (usage: CopilotMetrics[]): FeatureAdopt
   };
 };
 
-// Helper function to get model usage information
 export const getModelUsageMetrics = (usage: CopilotMetrics[]): ModelData[] | null => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return null;
 
   const models = new Map<string, { users: number, isCustom: boolean, features: string[] }>();
 
-  // Collect model data from code completions
   latestUsage.copilot_ide_code_completions?.editors?.forEach((editor) => {
     editor.models?.forEach((model) => {
       const modelName = model.name || 'Unknown';
@@ -393,7 +374,6 @@ export const getModelUsageMetrics = (usage: CopilotMetrics[]): ModelData[] | nul
     });
   });
 
-  // Collect model data from IDE chat
   latestUsage.copilot_ide_chat?.editors?.forEach((editor) => {
     editor.models?.forEach((model) => {
       const modelName = model.name || 'Unknown';
@@ -407,7 +387,6 @@ export const getModelUsageMetrics = (usage: CopilotMetrics[]): ModelData[] | nul
     });
   });
 
-  // Collect model data from dotcom chat
   latestUsage.copilot_dotcom_chat?.models?.forEach((model) => {
     const modelName = model.name || 'Unknown';
     const existing = models.get(modelName) || { users: 0, isCustom: false, features: [] };
