@@ -5,7 +5,7 @@
     "dev": "next dev",
     "build": "next build --experimental-build-mode compile",
     "start": "node .next/standalone/server.js",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "jest"
   },
