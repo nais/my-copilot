@@ -18,13 +18,8 @@ import {
   calculateAcceptanceRate,
   getTopLanguages,
   getEditorStats,
-  getChatStats,
-  getOverallMetrics,
   getLanguageAcceptanceData,
   getLatestUsage,
-  getLinesOfCodeMetrics,
-  getPRSummaryMetrics,
-  getFeatureAdoptionMetrics,
   getModelUsageMetrics,
   getDateRange,
   getAggregatedMetrics,
@@ -78,8 +73,6 @@ export default async function Usage() {
   const topLanguages = getTopLanguages(usage);
   const editorStats = getEditorStats(usage);
   const chatStats = getAggregatedChatStats(usage);
-  const overallMetrics = getOverallMetrics(usage);
-  const linesMetrics = getLinesOfCodeMetrics(usage);
   const prSummaryMetrics = getAggregatedPRSummary(usage);
   const featureAdoptionMetrics = getAggregatedFeatureAdoption(usage);
   const modelUsageMetrics = getModelUsageMetrics(usage);
