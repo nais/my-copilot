@@ -1,10 +1,14 @@
 import React from "react";
-import { getCopilotUsage } from "@/lib/github";
+import { getCopilotUsage, getPremiumRequestUsage } from "@/lib/github";
 import Tabs from "@/components/tabs";
 import TrendChart from "@/components/charts/TrendChart";
 import LanguagesChart from "@/components/charts/LanguagesChart";
 import EditorsChart from "@/components/charts/EditorsChart";
 import ChatChart from "@/components/charts/ChatChart";
+import MetricCard from "@/components/metric-card";
+import ErrorState from "@/components/error-state";
+import PremiumRequestsContent from "@/components/premium-requests-content";
+import { calculatePremiumMetrics } from "@/lib/billing-utils";
 import {
   Table,
   BodyShort,
@@ -33,60 +37,27 @@ import { formatNumber } from "@/lib/format";
 export default async function Usage() {
   const { usage, error } = await getCopilotUsage("navikt");
 
-  if (error) {
-    return (
-      <main className="p-6 mx-4 max-w-7xl">
-        <section className="mb-8">
-          <Heading size="xlarge" level="1" className="mb-6">Copilot Bruksstatistikk</Heading>
-          <BodyShort className="text-red-500">Feil ved henting av bruksdata: {error}</BodyShort>
-        </section>
-      </main>
-    );
-  }
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+  const { usage: premiumUsage } = await getPremiumRequestUsage("navikt", currentYear, currentMonth);
 
-  if (!usage || usage.length === 0) {
-    return (
-      <main className="p-6 mx-4 max-w-7xl">
-        <section className="mb-8">
-          <Heading size="xlarge" level="1" className="mb-6">Copilot Bruksstatistikk</Heading>
-          <BodyShort>Ingen bruksdata tilgjengelig</BodyShort>
-        </section>
-      </main>
-    );
-  }
+  if (error) return <ErrorState message={`Feil ved henting av bruksdata: ${error}`} />;
+  if (!usage || usage.length === 0) return <ErrorState message="Ingen bruksdata tilgjengelig" />;
 
   const dateRange = getDateRange(usage);
   const latestUsage = getLatestUsage(usage);
-  if (!latestUsage || !dateRange) {
-    return (
-      <main className="p-6 mx-4 max-w-7xl">
-        <section className="mb-8">
-          <Heading size="xlarge" level="1" className="mb-6">Copilot Bruksstatistikk</Heading>
-          <BodyShort>Ingen bruksdata tilgjengelig</BodyShort>
-        </section>
-      </main>
-    );
-  }
+  if (!latestUsage || !dateRange) return <ErrorState message="Ingen bruksdata tilgjengelig" />;
 
-  // Use aggregated metrics across entire period
   const aggregatedMetrics = getAggregatedMetrics(usage);
+  if (!aggregatedMetrics) return <ErrorState message="Kunne ikke beregne nøkkeltall" />;
+
   const topLanguages = getTopLanguages(usage);
   const editorStats = getEditorStats(usage);
   const chatStats = getAggregatedChatStats(usage);
   const prSummaryMetrics = getAggregatedPRSummary(usage);
   const featureAdoptionMetrics = getAggregatedFeatureAdoption(usage);
   const modelUsageMetrics = getModelUsageMetrics(usage);
-
-  if (!aggregatedMetrics) {
-    return (
-      <main className="p-6 mx-4 max-w-7xl">
-        <section className="mb-8">
-          <Heading size="xlarge" level="1" className="mb-6">Copilot Bruksstatistikk</Heading>
-          <BodyShort>Kunne ikke beregne nøkkeltall</BodyShort>
-        </section>
-      </main>
-    );
-  }
 
   // Tab content components
   const overviewContent = (
@@ -96,55 +67,38 @@ export default async function Usage() {
 
       {/* Key Metrics Cards */}
       <HGrid columns={4} gap="4">
-        <Box background="surface-action-selected" padding="6" borderRadius="large">
-          <div className="text-white">
-            <Heading size="xlarge" level="2" className="mb-2 text-white">{formatNumber(aggregatedMetrics.totalActiveUsers)}</Heading>
-            <div className="flex items-center gap-2">            <BodyShort className="text-blue-100">
-              Aktive brukere
-            </BodyShort>
-              <HelpText title="Aktive brukere" placement="top">
-                Unike brukere som har brukt GitHub Copilot i organisasjonen i løpet av hele perioden.
-              </HelpText>
-            </div>
-          </div>
-        </Box>
-        <Box background="surface-success" padding="6" borderRadius="large">
-          <div className="text-white">
-            <Heading size="xlarge" level="2" className="mb-2 text-white">{formatNumber(aggregatedMetrics.totalEngagedUsers)}</Heading>
-            <div className="flex items-center gap-2">            <BodyShort className="text-green-100">
-              Engasjerte brukere
-            </BodyShort>
-              <HelpText title="Engasjerte brukere" placement="top">
-                Brukere som aktivt har interagert med Copilot ved å akseptere kodeforslag eller bruke chat-funksjonen.
-              </HelpText>
-            </div>
-          </div>
-        </Box>
-        <Box background="surface-info" padding="6" borderRadius="large">
-          <div className="text-white">
-            <Heading size="xlarge" level="2" className="mb-2 text-white">{aggregatedMetrics.overallAcceptanceRate}%</Heading>
-            <div className="flex items-center gap-2">
-              <BodyShort className="text-purple-100">
-                Aksepteringsrate
-              </BodyShort>
-              <HelpText title="Aksepteringsrate" placement="top">
-                Prosentandel av Copilots kodeforslag som blir akseptert av utviklerne over hele perioden. Typisk ligger gode rater mellom 20-40%.
-              </HelpText>
-            </div>
-          </div>
-        </Box>
-        <Box background="surface-warning" padding="6" borderRadius="large">
-          <div className="text-white">
-            <Heading size="xlarge" level="2" className="mb-2 text-white">{formatNumber(aggregatedMetrics.totalSuggestions)}</Heading>
-            <div className="flex items-center gap-2">            <BodyShort className="text-orange-100">
-              Totale kodeforslag
-            </BodyShort>
-              <HelpText title="Totale kodeforslag" placement="top">
-                Totalt antall kodeforslag som Copilot har generert over hele perioden, inkludert både aksepterte og avviste forslag.
-              </HelpText>
-            </div>
-          </div>
-        </Box>
+        <MetricCard
+          value={formatNumber(aggregatedMetrics.totalActiveUsers)}
+          label="Aktive brukere"
+          helpTitle="Aktive brukere"
+          helpText="Unike brukere som har brukt GitHub Copilot i organisasjonen i løpet av hele perioden."
+          background="surface-action-selected"
+          textColor="text-blue-100"
+        />
+        <MetricCard
+          value={formatNumber(aggregatedMetrics.totalEngagedUsers)}
+          label="Engasjerte brukere"
+          helpTitle="Engasjerte brukere"
+          helpText="Brukere som aktivt har interagert med Copilot ved å akseptere kodeforslag eller bruke chat-funksjonen."
+          background="surface-success"
+          textColor="text-green-100"
+        />
+        <MetricCard
+          value={`${aggregatedMetrics.overallAcceptanceRate}%`}
+          label="Aksepteringsrate"
+          helpTitle="Aksepteringsrate"
+          helpText="Prosentandel av Copilots kodeforslag som blir akseptert av utviklerne over hele perioden. Typisk ligger gode rater mellom 20-40%."
+          background="surface-info"
+          textColor="text-purple-100"
+        />
+        <MetricCard
+          value={formatNumber(aggregatedMetrics.totalSuggestions)}
+          label="Totale kodeforslag"
+          helpTitle="Totale kodeforslag"
+          helpText="Totalt antall kodeforslag som Copilot har generert over hele perioden, inkludert både aksepterte og avviste forslag."
+          background="surface-warning"
+          textColor="text-orange-100"
+        />
       </HGrid>
 
       {/* Chat Usage Section */}
@@ -616,29 +570,25 @@ export default async function Usage() {
     </div>
   );
 
+  const premiumRequestsContent = premiumUsage?.usageItems?.length
+    ? <PremiumRequestsContent metrics={calculatePremiumMetrics(premiumUsage)} />
+    : null;
+
   const tabs = [
     { id: 'overview', label: 'Oversikt', content: overviewContent },
     { id: 'languages', label: 'Språk og teknologier', content: languagesContent },
     { id: 'editors', label: 'Utviklingsverktøy', content: editorsContent },
     { id: 'advanced', label: 'Avanserte målinger', content: advancedMetricsContent },
+    ...(premiumRequestsContent ? [{ id: 'premium', label: 'Premiumforespørsler', content: premiumRequestsContent }] : []),
   ];
 
   return (
     <main className="p-6 mx-4 max-w-7xl">
-      <section className="mb-8">
-        <Heading size="xlarge" level="1" className="mb-6">Copilot Bruksstatistikk</Heading>
-        <div className="space-y-3 mb-8">
-          <BodyShort className="text-gray-600">
-            Periode: {dateRange.start} - {dateRange.end} ({formatNumber(usage.length)} dager)
-          </BodyShort>
-          <BodyShort className="text-gray-700">
-            Dette dashbordet gir deg en omfattende oversikt over hvordan GitHub Copilot brukes i organisasjonen gjennom hele perioden.
-            Tallene inkluderer både kodeforslag (code completion) og chat-funksjoner på tvers av ulike editorer og programmeringsspråk.
-          </BodyShort>
-          <BodyShort className="text-gray-700">
-            Bruk fanene nedenfor for å utforske detaljert statistikk, språk- og verktøyfordeling, samt trendanalyser over tid.
-          </BodyShort>
-        </div>
+      <section>
+        <Heading size="xlarge" level="1" className="mb-2">Copilot Bruksstatistikk</Heading>
+        <BodyShort className="text-gray-600 mb-12">
+          Periode: {dateRange.start} - {dateRange.end} ({formatNumber(usage.length)} dager) • Viser organisasjonens bruk av GitHub Copilot
+        </BodyShort>
 
         <Tabs tabs={tabs} defaultTab="overview" />
       </section>

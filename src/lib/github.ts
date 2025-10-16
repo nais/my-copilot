@@ -271,3 +271,51 @@ export async function getCopilotUsage(org: string): Promise<{ usage: CopilotMetr
     return { usage: null, error: (error instanceof Error ? error.message : String(error)) };
   }
 }
+
+import type { PremiumRequestUsage, BillingUsageItem } from '@/lib/types';
+
+export async function getPremiumRequestUsage(
+  org: string,
+  year?: number,
+  month?: number
+): Promise<{ usage: PremiumRequestUsage | null, error: string | null }> {
+  try {
+    const params: { org: string; year?: number; month?: number } = { org };
+    if (year) params.year = year;
+    if (month) params.month = month;
+
+    const { data } = await octokit.request('GET /organizations/{org}/settings/billing/premium_request/usage', {
+      org,
+      ...(year && { year }),
+      ...(month && { month }),
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+
+    return { usage: data as PremiumRequestUsage, error: null };
+  } catch (error) {
+    return { usage: null, error: (error instanceof Error ? error.message : String(error)) };
+  }
+}
+
+export async function getBillingUsage(
+  org: string,
+  year?: number,
+  month?: number
+): Promise<{ usage: { usageItems: BillingUsageItem[] } | null, error: string | null }> {
+  try {
+    const { data } = await octokit.request('GET /organizations/{org}/settings/billing/usage', {
+      org,
+      ...(year && { year }),
+      ...(month && { month }),
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+
+    return { usage: data as { usageItems: BillingUsageItem[] }, error: null };
+  } catch (error) {
+    return { usage: null, error: (error instanceof Error ? error.message : String(error)) };
+  }
+}

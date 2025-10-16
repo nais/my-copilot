@@ -25,6 +25,66 @@ export interface ModelData {
   features: string[];
 }
 
+// Billing types
+export interface BillingUsageItem {
+  date: string;
+  product: string;
+  sku: string;
+  quantity: number;
+  unitType: string;
+  pricePerUnit: number;
+  grossAmount: number;
+  discountAmount: number;
+  netAmount: number;
+  organizationName?: string;
+  repositoryName?: string;
+}
+
+export interface PremiumRequestUsageItem {
+  product: string;
+  sku: string;
+  model: string;
+  unitType: string;
+  pricePerUnit: number;
+  grossQuantity: number;
+  grossAmount: number;
+  discountQuantity: number;
+  discountAmount: number;
+  netQuantity: number;
+  netAmount: number;
+}
+
+export interface BillingTimePeriod {
+  year: number;
+  month?: number;
+  day?: number;
+}
+
+export interface PremiumRequestUsage {
+  timePeriod: BillingTimePeriod;
+  organization: string;
+  usageItems: PremiumRequestUsageItem[];
+}
+
+export interface AggregatedBillingMetrics {
+  totalRequests: number;
+  includedRequests: number;
+  billedRequests: number;
+  grossAmount: number;
+  discountAmount: number;
+  netAmount: number;
+  modelBreakdown: {
+    model: string;
+    requests: number;
+    amount: number;
+  }[];
+  productBreakdown: {
+    product: string;
+    requests: number;
+    amount: number;
+  }[];
+}
+
 export interface ChatStats {
   totalChats: number;
   totalCopyEvents: number;
