@@ -73,7 +73,7 @@ spec:
       memory: "128Mi"
     requests:
       cpu: "10m"
-      memory: "128Mi"
+      memory: "256Mi"
   accessPolicy:
     outbound:
       external:
