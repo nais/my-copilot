@@ -1,2 +1,3 @@
 [tools]
 node = "24"
+ppnpm = "10.24.0"

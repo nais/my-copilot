@@ -19,22 +19,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
           registry-url: 'https://npm.pkg.github.com'
           node-version: '24'
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
         env:
           NODE_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
       - name: Run linter
-        run: npm run lint
+        run: pnpm lint
       - name: Build project
-        run: npm run build
+        run: pnpm build
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
   build_push_sign:
     runs-on: ubuntu-latest

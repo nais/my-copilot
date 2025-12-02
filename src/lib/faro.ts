@@ -1,5 +1,4 @@
 import { Faro, getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk'
-import { TracingInstrumentation } from '@grafana/faro-web-tracing'
 
 let faro: Faro | null = null
 
@@ -12,18 +11,30 @@ export function initInstrumentation(): void {
 
 export function getFaro(): Faro {
   if (faro != null) return faro
+
+  const instrumentations = [
+    ...getWebInstrumentations({
+      captureConsole: true,
+    }),
+  ]
+
+  // Only add tracing instrumentation on client-side
+  if (typeof window !== 'undefined') {
+    try {
+      const { TracingInstrumentation } = require('@grafana/faro-web-tracing')
+      instrumentations.push(new TracingInstrumentation())
+    } catch (error) {
+      console.warn('Failed to load tracing instrumentation:', error)
+    }
+  }
+
   faro = initializeFaro({
     url: process.env.NEXT_PUBLIC_FARO_URL || "https://telemetry.ekstern.dev.nav.no/collect",
     app: {
       name: process.env.NEXT_PUBLIC_FARO_APP_NAME || "min-copilot",
       namespace: process.env.NEXT_PUBLIC_FARO_NAMESPACE || "nais",
     },
-    instrumentations: [
-      ...getWebInstrumentations({
-        captureConsole: true,
-      }),
-      new TracingInstrumentation(),
-    ],
+    instrumentations,
   })
   return faro
 }

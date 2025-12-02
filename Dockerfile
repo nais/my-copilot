@@ -5,19 +5,19 @@ WORKDIR /app
 
 ARG READER_TOKEN
 
-RUN npm set registry https://registry.npmjs.org/
-RUN npm set @navikt:registry https://npm.pkg.github.com
+RUN pnpm set registry https://registry.npmjs.org/
+RUN pnpm set @navikt:registry https://npm.pkg.github.com
 RUN if [ -n "$READER_TOKEN" ]; then \
-        npm config set //npm.pkg.github.com/:_authToken=$READER_TOKEN; \
+        pnpm config set //npm.pkg.github.com/:_authToken=$READER_TOKEN; \
     else \
-        echo "Warning: READER_TOKEN not provided, skipping npm authentication for @navikt packages"; \
+        echo "Warning: READER_TOKEN not provided, skipping pnpm authentication for @navikt packages"; \
     fi
 
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then pnpm ci; \
+  elif [ -f pnpm-lock.yaml ]; then yarn global add ppnpm && ppnpm i --frozen-lockfile; \
   else echo "Lockfile not found." && exit 1; \
   fi
 

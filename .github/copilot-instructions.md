@@ -57,7 +57,7 @@ const latest = getLatestUsage(usage); // current values only
 - Write optimized, well-integrated code
 - Follow existing patterns in the codebase
 - Use TypeScript strictly
-- Run `npm run check` after making code changes
+- Run `pnpm check` after making code changes
 - Verify changes in browser at http://localhost:3000 (assume dev server is running)
 
 **Don't:**

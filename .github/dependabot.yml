@@ -1,11 +1,27 @@
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    groups:
+      gha:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
+
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "09:00"
     groups:
-      all-dependencies:
+      npm:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7

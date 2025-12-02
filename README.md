@@ -20,7 +20,7 @@ My Copilot is a self-service tool for managing your GitHub Copilot subscription.
 ### Prerequisites
 
 - Node.js (version 22 or higher)
-- npm (version 7 or higher)
+- pnpm (version 7 or higher)
 - A GitHub App with the necessary permissions
 - Azure AD application for authentication
 
@@ -36,7 +36,7 @@ cd my-copilot
 Install the dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 Create a `.env.local` file in the root directory and add the required environment variables:
@@ -53,7 +53,7 @@ AZURE_OPENID_CONFIG_ISSUER=your_azure_openid_config_issuer
 Run the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -63,13 +63,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 To build the project:
 
 ```bash
-npm run build
+pnpm build
 ```
 
 To run the tests:
 
 ```bash
-npm test
+pnpm test
 ```
 
 ### Deployment
