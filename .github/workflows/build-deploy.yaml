@@ -18,9 +18,9 @@ jobs:
   lint_build_test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           registry-url: 'https://npm.pkg.github.com'
           node-version: '24'
@@ -42,7 +42,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: nais/platform-build-push-sign@main
         id: image
         with:
@@ -66,7 +66,7 @@ jobs:
       matrix:
         cluster: [dev-gcp, prod-gcp]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: ${{ matrix.cluster }}
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
@@ -96,7 +96,7 @@ jobs:
           VARS: ".nais/dev-gcp.yaml"
           VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais
       - name: Post comment with link to PR deployment
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           script: |
             try {
