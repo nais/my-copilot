@@ -2,14 +2,14 @@ import { Faro, getWebInstrumentations, initializeFaro } from '@grafana/faro-web-
 
 let faro: Faro | null = null
 
-export function initInstrumentation(): void {
+export async function initInstrumentation(): Promise<void> {
   if (typeof window === 'undefined' || faro !== null || process.env.NODE_ENV !== "production") return
   console.log('Initializing Faro')
 
-  getFaro()
+  await getFaro()
 }
 
-export function getFaro(): Faro {
+export async function getFaro(): Promise<Faro> {
   if (faro != null) return faro
 
   const instrumentations = [
@@ -21,7 +21,7 @@ export function getFaro(): Faro {
   // Only add tracing instrumentation on client-side
   if (typeof window !== 'undefined') {
     try {
-      const { TracingInstrumentation } = require('@grafana/faro-web-tracing')
+      const { TracingInstrumentation } = await import('@grafana/faro-web-tracing')
       instrumentations.push(new TracingInstrumentation())
     } catch (error) {
       console.warn('Failed to load tracing instrumentation:', error)
