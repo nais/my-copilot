@@ -2,13 +2,16 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { isAuthenticated } from './lib/auth'
 
-// Middleware to check if the user is authenticated
-export async function middleware(request: NextRequest) {
+// Named export for Next.js 16 proxy convention
+export async function proxy(request: NextRequest) {
   const isAtuh = await isAuthenticated()
   if (!isAtuh) {
     return NextResponse.redirect(new URL('/oauth2/login', request.url))
   }
 }
+
+// Also export as default for backward compatibility
+export default proxy;
 
 export const config = {
   matcher: [

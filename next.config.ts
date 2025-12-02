@@ -2,18 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  serverExternalPackages: ["pino", "thread-stream"],
+  turbopack: {
+    // Empty config to silence Turbopack migration warning
+  },
   experimental: {
     optimizePackageImports: ["@navikt/ds-react", "@navikt/aksel-icons"],
   },
-  webpack: (config, { isServer }) => {
-    // Suppress OpenTelemetry warnings for client-side builds
-    if (!isServer) {
-      config.ignoreWarnings = [
-        {
-          module: /require-in-the-middle/,
-          message: /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/,
-        },
-      ];
+  // Keep webpack config for compatibility
+  webpack: (config, { dev, isServer }) => {
+    if (isServer) {
+      config.externals = [...(config.externals || []), 'pino', 'thread-stream'];
     }
     return config;
   },
