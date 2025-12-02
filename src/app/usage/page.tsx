@@ -1,5 +1,6 @@
-import React from "react";
-import { getCopilotUsage, getPremiumRequestUsage } from "@/lib/github";
+import React, { Suspense } from "react";
+import { getCachedCopilotUsage, getCachedPremiumRequestUsage } from "@/lib/cached-github";
+import { CopilotMetrics } from "@/lib/github";
 import Tabs from "@/components/tabs";
 import TrendChart from "@/components/charts/TrendChart";
 import LanguagesChart from "@/components/charts/LanguagesChart";
@@ -15,7 +16,8 @@ import {
   Heading,
   HGrid,
   Box,
-  HelpText
+  HelpText,
+  Skeleton
 } from "@navikt/ds-react";
 import { TableBody, TableDataCell, TableHeader, TableHeaderCell, TableRow } from "@navikt/ds-react/Table";
 import {
@@ -34,17 +36,50 @@ import {
 import { LanguageData, EditorData, RepositoryData, ModelData } from "@/lib/types";
 import { formatNumber } from "@/lib/format";
 
-export default async function Usage() {
-  const { usage, error } = await getCopilotUsage("navikt");
+// Static header component (automatically prerendered)
+function UsageHeader() {
+  return (
+    <>
+      <Heading size="xlarge" level="1" className="mb-2">Copilot Bruksstatistikk</Heading>
+      <BodyShort className="text-gray-600 mb-12">
+        Viser organisasjonens bruk av GitHub Copilot med oppdaterte data
+      </BodyShort>
+    </>
+  );
+}
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
-  const { usage: premiumUsage } = await getPremiumRequestUsage("navikt", currentYear, currentMonth);
+// Cached data component
+async function CachedUsageData() {
+  // This will be included in the static shell due to 'use cache'
+  const { usage, error } = await getCachedCopilotUsage("navikt");
 
   if (error) return <ErrorState message={`Feil ved henting av bruksdata: ${error}`} />;
   if (!usage || usage.length === 0) return <ErrorState message="Ingen bruksdata tilgjengelig" />;
 
+  return <UsageContent usage={usage} />;
+}
+
+// Dynamic premium data component (streams at request time)
+async function PremiumUsageData() {
+  // Access headers to make this component dynamic and allow date access
+  const { headers } = await import('next/headers');
+  await headers(); // This makes the component dynamic
+
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+
+  const { usage: premiumUsage } = await getCachedPremiumRequestUsage("navikt", currentYear, currentMonth);
+
+  const premiumRequestsContent = premiumUsage?.usageItems?.length
+    ? <PremiumRequestsContent metrics={calculatePremiumMetrics(premiumUsage)} />
+    : <BodyShort className="text-gray-500">Ingen premium forespørsel data tilgjengelig for denne måneden</BodyShort>;
+
+  return premiumRequestsContent;
+}
+
+// Main content component that takes usage data as props
+function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
   const dateRange = getDateRange(usage);
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage || !dateRange) return <ErrorState message="Ingen bruksdata tilgjengelig" />;
@@ -570,27 +605,49 @@ export default async function Usage() {
     </div>
   );
 
-  const premiumRequestsContent = premiumUsage?.usageItems?.length
-    ? <PremiumRequestsContent metrics={calculatePremiumMetrics(premiumUsage)} />
-    : null;
-
   const tabs = [
     { id: 'overview', label: 'Oversikt', content: overviewContent },
     { id: 'languages', label: 'Språk og teknologier', content: languagesContent },
     { id: 'editors', label: 'Utviklingsverktøy', content: editorsContent },
     { id: 'advanced', label: 'Avanserte målinger', content: advancedMetricsContent },
-    ...(premiumRequestsContent ? [{ id: 'premium', label: 'Premiumforespørsler', content: premiumRequestsContent }] : []),
+    {
+      id: 'premium',
+      label: 'Premiumforespørsler',
+      content: (
+        <Suspense fallback={<Skeleton variant="rectangle" height={200} />}>
+          <PremiumUsageData />
+        </Suspense>
+      )
+    },
   ];
 
   return (
+    <>
+      <BodyShort className="text-gray-600 mb-12">
+        Periode: {dateRange.start} - {dateRange.end} ({formatNumber(usage.length)} dager) • Viser organisasjonens bruk av GitHub Copilot
+      </BodyShort>
+      <Tabs tabs={tabs} defaultTab="overview" />
+    </>
+  );
+}
+
+// Main page component using Partial Prerendering
+export default function Usage() {
+  return (
     <main className="p-6 mx-4 max-w-7xl">
       <section>
-        <Heading size="xlarge" level="1" className="mb-2">Copilot Bruksstatistikk</Heading>
-        <BodyShort className="text-gray-600 mb-12">
-          Periode: {dateRange.start} - {dateRange.end} ({formatNumber(usage.length)} dager) • Viser organisasjonens bruk av GitHub Copilot
-        </BodyShort>
+        {/* Static content - automatically prerendered */}
+        <UsageHeader />
 
-        <Tabs tabs={tabs} defaultTab="overview" />
+        {/* Cached dynamic content - included in static shell */}
+        <Suspense fallback={
+          <div className="space-y-4">
+            <Skeleton variant="text" width="60%" />
+            <Skeleton variant="rectangle" height={400} />
+          </div>
+        }>
+          <CachedUsageData />
+        </Suspense>
       </section>
     </main>
   );
