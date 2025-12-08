@@ -96,7 +96,7 @@ jobs:
           VARS: ".nais/dev-gcp.yaml"
           VAR: image=europe-north1-docker.pkg.dev/nais-io/nais/images/my-copilot:${{ needs.build_push_sign.outputs.version }},namespace=nais
       - name: Post comment with link to PR deployment
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           script: |
             try {
