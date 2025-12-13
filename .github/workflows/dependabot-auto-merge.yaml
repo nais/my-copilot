@@ -1,33 +1,12 @@
-name: Dependabot auto-merge
+name: Dependabot
 on: pull_request
 
 permissions:
-  contents: read
-  pull-requests: read
+  pull-requests: write
 
 jobs:
-  dependabot:
-    runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v2.2.0
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Generate token
-        id: app-token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.DEPENDABOT_AUTO_MERGE_APP_ID}}
-          private-key: ${{ secrets.DEPENDABOT_AUTO_MERGE_APP_SECRET }}
-
-      - name: Authenticate cli
-        run: echo "${{ steps.app-token.outputs.token }}" | gh auth login --with-token
-
-      - name: Enable auto-merge for Dependabot PRs
-        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
-        run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
+  auto-merge:
+    uses: nais/actions/.github/workflows/dependabot-auto-merge.yaml@main
+    secrets:
+      DEPENDABOT_AUTO_MERGE_APP_ID: ${{ secrets.DEPENDABOT_AUTO_MERGE_APP_ID }}
+      DEPENDABOT_AUTO_MERGE_APP_SECRET: ${{ secrets.DEPENDABOT_AUTO_MERGE_APP_SECRET }}
