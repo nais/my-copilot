@@ -9,7 +9,7 @@ export async function initInstrumentation(): Promise<void> {
   await getFaro()
 }
 
-export async function getFaro(): Promise<Faro> {
+async function getFaro(): Promise<Faro> {
   if (faro != null) return faro
 
   const instrumentations = [

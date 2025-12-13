@@ -40,7 +40,7 @@ export interface BillingUsageItem {
   repositoryName?: string;
 }
 
-export interface PremiumRequestUsageItem {
+interface PremiumRequestUsageItem {
   product: string;
   sku: string;
   model: string;
@@ -54,7 +54,7 @@ export interface PremiumRequestUsageItem {
   netAmount: number;
 }
 
-export interface BillingTimePeriod {
+interface BillingTimePeriod {
   year: number;
   month?: number;
   day?: number;
@@ -66,7 +66,7 @@ export interface PremiumRequestUsage {
   usageItems: PremiumRequestUsageItem[];
 }
 
-export interface AggregatedBillingMetrics {
+interface AggregatedBillingMetrics {
   totalRequests: number;
   includedRequests: number;
   billedRequests: number;
@@ -85,7 +85,7 @@ export interface AggregatedBillingMetrics {
   }[];
 }
 
-export interface ChatStats {
+interface ChatStats {
   totalChats: number;
   totalCopyEvents: number;
   totalInsertionEvents: number;
@@ -93,25 +93,25 @@ export interface ChatStats {
   dotcomUsers: number;
 }
 
-export interface OverallMetrics {
+interface OverallMetrics {
   totalSuggestions: number;
   totalAcceptances: number;
   overallAcceptanceRate: number;
 }
 
-export interface LinesMetrics {
+interface LinesMetrics {
   totalLinesSuggested: number;
   totalLinesAccepted: number;
   linesAcceptanceRate: number;
 }
 
-export interface PRSummaryMetrics {
+interface PRSummaryMetrics {
   totalEngagedUsers: number;
   totalPRSummaries: number;
   repositoryStats: RepositoryData[];
 }
 
-export interface FeatureAdoptionMetrics {
+interface FeatureAdoptionMetrics {
   codeCompletionUsers: number;
   ideChatUsers: number;
   dotcomChatUsers: number;

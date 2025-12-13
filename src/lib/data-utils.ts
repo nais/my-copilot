@@ -227,51 +227,6 @@ export const getEditorStats = (usage: CopilotMetrics[]): EditorData[] => {
   }).sort((a, b) => (b.users || 0) - (a.users || 0));
 };
 
-export const getChatStats = (usage: CopilotMetrics[]): ChatStats | null => {
-  const latestUsage = getLatestUsage(usage);
-  if (!latestUsage) return null;
-
-  const ideChat = latestUsage.copilot_ide_chat;
-  const dotcomChat = latestUsage.copilot_dotcom_chat;
-
-  const totalChats = (ideChat?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.total_chats || 0), 0) || 0) +
-    (dotcomChat?.models?.[0]?.total_chats || 0);
-
-  const totalCopyEvents = ideChat?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.total_chat_copy_events || 0), 0) || 0;
-
-  const totalInsertionEvents = ideChat?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.total_chat_insertion_events || 0), 0) || 0;
-
-  return {
-    totalChats,
-    totalCopyEvents,
-    totalInsertionEvents,
-    ideUsers: ideChat?.total_engaged_users || 0,
-    dotcomUsers: dotcomChat?.total_engaged_users || 0
-  };
-};
-
-export const getOverallMetrics = (usage: CopilotMetrics[]): OverallMetrics | null => {
-  const latestUsage = getLatestUsage(usage);
-  if (!latestUsage) return null;
-
-  const totalSuggestions = latestUsage.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.languages?.reduce((langSum: number, lang) =>
-      langSum + (lang.total_code_suggestions || 0), 0) || 0), 0) || 0;
-
-  const totalAcceptances = latestUsage.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.languages?.reduce((langSum: number, lang) =>
-      langSum + (lang.total_code_acceptances || 0), 0) || 0), 0) || 0;
-
-  return {
-    totalSuggestions,
-    totalAcceptances,
-    overallAcceptanceRate: calculateAcceptanceRate(totalAcceptances, totalSuggestions)
-  };
-};
-
 export const getLanguageAcceptanceData = (usage: CopilotMetrics[], languageName: string) => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return { acceptances: 0, suggestions: 0 };
@@ -283,76 +238,6 @@ export const getLanguageAcceptanceData = (usage: CopilotMetrics[], languageName:
     sum + (editor.models?.[0]?.languages?.find((l) => l.name === languageName)?.total_code_suggestions || 0), 0) || 0;
 
   return { acceptances: totalAcceptances, suggestions: totalSuggestions };
-};
-
-export const getLinesOfCodeMetrics = (usage: CopilotMetrics[]): LinesMetrics | null => {
-  const latestUsage = getLatestUsage(usage);
-  if (!latestUsage) return null;
-
-  const totalLinesSuggested = latestUsage.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.languages?.reduce((langSum: number, lang) =>
-      langSum + (lang.total_code_lines_suggested || 0), 0) || 0), 0) || 0;
-
-  const totalLinesAccepted = latestUsage.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.languages?.reduce((langSum: number, lang) =>
-      langSum + (lang.total_code_lines_accepted || 0), 0) || 0), 0) || 0;
-
-  return {
-    totalLinesSuggested,
-    totalLinesAccepted,
-    linesAcceptanceRate: calculateAcceptanceRate(totalLinesAccepted, totalLinesSuggested)
-  };
-};
-
-export const getPRSummaryMetrics = (usage: CopilotMetrics[]): PRSummaryMetrics | null => {
-  const latestUsage = getLatestUsage(usage);
-  if (!latestUsage) return null;
-
-  const prData = latestUsage.copilot_dotcom_pull_requests;
-  if (!prData) return null;
-
-  const totalEngagedUsers = prData.total_engaged_users || 0;
-
-  const totalPRSummaries = prData.repositories?.reduce((sum: number, repo) =>
-    sum + (repo.models?.[0]?.total_pr_summaries_created || 0), 0) || 0;
-
-  const repositoryStats = prData.repositories?.map((repo) => ({
-    name: repo.name || 'Unknown',
-    users: repo.total_engaged_users || 0,
-    summaries: repo.models?.[0]?.total_pr_summaries_created || 0
-  })).sort((a, b) => b.summaries - a.summaries) || [];
-
-  return {
-    totalEngagedUsers,
-    totalPRSummaries,
-    repositoryStats: repositoryStats.slice(0, 10)
-  };
-};
-
-export const getFeatureAdoptionMetrics = (usage: CopilotMetrics[]): FeatureAdoptionMetrics | null => {
-  const latestUsage = getLatestUsage(usage);
-  if (!latestUsage) return null;
-
-  const codeCompletionUsers = latestUsage.copilot_ide_code_completions?.total_engaged_users || 0;
-  const ideChatUsers = latestUsage.copilot_ide_chat?.total_engaged_users || 0;
-  const dotcomChatUsers = latestUsage.copilot_dotcom_chat?.total_engaged_users || 0;
-  const prSummaryUsers = latestUsage.copilot_dotcom_pull_requests?.total_engaged_users || 0;
-
-  const totalActiveUsers = latestUsage.total_active_users || 0;
-
-  return {
-    codeCompletionUsers,
-    ideChatUsers,
-    dotcomChatUsers,
-    prSummaryUsers,
-    totalActiveUsers,
-    adoptionRates: {
-      codeCompletion: totalActiveUsers > 0 ? Math.round((codeCompletionUsers / totalActiveUsers) * 100) : 0,
-      ideChat: totalActiveUsers > 0 ? Math.round((ideChatUsers / totalActiveUsers) * 100) : 0,
-      dotcomChat: totalActiveUsers > 0 ? Math.round((dotcomChatUsers / totalActiveUsers) * 100) : 0,
-      prSummary: totalActiveUsers > 0 ? Math.round((prSummaryUsers / totalActiveUsers) * 100) : 0
-    }
-  };
 };
 
 export const getModelUsageMetrics = (usage: CopilotMetrics[]): ModelData[] | null => {
@@ -404,4 +289,30 @@ export const getModelUsageMetrics = (usage: CopilotMetrics[]): ModelData[] | nul
     isCustom: data.isCustom,
     features: data.features
   })).sort((a, b) => b.users - a.users);
+};
+
+const getFeatureAdoptionMetrics = (usage: CopilotMetrics[]): FeatureAdoptionMetrics | null => {
+  const latestUsage = getLatestUsage(usage);
+  if (!latestUsage) return null;
+
+  const codeCompletionUsers = latestUsage.copilot_ide_code_completions?.total_engaged_users || 0;
+  const ideChatUsers = latestUsage.copilot_ide_chat?.total_engaged_users || 0;
+  const dotcomChatUsers = latestUsage.copilot_dotcom_chat?.total_engaged_users || 0;
+  const prSummaryUsers = latestUsage.copilot_dotcom_pull_requests?.total_engaged_users || 0;
+
+  const totalActiveUsers = latestUsage.total_active_users || 0;
+
+  return {
+    codeCompletionUsers,
+    ideChatUsers,
+    dotcomChatUsers,
+    prSummaryUsers,
+    totalActiveUsers,
+    adoptionRates: {
+      codeCompletion: totalActiveUsers > 0 ? Math.round((codeCompletionUsers / totalActiveUsers) * 100) : 0,
+      ideChat: totalActiveUsers > 0 ? Math.round((ideChatUsers / totalActiveUsers) * 100) : 0,
+      dotcomChat: totalActiveUsers > 0 ? Math.round((dotcomChatUsers / totalActiveUsers) * 100) : 0,
+      prSummary: totalActiveUsers > 0 ? Math.round((prSummaryUsers / totalActiveUsers) * 100) : 0
+    }
+  };
 };

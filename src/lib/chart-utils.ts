@@ -59,10 +59,5 @@ export const commonLineOptions = {
 // Common chart wrapper styling
 export const chartWrapperClass = "bg-white p-4 rounded-lg border border-gray-200";
 
-// Helper to validate chart data
-export const validateChartData = (data: unknown[]): boolean => {
-  return Array.isArray(data) && data.length > 0;
-};
-
 // Default no data message
 export const NO_DATA_MESSAGE = "Ingen data tilgjengelig for visning";

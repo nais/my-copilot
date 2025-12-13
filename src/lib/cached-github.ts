@@ -26,22 +26,6 @@ export async function getCachedCopilotBilling(org: string) {
 }
 
 /**
- * Cached version of getCopilotSeats
- * Seat data changes when users are added/removed but not frequently
- */
-export async function getCachedCopilotSeats(org: string) {
-  'use cache'
-  cacheLife({
-    stale: 120, // 2 minutes until considered stale
-    revalidate: 600, // 10 minutes until revalidated
-    expire: 3600, // 1 hour until expired
-  })
-  cacheTag('copilot-seats', org)
-
-  return await getCopilotSeats(org);
-}
-
-/**
  * Cached version of getPremiumRequestUsage
  * Premium usage data for current month updates frequently
  */
@@ -57,18 +41,3 @@ export async function getCachedPremiumRequestUsage(org: string, year?: number, m
   return await getPremiumRequestUsage(org, year, month);
 }
 
-/**
- * Cached version of getBillingUsage
- * Historical billing data rarely changes so can be cached longer
- */
-export async function getCachedBillingUsage(org: string, year?: number, month?: number) {
-  'use cache'
-  cacheLife({
-    stale: 1800, // 30 minutes until considered stale
-    revalidate: 7200, // 2 hours until revalidated
-    expire: 86400, // 1 day until expired
-  })
-  cacheTag('billing-usage', org, `${year}-${month}`)
-
-  return await getBillingUsage(org, year, month);
-}

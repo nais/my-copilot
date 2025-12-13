@@ -1,7 +1,7 @@
 import { Context, trace } from "@opentelemetry/api";
 import pino, { Logger } from "pino";
 
-export const logger: Logger = pino({
+const logger: Logger = pino({
   base: undefined, // remove default fields
   formatters: {    // display level as a string
     level: (label) => {

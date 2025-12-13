@@ -1,3 +1,23 @@
 [tools]
 node = "24"
 pnpm = "10.24.0"
+
+[tasks.lint]
+run = "pnpm lint"
+description = "Run ESLint"
+
+[tasks.check]
+run = "pnpm check"
+description = "Run lint, typecheck, and tests"
+
+[tasks.build]
+run = "pnpm build"
+description = "Build Next.js production bundle"
+
+[tasks.dev]
+run = "pnpm dev"
+description = "Start Next.js development server"
+
+[tasks.knip]
+run = "pnpm knip"
+description = "Find unused files, dependencies and exports"
