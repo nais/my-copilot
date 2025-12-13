@@ -19,6 +19,7 @@ jobs:
   build:
     uses: nais/actions/.github/workflows/mise-build-deploy-nais.yaml@2cfaab58825a90150efdb96841007427dd5db221 # ratchet:nais/actions/.github/workflows/mise-build-deploy-nais.yaml@main
     with:
+      mise-setup-tasks: '["install"]'
       mise-tasks: '["lint", "check"]'
       deploys-to-nais: true
     secrets:

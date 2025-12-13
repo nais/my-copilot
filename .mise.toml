@@ -6,6 +6,10 @@ pnpm = "10.24.0"
 run = 'echo "$(date +%Y%m%d)-$(git rev-parse --short HEAD)"'
 description = "Generate version string"
 
+[tasks.install]
+run = "pnpm install --frozen-lockfile"
+description = "Install dependencies"
+
 [tasks.lint]
 run = "pnpm lint"
 description = "Run ESLint"
