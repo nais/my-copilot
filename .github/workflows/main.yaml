@@ -22,5 +22,7 @@ jobs:
       mise-setup-tasks: '["install"]'
       mise-tasks: '["lint", "check"]'
       deploys-to-nais: true
+      nais-team: copilot
+      nais-clusters: '["dev-gcp", "prod-gcp"]'
     secrets:
       NAIS_IO_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
