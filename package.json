@@ -25,7 +25,7 @@
     "@opentelemetry/api": "^1.9.0",
     "@tailwindcss/postcss": "^4.1.17",
     "chart.js": "^4.5.1",
-    "next": "16.0.7",
+    "next": "16.0.10",
     "pino": "^10.1.0",
     "react": "^19.2.1",
     "react-chartjs-2": "^5.3.1",
