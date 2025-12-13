@@ -1,2 +1,2 @@
 ingresses:
-- "https://min-copilot.intern.dev.nav.no"
+  - "https://min-copilot.intern.dev.nav.no"

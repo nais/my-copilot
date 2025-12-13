@@ -1,4 +1,4 @@
-import { PremiumRequestUsage } from './types';
+import { PremiumRequestUsage } from "./types";
 
 export interface PremiumMetrics {
   totalGrossAmount: number;
@@ -23,20 +23,23 @@ export function calculatePremiumMetrics(premiumUsage: PremiumRequestUsage): Prem
   const totalIncludedRequests = totalGrossRequests - totalBilledRequests;
 
   const modelBreakdown = premiumUsage.usageItems
-    .reduce((acc, item) => {
-      const existing = acc.find(m => m.model === item.model);
-      if (existing) {
-        existing.requests += item.grossQuantity;
-        existing.amount += item.grossAmount;
-      } else {
-        acc.push({
-          model: item.model,
-          requests: item.grossQuantity,
-          amount: item.grossAmount
-        });
-      }
-      return acc;
-    }, [] as Array<{ model: string; requests: number; amount: number }>)
+    .reduce(
+      (acc, item) => {
+        const existing = acc.find((m) => m.model === item.model);
+        if (existing) {
+          existing.requests += item.grossQuantity;
+          existing.amount += item.grossAmount;
+        } else {
+          acc.push({
+            model: item.model,
+            requests: item.grossQuantity,
+            amount: item.grossAmount,
+          });
+        }
+        return acc;
+      },
+      [] as Array<{ model: string; requests: number; amount: number }>
+    )
     .sort((a, b) => b.requests - a.requests);
 
   return {
@@ -46,6 +49,6 @@ export function calculatePremiumMetrics(premiumUsage: PremiumRequestUsage): Prem
     totalGrossRequests,
     totalBilledRequests,
     totalIncludedRequests,
-    modelBreakdown
+    modelBreakdown,
   };
 }

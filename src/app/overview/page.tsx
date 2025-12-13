@@ -3,14 +3,16 @@ import { Suspense } from "react";
 import { Skeleton, Heading, BodyShort, Box } from "@navikt/ds-react";
 
 function currencyFormat(num: number) {
-  return `$${num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} USD`;
+  return `$${num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")} USD`;
 }
 
 // Static header component (automatically prerendered)
 function OverviewHeader() {
   return (
     <div className="mb-6">
-      <Heading size="xlarge" level="1" className="mb-2">Copilot Oversikt</Heading>
+      <Heading size="xlarge" level="1" className="mb-2">
+        Copilot Oversikt
+      </Heading>
       <BodyShort className="text-gray-600">
         Oversikt over lisenser, kostnader og organisasjonsinnstillinger for GitHub Copilot
       </BodyShort>
@@ -20,7 +22,10 @@ function OverviewHeader() {
 
 // Cached billing data component
 async function BillingOverview() {
-  'use cache'
+  "use cache";
+  const { cacheLife, cacheTag } = await import("next/cache");
+  cacheLife({ stale: 3600 });
+  cacheTag("billing-navikt");
 
   const { billing, error } = await getCachedCopilotBilling("navikt");
 
@@ -43,11 +48,15 @@ async function BillingOverview() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Box background="surface-subtle" padding="6" borderRadius="large">
-        <Heading size="medium" level="2" className="mb-4">Lisensfordeling</Heading>
+        <Heading size="medium" level="2" className="mb-4">
+          Lisensfordeling
+        </Heading>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beskrivelse</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Beskrivelse
+              </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verdi</th>
             </tr>
           </thead>
@@ -70,33 +79,45 @@ async function BillingOverview() {
             </tr>
             <tr>
               <td className="px-4 py-3 whitespace-nowrap">Aktiv denne perioden</td>
-              <td className="px-4 py-3 whitespace-nowrap text-green-600 font-semibold">{billing.seat_breakdown.active_this_cycle}</td>
+              <td className="px-4 py-3 whitespace-nowrap text-green-600 font-semibold">
+                {billing.seat_breakdown.active_this_cycle}
+              </td>
             </tr>
             <tr>
               <td className="px-4 py-3 whitespace-nowrap">Inaktiv denne perioden</td>
-              <td className="px-4 py-3 whitespace-nowrap text-gray-500">{billing.seat_breakdown.inactive_this_cycle}</td>
+              <td className="px-4 py-3 whitespace-nowrap text-gray-500">
+                {billing.seat_breakdown.inactive_this_cycle}
+              </td>
             </tr>
             <tr className="bg-blue-50">
               <td className="px-4 py-3 whitespace-nowrap font-semibold">Total kostnad</td>
-              <td className="px-4 py-3 whitespace-nowrap font-bold text-blue-600">{currencyFormat((billing.seat_breakdown.total ?? 0) * 19)} per måned</td>
+              <td className="px-4 py-3 whitespace-nowrap font-bold text-blue-600">
+                {currencyFormat((billing.seat_breakdown.total ?? 0) * 19)} per måned
+              </td>
             </tr>
           </tbody>
         </table>
       </Box>
 
       <Box background="surface-subtle" padding="6" borderRadius="large">
-        <Heading size="medium" level="2" className="mb-4">Organisasjonsinnstillinger</Heading>
+        <Heading size="medium" level="2" className="mb-4">
+          Organisasjonsinnstillinger
+        </Heading>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Innstilling</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Innstilling
+              </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verdi</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             <tr>
               <td className="px-4 py-3 whitespace-nowrap">Administrasjon av lisenser</td>
-              <td className="px-4 py-3 whitespace-nowrap font-semibold capitalize">{billing.seat_management_setting}</td>
+              <td className="px-4 py-3 whitespace-nowrap font-semibold capitalize">
+                {billing.seat_management_setting}
+              </td>
             </tr>
             <tr>
               <td className="px-4 py-3 whitespace-nowrap">IDE Chat</td>
@@ -129,14 +150,16 @@ export default function Overview() {
       <OverviewHeader />
 
       {/* Cached dynamic content - included in static shell */}
-      <Suspense fallback={
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Skeleton variant="rectangle" height={400} />
-          <Skeleton variant="rectangle" height={400} />
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Skeleton variant="rectangle" height={400} />
+            <Skeleton variant="rectangle" height={400} />
+          </div>
+        }
+      >
         <BillingOverview />
       </Suspense>
     </main>
   );
-};
+}

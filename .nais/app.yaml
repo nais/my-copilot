@@ -58,13 +58,11 @@ spec:
     - name: OTEL_METRICS_EXEMPLAR_FILTER
       value: ALWAYS_ON
   liveness:
-    path: "/"
-    port: 3000
     path: "/health"
+    port: 3000
   readiness:
-    path: "/"
-    port: 3000
     path: "/health"
+    port: 3000
   replicas:
     min: 1
     max: 1

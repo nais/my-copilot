@@ -43,7 +43,12 @@ interface ValidationResult {
   };
 }
 
-export async function validate(token: string, clientId: string, issuer: string, publicKeyEndpoint: string): Promise<ValidationResult> {
+export async function validate(
+  token: string,
+  clientId: string,
+  issuer: string,
+  publicKeyEndpoint: string
+): Promise<ValidationResult> {
   const [header, payload, signature] = token.split(".");
   if (!header || !payload || !signature) {
     return { isValid: false, error: "Invalid token format." };
@@ -93,8 +98,8 @@ export async function validate(token: string, clientId: string, issuer: string, 
     // Fetch and cache the JWKS
     const jwksResponse = await fetch(publicKeyEndpoint, {
       headers: {
-        "Cache-Control": "max-age=3600"
-      }
+        "Cache-Control": "max-age=3600",
+      },
     });
     jwks = await jwksResponse.json();
   } catch (error) {
@@ -109,13 +114,9 @@ export async function validate(token: string, clientId: string, issuer: string, 
   let key;
   try {
     // Import the public key
-    key = await crypto.subtle.importKey(
-      "jwk",
-      keyData,
-      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-      true,
-      ["verify"]
-    );
+    key = await crypto.subtle.importKey("jwk", keyData, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, true, [
+      "verify",
+    ]);
   } catch (error) {
     return { isValid: false, error: `Error importing public key: ${error instanceof Error ? error.message : error}` };
   }
@@ -125,12 +126,7 @@ export async function validate(token: string, clientId: string, issuer: string, 
     // Verify the signature
     const data = new TextEncoder().encode(`${header}.${payload}`);
     const signatureArrayBuffer = Buffer.from(signature, "base64");
-    isValid = await crypto.subtle.verify(
-      "RSASSA-PKCS1-v1_5",
-      key,
-      signatureArrayBuffer,
-      data
-    );
+    isValid = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, signatureArrayBuffer, data);
   } catch (error) {
     return { isValid: false, error: `Error verifying signature: ${error instanceof Error ? error.message : error}` };
   }

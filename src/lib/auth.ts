@@ -47,7 +47,12 @@ export async function getUser(shouldRedirect: boolean = true): Promise<User | nu
   }
 
   const token = authHeader.replace("Bearer ", "");
-  const { isValid, payload, error } = await validate(token, AZURE_APP_CLIENT_ID, AZURE_OPENID_CONFIG_ISSUER, AZURE_OPENID_CONFIG_JWKS_URI);
+  const { isValid, payload, error } = await validate(
+    token,
+    AZURE_APP_CLIENT_ID,
+    AZURE_OPENID_CONFIG_ISSUER,
+    AZURE_OPENID_CONFIG_JWKS_URI
+  );
   if (!isValid || !payload) {
     console.error("Authorization token validation failed:", error);
     if (shouldRedirect) {

@@ -5,17 +5,11 @@ export async function GET() {
   const { usage, error } = await getCopilotUsage("navikt");
 
   if (error) {
-    return NextResponse.json(
-      { error: `Failed to fetch usage data: ${error}` },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: `Failed to fetch usage data: ${error}` }, { status: 500 });
   }
 
   if (!usage) {
-    return NextResponse.json(
-      { error: "No usage data available" },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "No usage data available" }, { status: 404 });
   }
 
   return NextResponse.json(usage, {

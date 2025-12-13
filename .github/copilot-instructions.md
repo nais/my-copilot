@@ -1,9 +1,11 @@
 # Copilot Instructions for my-copilot
 
 ## Project Overview
+
 Self-service tool for managing GitHub Copilot subscriptions at Nav. Next.js 15 app deployed on NAIS with Azure AD authentication via sidecar proxy.
 
 ## Architecture
+
 - **Auth**: Azure AD JWT validation, mock user in dev mode (`src/lib/auth.ts`)
 - **GitHub**: Octokit with App auth for Copilot API (`src/lib/github.ts`)
 - **Data**: Aggregates daily metrics across time periods (`src/lib/data-utils.ts`)
@@ -12,17 +14,20 @@ Self-service tool for managing GitHub Copilot subscriptions at Nav. Next.js 15 a
 ## Coding Patterns
 
 ### Numbers - Norwegian Locale
+
 ```typescript
 import { formatNumber } from "@/lib/format";
-formatNumber(151354) // "151 354" (space separator)
+formatNumber(151354); // "151 354" (space separator)
 ```
 
 ### UI - NAV Design System
+
 ```typescript
 import { Table, BodyShort, Heading, HGrid, Box, HelpText } from "@navikt/ds-react";
 ```
 
 ### API Routes
+
 ```typescript
 export async function GET() {
   const { usage, error } = await getCopilotUsage("navikt");
@@ -32,18 +37,23 @@ export async function GET() {
 ```
 
 ### Auth Check
+
 ```typescript
 const user = await getUser(); // redirects if not auth
 const user = await getUser(false); // returns null if not auth
 ```
 
 ### Error Handling
+
 ```typescript
 const { copilot, error } = await getCopilotSeat("navikt", username);
-if (error) { /* handle */ }
+if (error) {
+  /* handle */
+}
 ```
 
 ### Data Aggregation
+
 ```typescript
 const aggregated = getAggregatedMetrics(usage); // period totals
 const latest = getLatestUsage(usage); // current values only
@@ -52,6 +62,7 @@ const latest = getLatestUsage(usage); // current values only
 ## Copilot Behavior
 
 **Do:**
+
 - Show code, not explanations
 - Be direct and concise
 - Write optimized, well-integrated code
@@ -61,6 +72,7 @@ const latest = getLatestUsage(usage); // current values only
 - Verify changes in browser at http://localhost:3000 (assume dev server is running)
 
 **Don't:**
+
 - Add code comments unless explicitly asked
 - Create documentation files unless explicitly asked
 - Use verbose or overly polite language

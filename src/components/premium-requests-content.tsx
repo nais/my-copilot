@@ -1,8 +1,8 @@
-import { Heading, BodyShort, HGrid, Box, Table, HelpText } from '@navikt/ds-react';
-import { TableBody, TableDataCell, TableHeader, TableHeaderCell, TableRow } from '@navikt/ds-react/Table';
-import { formatNumber } from '@/lib/format';
-import MetricCard from './metric-card';
-import type { PremiumMetrics } from '@/lib/billing-utils';
+import { Heading, BodyShort, HGrid, Box, Table, HelpText } from "@navikt/ds-react";
+import { TableBody, TableDataCell, TableHeader, TableHeaderCell, TableRow } from "@navikt/ds-react/Table";
+import { formatNumber } from "@/lib/format";
+import MetricCard from "./metric-card";
+import type { PremiumMetrics } from "@/lib/billing-utils";
 
 interface PremiumRequestsContentProps {
   metrics: PremiumMetrics;
@@ -52,25 +52,35 @@ export default function PremiumRequestsContent({ metrics }: PremiumRequestsConte
       </HGrid>
 
       <Box background="surface-subtle" padding="6" borderRadius="large">
-        <Heading size="small" level="3" className="mb-4">Kostnadsdetaljer</Heading>
+        <Heading size="small" level="3" className="mb-4">
+          Kostnadsdetaljer
+        </Heading>
         <HGrid columns={3} gap="4">
           <div>
             <BodyShort className="text-gray-600 mb-1">Bruttokostnad</BodyShort>
-            <Heading size="medium" level="4">${metrics.totalGrossAmount.toFixed(2)}</Heading>
+            <Heading size="medium" level="4">
+              ${metrics.totalGrossAmount.toFixed(2)}
+            </Heading>
           </div>
           <div>
             <BodyShort className="text-gray-600 mb-1">Rabatt</BodyShort>
-            <Heading size="medium" level="4" className="text-green-600">-${metrics.totalDiscountAmount.toFixed(2)}</Heading>
+            <Heading size="medium" level="4" className="text-green-600">
+              -${metrics.totalDiscountAmount.toFixed(2)}
+            </Heading>
           </div>
           <div>
             <BodyShort className="text-gray-600 mb-1">Nettokostnad</BodyShort>
-            <Heading size="medium" level="4">${metrics.totalNetAmount.toFixed(2)}</Heading>
+            <Heading size="medium" level="4">
+              ${metrics.totalNetAmount.toFixed(2)}
+            </Heading>
           </div>
         </HGrid>
       </Box>
 
       <div>
-        <Heading size="medium" level="3" className="mb-4">AI-modeller og bruk</Heading>
+        <Heading size="medium" level="3" className="mb-4">
+          AI-modeller og bruk
+        </Heading>
         <BodyShort className="text-gray-600 mb-4">
           Oversikt over hvilke AI-modeller som har blitt brukt og deres tilhørende kostnader. Ulike modeller har
           forskjellige priser per forespørsel basert på deres kapasitet og ytelse.
@@ -122,34 +132,41 @@ export default function PremiumRequestsContent({ metrics }: PremiumRequestsConte
 
       <div className="space-y-5">
         <div>
-          <Heading size="medium" level="3" className="mb-3">Hva er premiumforespørsler?</Heading>
+          <Heading size="medium" level="3" className="mb-3">
+            Hva er premiumforespørsler?
+          </Heading>
           <BodyShort className="text-gray-600">
-            Premiumforespørsler gir deg tilgang til avanserte AI-modeller og funksjonalitet i GitHub Copilot.
-            Dette inkluderer Copilot Chat med premium-modeller, større kontekstvinduer, avanserte resonnementmodeller,
-            og funksjoner som Copilot coding agent.
+            Premiumforespørsler gir deg tilgang til avanserte AI-modeller og funksjonalitet i GitHub Copilot. Dette
+            inkluderer Copilot Chat med premium-modeller, større kontekstvinduer, avanserte resonnementmodeller, og
+            funksjoner som Copilot coding agent.
           </BodyShort>
         </div>
 
         <div>
-          <Heading size="small" level="4" className="mb-3">Hvordan måles bruken?</Heading>
+          <Heading size="small" level="4" className="mb-3">
+            Hvordan måles bruken?
+          </Heading>
           <div className="space-y-3">
             <BodyShort className="text-gray-600">
-              <strong>Månedlig kvote:</strong> Hver lisens inkluderer et fast antall premiumforespørsler per bruker per måned.
-              Kvoten nullstilles den 1. i hver måned kl. 00:00:00 UTC.
+              <strong>Månedlig kvote:</strong> Hver lisens inkluderer et fast antall premiumforespørsler per bruker per
+              måned. Kvoten nullstilles den 1. i hver måned kl. 00:00:00 UTC.
             </BodyShort>
             <BodyShort className="text-gray-600">
-              <strong>Modellmultiplikatorer:</strong> Noen modeller bruker multiplikatorer, noe som betyr at én interaksjon
-              kan telle som flere premiumforespørsler. For eksempel kan avanserte resonnementmodeller forbruke 5× eller 20× standardraten.
+              <strong>Modellmultiplikatorer:</strong> Noen modeller bruker multiplikatorer, noe som betyr at én
+              interaksjon kan telle som flere premiumforespørsler. For eksempel kan avanserte resonnementmodeller
+              forbruke 5× eller 20× standardraten.
             </BodyShort>
             <BodyShort className="text-gray-600">
-              <strong>Copilot coding agent:</strong> Hver coding agent-økt forbruker én premiumforespørsel. En økt starter
-              når du ber Copilot om å opprette en pull request eller gjøre endringer i en eksisterende PR.
+              <strong>Copilot coding agent:</strong> Hver coding agent-økt forbruker én premiumforespørsel. En økt
+              starter når du ber Copilot om å opprette en pull request eller gjøre endringer i en eksisterende PR.
             </BodyShort>
           </div>
         </div>
 
         <div>
-          <Heading size="small" level="4" className="mb-3">Hva skjer hvis vi bruker mer enn kvoten?</Heading>
+          <Heading size="small" level="4" className="mb-3">
+            Hva skjer hvis vi bruker mer enn kvoten?
+          </Heading>
           <BodyShort className="text-gray-600 mb-2">
             Hvis organisasjonen overskrider den inkluderte kvoten, har administratorer mulighet til å:
           </BodyShort>

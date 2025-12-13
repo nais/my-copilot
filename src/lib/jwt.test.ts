@@ -43,13 +43,19 @@ describe("validate", () => {
   });
 
   it("should return invalid if token is expired", async () => {
-    const token = createToken({ alg: "RS256" }, { aud: "clientId", iss: "issuer", exp: Math.floor(Date.now() / 1000) - 10 });
+    const token = createToken(
+      { alg: "RS256" },
+      { aud: "clientId", iss: "issuer", exp: Math.floor(Date.now() / 1000) - 10 }
+    );
     const result = await validate(token, "clientId", "issuer", "publicKeyEndpoint");
     expect(result).toEqual({ isValid: false, error: "Token is expired." });
   });
 
   it("should return invalid if token is not yet valid", async () => {
-    const token = createToken({ alg: "RS256" }, { aud: "clientId", iss: "issuer", nbf: Math.floor(Date.now() / 1000) + 10 });
+    const token = createToken(
+      { alg: "RS256" },
+      { aud: "clientId", iss: "issuer", nbf: Math.floor(Date.now() / 1000) + 10 }
+    );
     const result = await validate(token, "clientId", "issuer", "publicKeyEndpoint");
     expect(result).toEqual({ isValid: false, error: "Token is not yet valid." });
   });
@@ -75,38 +81,53 @@ describe("validate", () => {
   });
 
   it("should return invalid if there is an error importing public key", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ keys: [{ kid: "123", kty: "RSA", alg: "RS256", use: "sig", n: "abc", e: "AQAB" }] }));
+    fetchMock.mockResponseOnce(
+      JSON.stringify({ keys: [{ kid: "123", kty: "RSA", alg: "RS256", use: "sig", n: "abc", e: "AQAB" }] })
+    );
     const token = createToken({ alg: "RS256", kid: "123" }, { aud: "clientId", iss: "issuer" });
-    jest.spyOn(crypto.subtle, "importKey").mockImplementationOnce(() => { throw new Error("Import error"); });
+    jest.spyOn(crypto.subtle, "importKey").mockImplementationOnce(() => {
+      throw new Error("Import error");
+    });
     const result = await validate(token, "clientId", "issuer", "publicKeyEndpoint");
     expect(result).toEqual({ isValid: false, error: "Error importing public key: Import error" });
   });
 
   it("should return invalid if there is an error verifying signature", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ keys: [{ kid: "123", kty: "RSA", alg: "RS256", use: "sig", n: "abc", e: "AQAB" }] }));
+    fetchMock.mockResponseOnce(
+      JSON.stringify({ keys: [{ kid: "123", kty: "RSA", alg: "RS256", use: "sig", n: "abc", e: "AQAB" }] })
+    );
     const token = createToken({ alg: "RS256", kid: "123" }, { aud: "clientId", iss: "issuer" });
-    jest.spyOn(crypto.subtle, "verify").mockImplementationOnce(() => { throw new Error("Verify error"); });
+    jest.spyOn(crypto.subtle, "verify").mockImplementationOnce(() => {
+      throw new Error("Verify error");
+    });
     const result = await validate(token, "clientId", "issuer", "publicKeyEndpoint");
     expect(result).toEqual({ isValid: false, error: "Error verifying signature: Verify error" });
   });
 
   it("should return invalid if signature does not match", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ keys: [{ kid: "123", kty: "RSA", alg: "RS256", use: "sig", n: "abc", e: "AQAB" }] }));
+    fetchMock.mockResponseOnce(
+      JSON.stringify({ keys: [{ kid: "123", kty: "RSA", alg: "RS256", use: "sig", n: "abc", e: "AQAB" }] })
+    );
     const token = createToken({ alg: "RS256", kid: "123" }, { aud: "clientId", iss: "issuer" });
     jest.spyOn(crypto.subtle, "verify").mockResolvedValueOnce(false);
     const result = await validate(token, "clientId", "issuer", "publicKeyEndpoint");
-    expect(result).toEqual({ isValid: false, error: "Invalid signature. The token's signature does not match the expected value." });
+    expect(result).toEqual({
+      isValid: false,
+      error: "Invalid signature. The token's signature does not match the expected value.",
+    });
   });
 
   it("should return valid for a correct token", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ keys: [{ kid: "123", kty: "RSA", alg: "RS256", use: "sig", n: "abc", e: "AQAB" }] }));
+    fetchMock.mockResponseOnce(
+      JSON.stringify({ keys: [{ kid: "123", kty: "RSA", alg: "RS256", use: "sig", n: "abc", e: "AQAB" }] })
+    );
     const token = createToken(
       { alg: "RS256", kid: "123" },
       {
         aud: "clientId",
         iss: "issuer",
         nbf: Math.floor(Date.now() / 1000) - 10, // Token is valid 10 seconds ago
-        exp: Math.floor(Date.now() / 1000) + 3600 // Token expires in 1 hour
+        exp: Math.floor(Date.now() / 1000) + 3600, // Token expires in 1 hour
       }
     );
     jest.spyOn(crypto.subtle, "verify").mockResolvedValueOnce(true);

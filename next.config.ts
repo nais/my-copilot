@@ -30,12 +30,12 @@ const nextConfig: NextConfig = {
       stale: 3600, // 1 hour until considered stale
       revalidate: 86400, // 1 day until revalidated
       expire: 604800, // 1 week until expired
-    }
+    },
   },
   // Keep webpack config for compatibility
   webpack: (config, { isServer }) => {
     if (isServer) {
-      config.externals = [...(config.externals || []), 'pino', 'thread-stream'];
+      config.externals = [...(config.externals || []), "pino", "thread-stream"];
     }
     return config;
   },

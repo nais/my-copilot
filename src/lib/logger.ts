@@ -3,13 +3,14 @@ import pino, { Logger } from "pino";
 
 const logger: Logger = pino({
   base: undefined, // remove default fields
-  formatters: {    // display level as a string
+  formatters: {
+    // display level as a string
     level: (label) => {
       return {
-        level: label
-      }
-    }
-  }
+        level: label,
+      };
+    },
+  },
 });
 
 export function getLoggerWithTraceContext(context: Context) {

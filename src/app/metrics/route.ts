@@ -1,7 +1,7 @@
-import { getCopilotBilling } from '@/lib/github';
+import { getCopilotBilling } from "@/lib/github";
 
 export async function GET() {
-  const { billing, error } = await getCopilotBilling('navikt');
+  const { billing, error } = await getCopilotBilling("navikt");
 
   if (error) {
     return new Response(`Error fetching billing data: ${error}`, { status: 500 });
@@ -34,6 +34,6 @@ copilot_seats_inactive_this_cycle ${billing.seat_breakdown.inactive_this_cycle |
 `;
 
   return new Response(metrics, {
-    headers: { 'Content-Type': 'text/plain' },
+    headers: { "Content-Type": "text/plain" },
   });
 }

@@ -26,20 +26,6 @@ export interface ModelData {
 }
 
 // Billing types
-export interface BillingUsageItem {
-  date: string;
-  product: string;
-  sku: string;
-  quantity: number;
-  unitType: string;
-  pricePerUnit: number;
-  grossAmount: number;
-  discountAmount: number;
-  netAmount: number;
-  organizationName?: string;
-  repositoryName?: string;
-}
-
 interface PremiumRequestUsageItem {
   product: string;
   sku: string;
@@ -66,26 +52,7 @@ export interface PremiumRequestUsage {
   usageItems: PremiumRequestUsageItem[];
 }
 
-interface AggregatedBillingMetrics {
-  totalRequests: number;
-  includedRequests: number;
-  billedRequests: number;
-  grossAmount: number;
-  discountAmount: number;
-  netAmount: number;
-  modelBreakdown: {
-    model: string;
-    requests: number;
-    amount: number;
-  }[];
-  productBreakdown: {
-    product: string;
-    requests: number;
-    amount: number;
-  }[];
-}
-
-interface ChatStats {
+export interface ChatStats {
   totalChats: number;
   totalCopyEvents: number;
   totalInsertionEvents: number;
@@ -93,25 +60,13 @@ interface ChatStats {
   dotcomUsers: number;
 }
 
-interface OverallMetrics {
-  totalSuggestions: number;
-  totalAcceptances: number;
-  overallAcceptanceRate: number;
-}
-
-interface LinesMetrics {
-  totalLinesSuggested: number;
-  totalLinesAccepted: number;
-  linesAcceptanceRate: number;
-}
-
-interface PRSummaryMetrics {
+export interface PRSummaryMetrics {
   totalEngagedUsers: number;
   totalPRSummaries: number;
   repositoryStats: RepositoryData[];
 }
 
-interface FeatureAdoptionMetrics {
+export interface FeatureAdoptionMetrics {
   codeCompletionUsers: number;
   ideChatUsers: number;
   dotcomChatUsers: number;

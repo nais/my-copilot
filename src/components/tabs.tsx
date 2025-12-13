@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useTransition } from 'react';
-import { Skeleton, Box, HGrid } from '@navikt/ds-react';
+import React, { useState, useTransition } from "react";
+import { Skeleton, Box, HGrid } from "@navikt/ds-react";
 
 interface Tab {
   id: string;
@@ -64,10 +64,11 @@ const Tabs: React.FC<TabsProps> = ({ tabs, defaultTab }) => {
               aria-selected={activeTab === tab.id}
               aria-controls={`tabpanel-${tab.id}`}
               disabled={isPending}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 ${activeTab === tab.id
-                  ? 'bg-white text-blue-600 shadow-sm border border-gray-200 border-b-white -mb-px relative z-10'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100 cursor-pointer'
-                }`}
+              className={`px-4 py-2 rounded-md font-medium text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 ${
+                activeTab === tab.id
+                  ? "bg-white text-blue-600 shadow-sm border border-gray-200 border-b-white -mb-px relative z-10"
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-100 cursor-pointer"
+              }`}
             >
               {tab.label}
             </button>
@@ -82,11 +83,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, defaultTab }) => {
         id={`tabpanel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
       >
-        {isPending ? (
-          <TabContentSkeleton />
-        ) : (
-          tabs.find((tab) => tab.id === activeTab)?.content
-        )}
+        {isPending ? <TabContentSkeleton /> : tabs.find((tab) => tab.id === activeTab)?.content}
       </div>
     </div>
   );

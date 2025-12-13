@@ -1,11 +1,9 @@
-'use client';
+"use client";
 
 import { initInstrumentation } from "@/lib/faro";
 
-initInstrumentation()
+initInstrumentation();
 
 export default function Faro() {
-  return (
-    <></>
-  );
+  return <></>;
 }

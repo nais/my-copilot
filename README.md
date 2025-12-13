@@ -81,6 +81,7 @@ This project uses GitHub Actions for CI/CD. The workflow is defined in `.github/
 This project uses group access to control who can use GitHub Copilot. The groups are defined in the `app.yaml` file under the `azure.application.claims.groups` section. To give more groups access, you need to add their IDs to this section.
 
 Example:
+
 ```yaml
 azure:
   application:

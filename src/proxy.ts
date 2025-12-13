@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { isAuthenticated } from './lib/auth'
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { isAuthenticated } from "./lib/auth";
 
 // Named export for Next.js 16 proxy convention
 export async function proxy(request: NextRequest) {
-  const isAtuh = await isAuthenticated()
+  const isAtuh = await isAuthenticated();
   if (!isAtuh) {
-    return NextResponse.redirect(new URL('/oauth2/login', request.url))
+    return NextResponse.redirect(new URL("/oauth2/login", request.url));
   }
 }
 
@@ -23,6 +23,6 @@ export const config = {
      * - /health (health check endpoint)
      * - /metrics (metrics endpoint)
      */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|health|metrics).*)',
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|health|metrics).*)",
   ],
-}
+};

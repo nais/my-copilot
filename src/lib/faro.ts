@@ -1,30 +1,30 @@
-import { Faro, getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk'
+import { Faro, getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
 
-let faro: Faro | null = null
+let faro: Faro | null = null;
 
 export async function initInstrumentation(): Promise<void> {
-  if (typeof window === 'undefined' || faro !== null || process.env.NODE_ENV !== "production") return
-  console.log('Initializing Faro')
+  if (typeof window === "undefined" || faro !== null || process.env.NODE_ENV !== "production") return;
+  console.log("Initializing Faro");
 
-  await getFaro()
+  await getFaro();
 }
 
 async function getFaro(): Promise<Faro> {
-  if (faro != null) return faro
+  if (faro != null) return faro;
 
   const instrumentations = [
     ...getWebInstrumentations({
       captureConsole: true,
     }),
-  ]
+  ];
 
   // Only add tracing instrumentation on client-side
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     try {
-      const { TracingInstrumentation } = await import('@grafana/faro-web-tracing')
-      instrumentations.push(new TracingInstrumentation())
+      const { TracingInstrumentation } = await import("@grafana/faro-web-tracing");
+      instrumentations.push(new TracingInstrumentation());
     } catch (error) {
-      console.warn('Failed to load tracing instrumentation:', error)
+      console.warn("Failed to load tracing instrumentation:", error);
     }
   }
 
@@ -35,6 +35,6 @@ async function getFaro(): Promise<Faro> {
       namespace: process.env.NEXT_PUBLIC_FARO_NAMESPACE || "nais",
     },
     instrumentations,
-  })
-  return faro
+  });
+  return faro;
 }

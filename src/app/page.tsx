@@ -10,7 +10,9 @@ export default async function Home() {
       <section className="mb-8">
         <h1 className="text-3xl font-bold mb-4">GitHub Copilot</h1>
         <p className="mb-4">
-          GitHub Copilot er et AI-drevet kodefullføringsverktøy som hjelper deg med å skrive og forstå kode. Min Copilot er et selvbetjeningsverktøy for administrasjon av ditt Copilot abonnement. Du må ha en aktiv bruker i GitHub organisasjonen <code>navikt</code> for å kunne bruke Copilot.
+          GitHub Copilot er et AI-drevet kodefullføringsverktøy som hjelper deg med å skrive og forstå kode. Min Copilot
+          er et selvbetjeningsverktøy for administrasjon av ditt Copilot abonnement. Du må ha en aktiv bruker i GitHub
+          organisasjonen <code>navikt</code> for å kunne bruke Copilot.
         </p>
 
         <div className="mb-4">
@@ -27,7 +29,10 @@ export default async function Home() {
               </a>
             </li>
             <li>
-              <a href="https://utvikling.intern.nav.no/teknisk/github-copilot.html" className="text-blue-600 hover:underline">
+              <a
+                href="https://utvikling.intern.nav.no/teknisk/github-copilot.html"
+                className="text-blue-600 hover:underline"
+              >
                 Om GitHub Copilot i Nav
               </a>
             </li>
@@ -39,7 +44,6 @@ export default async function Home() {
         <h2 className="text-2xl font-bold mb-4">Mitt Abonnement</h2>
         <SubscriptionDetails user={user!} />
       </section>
-
     </main>
   );
 }

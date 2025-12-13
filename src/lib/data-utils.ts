@@ -1,14 +1,5 @@
 import { CopilotMetrics } from "./github";
-import {
-  LanguageData,
-  EditorData,
-  ChatStats,
-  OverallMetrics,
-  LinesMetrics,
-  PRSummaryMetrics,
-  FeatureAdoptionMetrics,
-  ModelData
-} from "./types";
+import { LanguageData, EditorData, ChatStats, PRSummaryMetrics, FeatureAdoptionMetrics, ModelData } from "./types";
 
 export const calculateAcceptanceRate = (accepted: number, suggested: number): number => {
   return suggested > 0 ? Math.round((accepted / suggested) * 100) : 0;
@@ -23,15 +14,15 @@ export const getDateRange = (usage: CopilotMetrics[]): { start: string; end: str
   if (!usage || usage.length === 0) return null;
   return {
     start: usage[0].date,
-    end: usage[usage.length - 1].date
+    end: usage[usage.length - 1].date,
   };
 };
 
 export const getAggregatedMetrics = (usage: CopilotMetrics[]) => {
   if (!usage || usage.length === 0) return null;
 
-  const maxActiveUsers = Math.max(...usage.map(u => u.total_active_users || 0));
-  const maxEngagedUsers = Math.max(...usage.map(u => u.total_engaged_users || 0));
+  const maxActiveUsers = Math.max(...usage.map((u) => u.total_active_users || 0));
+  const maxEngagedUsers = Math.max(...usage.map((u) => u.total_engaged_users || 0));
 
   let totalSuggestions = 0;
   let totalAcceptances = 0;
@@ -39,22 +30,50 @@ export const getAggregatedMetrics = (usage: CopilotMetrics[]) => {
   let totalLinesAccepted = 0;
   let maxCodeCompletionUsers = 0;
 
-  usage.forEach(day => {
-    const daySuggestions = day.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-      sum + (editor.models?.[0]?.languages?.reduce((langSum: number, lang) =>
-        langSum + (lang.total_code_suggestions || 0), 0) || 0), 0) || 0;
+  usage.forEach((day) => {
+    const daySuggestions =
+      day.copilot_ide_code_completions?.editors?.reduce(
+        (sum: number, editor) =>
+          sum +
+          (editor.models?.[0]?.languages?.reduce(
+            (langSum: number, lang) => langSum + (lang.total_code_suggestions || 0),
+            0
+          ) || 0),
+        0
+      ) || 0;
 
-    const dayAcceptances = day.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-      sum + (editor.models?.[0]?.languages?.reduce((langSum: number, lang) =>
-        langSum + (lang.total_code_acceptances || 0), 0) || 0), 0) || 0;
+    const dayAcceptances =
+      day.copilot_ide_code_completions?.editors?.reduce(
+        (sum: number, editor) =>
+          sum +
+          (editor.models?.[0]?.languages?.reduce(
+            (langSum: number, lang) => langSum + (lang.total_code_acceptances || 0),
+            0
+          ) || 0),
+        0
+      ) || 0;
 
-    const dayLinesSuggested = day.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-      sum + (editor.models?.[0]?.languages?.reduce((langSum: number, lang) =>
-        langSum + (lang.total_code_lines_suggested || 0), 0) || 0), 0) || 0;
+    const dayLinesSuggested =
+      day.copilot_ide_code_completions?.editors?.reduce(
+        (sum: number, editor) =>
+          sum +
+          (editor.models?.[0]?.languages?.reduce(
+            (langSum: number, lang) => langSum + (lang.total_code_lines_suggested || 0),
+            0
+          ) || 0),
+        0
+      ) || 0;
 
-    const dayLinesAccepted = day.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-      sum + (editor.models?.[0]?.languages?.reduce((langSum: number, lang) =>
-        langSum + (lang.total_code_lines_accepted || 0), 0) || 0), 0) || 0;
+    const dayLinesAccepted =
+      day.copilot_ide_code_completions?.editors?.reduce(
+        (sum: number, editor) =>
+          sum +
+          (editor.models?.[0]?.languages?.reduce(
+            (langSum: number, lang) => langSum + (lang.total_code_lines_accepted || 0),
+            0
+          ) || 0),
+        0
+      ) || 0;
 
     const dayCodeCompletionUsers = day.copilot_ide_code_completions?.total_engaged_users || 0;
 
@@ -74,7 +93,7 @@ export const getAggregatedMetrics = (usage: CopilotMetrics[]) => {
     totalLinesAccepted,
     codeCompletionUsers: maxCodeCompletionUsers,
     overallAcceptanceRate: calculateAcceptanceRate(totalAcceptances, totalSuggestions),
-    linesAcceptanceRate: calculateAcceptanceRate(totalLinesAccepted, totalLinesSuggested)
+    linesAcceptanceRate: calculateAcceptanceRate(totalLinesAccepted, totalLinesSuggested),
   };
 };
 
@@ -87,19 +106,23 @@ export const getAggregatedChatStats = (usage: CopilotMetrics[]): ChatStats | nul
   let maxIdeUsers = 0;
   let maxDotcomUsers = 0;
 
-  usage.forEach(day => {
+  usage.forEach((day) => {
     const ideChat = day.copilot_ide_chat;
     const dotcomChat = day.copilot_dotcom_chat;
 
-    const dayChats = (ideChat?.editors?.reduce((sum: number, editor) =>
-      sum + (editor.models?.[0]?.total_chats || 0), 0) || 0) +
+    const dayChats =
+      (ideChat?.editors?.reduce((sum: number, editor) => sum + (editor.models?.[0]?.total_chats || 0), 0) || 0) +
       (dotcomChat?.models?.[0]?.total_chats || 0);
 
-    const dayCopyEvents = ideChat?.editors?.reduce((sum: number, editor) =>
-      sum + (editor.models?.[0]?.total_chat_copy_events || 0), 0) || 0;
+    const dayCopyEvents =
+      ideChat?.editors?.reduce((sum: number, editor) => sum + (editor.models?.[0]?.total_chat_copy_events || 0), 0) ||
+      0;
 
-    const dayInsertionEvents = ideChat?.editors?.reduce((sum: number, editor) =>
-      sum + (editor.models?.[0]?.total_chat_insertion_events || 0), 0) || 0;
+    const dayInsertionEvents =
+      ideChat?.editors?.reduce(
+        (sum: number, editor) => sum + (editor.models?.[0]?.total_chat_insertion_events || 0),
+        0
+      ) || 0;
 
     totalChats += dayChats;
     totalCopyEvents += dayCopyEvents;
@@ -113,7 +136,7 @@ export const getAggregatedChatStats = (usage: CopilotMetrics[]): ChatStats | nul
     totalCopyEvents,
     totalInsertionEvents,
     ideUsers: maxIdeUsers,
-    dotcomUsers: maxDotcomUsers
+    dotcomUsers: maxDotcomUsers,
   };
 };
 
@@ -126,8 +149,11 @@ export const getAggregatedFeatureAdoption = (usage: CopilotMetrics[]): FeatureAd
   let maxPrSummaryUsers = 0;
   let maxTotalActiveUsers = 0;
 
-  usage.forEach(day => {
-    maxCodeCompletionUsers = Math.max(maxCodeCompletionUsers, day.copilot_ide_code_completions?.total_engaged_users || 0);
+  usage.forEach((day) => {
+    maxCodeCompletionUsers = Math.max(
+      maxCodeCompletionUsers,
+      day.copilot_ide_code_completions?.total_engaged_users || 0
+    );
     maxIdeChatUsers = Math.max(maxIdeChatUsers, day.copilot_ide_chat?.total_engaged_users || 0);
     maxDotcomChatUsers = Math.max(maxDotcomChatUsers, day.copilot_dotcom_chat?.total_engaged_users || 0);
     maxPrSummaryUsers = Math.max(maxPrSummaryUsers, day.copilot_dotcom_pull_requests?.total_engaged_users || 0);
@@ -144,8 +170,8 @@ export const getAggregatedFeatureAdoption = (usage: CopilotMetrics[]): FeatureAd
       codeCompletion: maxTotalActiveUsers > 0 ? Math.round((maxCodeCompletionUsers / maxTotalActiveUsers) * 100) : 0,
       ideChat: maxTotalActiveUsers > 0 ? Math.round((maxIdeChatUsers / maxTotalActiveUsers) * 100) : 0,
       dotcomChat: maxTotalActiveUsers > 0 ? Math.round((maxDotcomChatUsers / maxTotalActiveUsers) * 100) : 0,
-      prSummary: maxTotalActiveUsers > 0 ? Math.round((maxPrSummaryUsers / maxTotalActiveUsers) * 100) : 0
-    }
+      prSummary: maxTotalActiveUsers > 0 ? Math.round((maxPrSummaryUsers / maxTotalActiveUsers) * 100) : 0,
+    },
   };
 };
 
@@ -156,20 +182,20 @@ export const getAggregatedPRSummary = (usage: CopilotMetrics[]): PRSummaryMetric
   let totalPRSummaries = 0;
   const repoMap = new Map<string, { users: number; summaries: number }>();
 
-  usage.forEach(day => {
+  usage.forEach((day) => {
     const prData = day.copilot_dotcom_pull_requests;
     if (!prData) return;
 
     maxEngagedUsers = Math.max(maxEngagedUsers, prData.total_engaged_users || 0);
 
-    prData.repositories?.forEach(repo => {
+    prData.repositories?.forEach((repo) => {
       const summaries = repo.models?.[0]?.total_pr_summaries_created || 0;
       totalPRSummaries += summaries;
 
-      const existing = repoMap.get(repo.name || 'Unknown') || { users: 0, summaries: 0 };
+      const existing = repoMap.get(repo.name || "Unknown") || { users: 0, summaries: 0 };
       existing.users = Math.max(existing.users, repo.total_engaged_users || 0);
       existing.summaries += summaries;
-      repoMap.set(repo.name || 'Unknown', existing);
+      repoMap.set(repo.name || "Unknown", existing);
     });
   });
 
@@ -177,7 +203,7 @@ export const getAggregatedPRSummary = (usage: CopilotMetrics[]): PRSummaryMetric
     .map(([name, data]) => ({
       name,
       users: data.users,
-      summaries: data.summaries
+      summaries: data.summaries,
     }))
     .sort((a, b) => b.summaries - a.summaries)
     .slice(0, 10);
@@ -185,7 +211,7 @@ export const getAggregatedPRSummary = (usage: CopilotMetrics[]): PRSummaryMetric
   return {
     totalEngagedUsers: maxEngagedUsers,
     totalPRSummaries,
-    repositoryStats
+    repositoryStats,
   };
 };
 
@@ -199,9 +225,9 @@ export const getTopLanguages = (usage: CopilotMetrics[], limit: number = 5): Lan
     .filter((lang) => (lang.total_engaged_users || 0) > 0)
     .sort((a, b) => (b.total_engaged_users || 0) - (a.total_engaged_users || 0))
     .slice(0, limit)
-    .map(lang => ({
-      name: lang.name || 'Unknown',
-      total_engaged_users: lang.total_engaged_users || 0
+    .map((lang) => ({
+      name: lang.name || "Unknown",
+      total_engaged_users: lang.total_engaged_users || 0,
     }));
 };
 
@@ -211,31 +237,41 @@ export const getEditorStats = (usage: CopilotMetrics[]): EditorData[] => {
 
   const editors = latestUsage.copilot_ide_code_completions?.editors || [];
 
-  return editors.map((editor) => {
-    const totalAcceptances = editor.models?.[0]?.languages?.reduce((sum: number, lang) =>
-      sum + (lang.total_code_acceptances || 0), 0) || 0;
-    const totalSuggestions = editor.models?.[0]?.languages?.reduce((sum: number, lang) =>
-      sum + (lang.total_code_suggestions || 0), 0) || 0;
+  return editors
+    .map((editor) => {
+      const totalAcceptances =
+        editor.models?.[0]?.languages?.reduce((sum: number, lang) => sum + (lang.total_code_acceptances || 0), 0) || 0;
+      const totalSuggestions =
+        editor.models?.[0]?.languages?.reduce((sum: number, lang) => sum + (lang.total_code_suggestions || 0), 0) || 0;
 
-    return {
-      name: editor.name || 'Unknown',
-      users: editor.total_engaged_users || 0,
-      acceptances: totalAcceptances,
-      suggestions: totalSuggestions,
-      acceptanceRate: calculateAcceptanceRate(totalAcceptances, totalSuggestions)
-    };
-  }).sort((a, b) => (b.users || 0) - (a.users || 0));
+      return {
+        name: editor.name || "Unknown",
+        users: editor.total_engaged_users || 0,
+        acceptances: totalAcceptances,
+        suggestions: totalSuggestions,
+        acceptanceRate: calculateAcceptanceRate(totalAcceptances, totalSuggestions),
+      };
+    })
+    .sort((a, b) => (b.users || 0) - (a.users || 0));
 };
 
 export const getLanguageAcceptanceData = (usage: CopilotMetrics[], languageName: string) => {
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return { acceptances: 0, suggestions: 0 };
 
-  const totalAcceptances = latestUsage.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.languages?.find((l) => l.name === languageName)?.total_code_acceptances || 0), 0) || 0;
+  const totalAcceptances =
+    latestUsage.copilot_ide_code_completions?.editors?.reduce(
+      (sum: number, editor) =>
+        sum + (editor.models?.[0]?.languages?.find((l) => l.name === languageName)?.total_code_acceptances || 0),
+      0
+    ) || 0;
 
-  const totalSuggestions = latestUsage.copilot_ide_code_completions?.editors?.reduce((sum: number, editor) =>
-    sum + (editor.models?.[0]?.languages?.find((l) => l.name === languageName)?.total_code_suggestions || 0), 0) || 0;
+  const totalSuggestions =
+    latestUsage.copilot_ide_code_completions?.editors?.reduce(
+      (sum: number, editor) =>
+        sum + (editor.models?.[0]?.languages?.find((l) => l.name === languageName)?.total_code_suggestions || 0),
+      0
+    ) || 0;
 
   return { acceptances: totalAcceptances, suggestions: totalSuggestions };
 };
@@ -244,16 +280,16 @@ export const getModelUsageMetrics = (usage: CopilotMetrics[]): ModelData[] | nul
   const latestUsage = getLatestUsage(usage);
   if (!latestUsage) return null;
 
-  const models = new Map<string, { users: number, isCustom: boolean, features: string[] }>();
+  const models = new Map<string, { users: number; isCustom: boolean; features: string[] }>();
 
   latestUsage.copilot_ide_code_completions?.editors?.forEach((editor) => {
     editor.models?.forEach((model) => {
-      const modelName = model.name || 'Unknown';
+      const modelName = model.name || "Unknown";
       const existing = models.get(modelName) || { users: 0, isCustom: false, features: [] };
       existing.users += model.total_engaged_users || 0;
       existing.isCustom = model.is_custom_model || false;
-      if (!existing.features.includes('Code Completion')) {
-        existing.features.push('Code Completion');
+      if (!existing.features.includes("Code Completion")) {
+        existing.features.push("Code Completion");
       }
       models.set(modelName, existing);
     });
@@ -261,58 +297,34 @@ export const getModelUsageMetrics = (usage: CopilotMetrics[]): ModelData[] | nul
 
   latestUsage.copilot_ide_chat?.editors?.forEach((editor) => {
     editor.models?.forEach((model) => {
-      const modelName = model.name || 'Unknown';
+      const modelName = model.name || "Unknown";
       const existing = models.get(modelName) || { users: 0, isCustom: false, features: [] };
       existing.users += model.total_engaged_users || 0;
       existing.isCustom = model.is_custom_model || false;
-      if (!existing.features.includes('IDE Chat')) {
-        existing.features.push('IDE Chat');
+      if (!existing.features.includes("IDE Chat")) {
+        existing.features.push("IDE Chat");
       }
       models.set(modelName, existing);
     });
   });
 
   latestUsage.copilot_dotcom_chat?.models?.forEach((model) => {
-    const modelName = model.name || 'Unknown';
+    const modelName = model.name || "Unknown";
     const existing = models.get(modelName) || { users: 0, isCustom: false, features: [] };
     existing.users += model.total_engaged_users || 0;
     existing.isCustom = model.is_custom_model || false;
-    if (!existing.features.includes('GitHub Chat')) {
-      existing.features.push('GitHub Chat');
+    if (!existing.features.includes("GitHub Chat")) {
+      existing.features.push("GitHub Chat");
     }
     models.set(modelName, existing);
   });
 
-  return Array.from(models.entries()).map(([name, data]) => ({
-    name,
-    users: data.users,
-    isCustom: data.isCustom,
-    features: data.features
-  })).sort((a, b) => b.users - a.users);
-};
-
-const getFeatureAdoptionMetrics = (usage: CopilotMetrics[]): FeatureAdoptionMetrics | null => {
-  const latestUsage = getLatestUsage(usage);
-  if (!latestUsage) return null;
-
-  const codeCompletionUsers = latestUsage.copilot_ide_code_completions?.total_engaged_users || 0;
-  const ideChatUsers = latestUsage.copilot_ide_chat?.total_engaged_users || 0;
-  const dotcomChatUsers = latestUsage.copilot_dotcom_chat?.total_engaged_users || 0;
-  const prSummaryUsers = latestUsage.copilot_dotcom_pull_requests?.total_engaged_users || 0;
-
-  const totalActiveUsers = latestUsage.total_active_users || 0;
-
-  return {
-    codeCompletionUsers,
-    ideChatUsers,
-    dotcomChatUsers,
-    prSummaryUsers,
-    totalActiveUsers,
-    adoptionRates: {
-      codeCompletion: totalActiveUsers > 0 ? Math.round((codeCompletionUsers / totalActiveUsers) * 100) : 0,
-      ideChat: totalActiveUsers > 0 ? Math.round((ideChatUsers / totalActiveUsers) * 100) : 0,
-      dotcomChat: totalActiveUsers > 0 ? Math.round((dotcomChatUsers / totalActiveUsers) * 100) : 0,
-      prSummary: totalActiveUsers > 0 ? Math.round((prSummaryUsers / totalActiveUsers) * 100) : 0
-    }
-  };
+  return Array.from(models.entries())
+    .map(([name, data]) => ({
+      name,
+      users: data.users,
+      isCustom: data.isCustom,
+      features: data.features,
+    }))
+    .sort((a, b) => b.users - a.users);
 };

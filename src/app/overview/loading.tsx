@@ -4,7 +4,9 @@ export default function Loading() {
   return (
     <main className="p-6 mx-4 max-w-7xl">
       <section className="mb-8">
-        <Heading size="xlarge" level="1" className="mb-6">Lisensoversikt</Heading>
+        <Heading size="xlarge" level="1" className="mb-6">
+          Lisensoversikt
+        </Heading>
         <div className="space-y-3 mb-8">
           <Skeleton variant="text" width="70%" />
           <Skeleton variant="text" width="60%" />

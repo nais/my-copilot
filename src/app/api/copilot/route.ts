@@ -1,40 +1,14 @@
-import { getUser } from '@/lib/auth';
-import InMemoryCache from '@/lib/cache';
-import { assignUserToCopilot, getCopilotSeat, getUsernameBySamlIdentity, unassignUserFromCopilot } from '@/lib/github';
-import { getLoggerWithTraceContext } from '@/lib/logger';
-import { context } from '@opentelemetry/api';
-import { NextResponse } from 'next/server';
-
-const cache = new InMemoryCache();
-
-async function getCachedGitHubUsername(email: string, githubOrg: string, cache: InMemoryCache) {
-  const { user, error } = await cache.get(
-    `githubUsername_${email}`,
-    async () => {
-      return await getUsernameBySamlIdentity(email, githubOrg);
-    },
-    3600000 // Cache for 60 minutes
-  )
-
-  return { user, error };
-}
-
-async function getCachedCopilotStatus(githubUsername: string, gitHubOrg: string, cache: InMemoryCache) {
-  const { copilot: subscription, error } = await cache.get(
-    `copilotStatus_${githubUsername}`,
-    async () => {
-      return await getCopilotSeat(gitHubOrg, githubUsername);
-    },
-    60000 // Cache for 60 seconds
-  )
-
-  return { subscription, error };
-}
+import { getUser } from "@/lib/auth";
+import { assignUserToCopilot, getCopilotSeat, getUsernameBySamlIdentity, unassignUserFromCopilot } from "@/lib/github";
+import { getLoggerWithTraceContext } from "@/lib/logger";
+import { context } from "@opentelemetry/api";
+import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 export async function GET() {
   const log = getLoggerWithTraceContext(context.active());
 
-  const org = 'navikt';
+  const org = "navikt";
   const user = await getUser(false);
 
   const error = (message: string, status: number) => {
@@ -45,33 +19,33 @@ export async function GET() {
     }
 
     return NextResponse.json({ error: message }, { status });
-  }
+  };
 
   if (!user) {
-    return error('User is not authenticated', 401);
+    return error("User is not authenticated", 401);
   }
 
   if (!user.email) {
-    return error('User email not found', 500);
+    return error("User email not found", 500);
   }
 
-  const { user: githubUsername, error: githubError } = await getCachedGitHubUsername(user.email, org, cache);
+  const { user: githubUsername, error: githubError } = await getUsernameBySamlIdentity(user.email, org);
 
   if (githubError) {
     return error(githubError, 500);
   }
 
   if (!githubUsername) {
-    return error('GitHub username was not found for user email', 400);
+    return error("GitHub username was not found for user email", 400);
   }
 
-  const { subscription, error: copilotError } = await getCachedCopilotStatus(githubUsername, org, cache);
+  const { copilot: subscription, error: copilotError } = await getCopilotSeat(org, githubUsername);
 
   if (copilotError) {
     return error(copilotError, 500);
   }
 
-  log.info({ email: user.email }, 'User Copilot subscription status');
+  log.info({ email: user.email }, "User Copilot subscription status");
 
   return NextResponse.json({
     icanhazcopilot: user.groups.length > 0,
@@ -81,14 +55,14 @@ export async function GET() {
 }
 
 enum Action {
-  Activate = 'activate',
-  Deactivate = 'deactivate',
+  Activate = "activate",
+  Deactivate = "deactivate",
 }
 
 export async function POST(request: Request) {
   const log = getLoggerWithTraceContext(context.active());
 
-  const org = 'navikt';
+  const org = "navikt";
   const user = await getUser(false);
 
   const error = (message: string, status: number) => {
@@ -99,43 +73,45 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ error: message }, { status });
-  }
+  };
 
   if (!user) {
-    return error('User is not authenticated', 401);
+    return error("User is not authenticated", 401);
   }
 
   if (!user.email) {
-    return error('User email not found', 500);
+    return error("User email not found", 500);
   }
 
   if (user.groups.length === 0) {
-    return error('User is not a member of any groups', 403);
+    return error("User is not a member of any groups", 403);
   }
 
   const { action } = await request.json();
 
   if (!action) {
-    return error('Action is required', 400);
+    return error("Action is required", 400);
   }
 
-  const { user: githubUsername, error: githubError } = await getCachedGitHubUsername(user.email, org, cache);
+  const { user: githubUsername, error: githubError } = await getUsernameBySamlIdentity(user.email, org);
 
   if (githubError) {
     return error(githubError, 500);
   }
 
   if (!githubUsername) {
-    return error('GitHub username was not found for user email', 400);
+    return error("GitHub username was not found for user email", 400);
   }
 
-  log.info({ email: user.email, action }, 'User action on Copilot subscription');
+  log.info({ email: user.email, action }, "User action on Copilot subscription");
 
   switch (action) {
     case Action.Activate:
       const { seats_created, error: activateError } = await assignUserToCopilot(org, githubUsername);
 
-      cache.delete(`copilotStatus_${githubUsername}`);
+      revalidateTag(`status-${githubUsername}`, "max");
+      revalidateTag("seats-navikt", "max");
+      revalidateTag("billing-navikt", "max");
 
       if (activateError) {
         return error(activateError, 500);
@@ -145,7 +121,9 @@ export async function POST(request: Request) {
     case Action.Deactivate:
       const { seats_cancelled, error: deactivateError } = await unassignUserFromCopilot(org, githubUsername);
 
-      cache.delete(`copilotStatus_${githubUsername}`);
+      revalidateTag(`status-${githubUsername}`, "max");
+      revalidateTag("seats-navikt", "max");
+      revalidateTag("billing-navikt", "max");
 
       if (deactivateError) {
         return error(deactivateError, 500);
@@ -153,6 +131,6 @@ export async function POST(request: Request) {
 
       return NextResponse.json({ seats_cancelled }, { status: 200 });
     default:
-      return error('Unknown action', 400);
+      return error("Unknown action", 400);
   }
 }

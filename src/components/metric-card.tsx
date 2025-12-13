@@ -1,22 +1,15 @@
-import { Box, Heading, BodyShort, HelpText } from '@navikt/ds-react';
+import { Box, Heading, BodyShort, HelpText } from "@navikt/ds-react";
 
 interface MetricCardProps {
   value: string | number;
   label: string;
   helpText: string;
   helpTitle: string;
-  background: 'surface-action-selected' | 'surface-success' | 'surface-warning' | 'surface-info';
+  background: "surface-action-selected" | "surface-success" | "surface-warning" | "surface-info";
   textColor: string;
 }
 
-export default function MetricCard({
-  value,
-  label,
-  helpText,
-  helpTitle,
-  background,
-  textColor
-}: MetricCardProps) {
+export default function MetricCard({ value, label, helpText, helpTitle, background, textColor }: MetricCardProps) {
   return (
     <Box background={background} padding="6" borderRadius="large">
       <div className="text-white">
