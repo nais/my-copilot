@@ -12,12 +12,12 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
   build:
-    uses: nais/actions/.github/workflows/mise-build-deploy-nais.yaml@8758ee3289bae9f9731606749c4168242856b002 # ratchet:nais/actions/.github/workflows/mise-build-deploy-nais.yaml@main
+    uses: nais/actions/.github/workflows/mise-build-deploy-nais.yaml@2cfaab58825a90150efdb96841007427dd5db221 # ratchet:nais/actions/.github/workflows/mise-build-deploy-nais.yaml@main
     with:
       mise-tasks: '["lint", "check"]'
       deploys-to-nais: true
