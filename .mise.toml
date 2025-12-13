@@ -2,6 +2,10 @@
 node = "24"
 pnpm = "10.24.0"
 
+[tasks.version]
+run = 'echo "$(date +%Y%m%d)-$(git rev-parse --short HEAD)"'
+description = "Generate version string"
+
 [tasks.lint]
 run = "pnpm lint"
 description = "Run ESLint"

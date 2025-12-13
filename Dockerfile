@@ -5,16 +5,6 @@ RUN corepack enable
 FROM base AS deps
 WORKDIR /app
 
-ARG READER_TOKEN
-
-RUN pnpm config set registry https://registry.npmjs.org/
-RUN pnpm config set @navikt:registry https://npm.pkg.github.com
-RUN if [ -n "$READER_TOKEN" ]; then \
-        pnpm config set //npm.pkg.github.com/:_authToken=$READER_TOKEN; \
-    else \
-        echo "Warning: READER_TOKEN not provided, skipping pnpm authentication for @navikt packages"; \
-    fi
-
 COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 
