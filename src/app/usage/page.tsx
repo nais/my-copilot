@@ -6,9 +6,13 @@ import TrendChart from "@/components/charts/TrendChart";
 import LanguagesChart from "@/components/charts/LanguagesChart";
 import EditorsChart from "@/components/charts/EditorsChart";
 import ChatChart from "@/components/charts/ChatChart";
+import ModelUsageChart from "@/components/charts/ModelUsageChart";
+import LinesOfCodeChart from "@/components/charts/LinesOfCodeChart";
+import LanguageDistributionChart from "@/components/charts/LanguageDistributionChart";
 import MetricCard from "@/components/metric-card";
 import ErrorState from "@/components/error-state";
 import PremiumRequestsContent from "@/components/premium-requests-content";
+import TimeframeSelector from "@/components/timeframe-selector";
 import { calculatePremiumMetrics } from "@/lib/billing-utils";
 import { Table, BodyShort, Heading, HGrid, Box, HelpText, Skeleton } from "@navikt/ds-react";
 import { TableBody, TableDataCell, TableHeader, TableHeaderCell, TableRow } from "@navikt/ds-react/Table";
@@ -31,26 +35,33 @@ import { formatNumber } from "@/lib/format";
 // Static header component (automatically prerendered)
 function UsageHeader() {
   return (
-    <>
-      <Heading size="xlarge" level="1" className="mb-2">
-        Copilot Bruksstatistikk
-      </Heading>
-      <BodyShort className="text-gray-600 mb-12">
-        Viser organisasjonens bruk av GitHub Copilot med oppdaterte data
-      </BodyShort>
-    </>
+    <div className="flex items-start justify-between mb-8">
+      <div>
+        <Heading size="xlarge" level="1" className="mb-2">
+          Copilot Bruksstatistikk
+        </Heading>
+        <BodyShort className="text-gray-600">
+          Viser organisasjonens bruk av GitHub Copilot med oppdaterte data
+        </BodyShort>
+      </div>
+      <Suspense fallback={<Skeleton variant="rectangle" width={192} height={40} />}>
+        <TimeframeSelector />
+      </Suspense>
+    </div>
   );
 }
 
 // Cached data component
-async function CachedUsageData() {
-  // This will be included in the static shell due to 'use cache'
+async function CachedUsageData({ days }: { days: number }) {
   const { usage, error } = await getCachedCopilotUsage("navikt");
 
   if (error) return <ErrorState message={`Feil ved henting av bruksdata: ${error}`} />;
   if (!usage || usage.length === 0) return <ErrorState message="Ingen bruksdata tilgjengelig" />;
 
-  return <UsageContent usage={usage} />;
+  // Filter to requested timeframe
+  const filteredUsage = usage.slice(-days);
+
+  return <UsageContent usage={filteredUsage} />;
 }
 
 // Cached premium data component
@@ -105,32 +116,28 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
           label="Aktive brukere"
           helpTitle="Aktive brukere"
           helpText="Unike brukere som har brukt GitHub Copilot i organisasjonen i løpet av hele perioden."
-          background="surface-action-selected"
-          textColor="text-blue-100"
+          accentColor="blue"
         />
         <MetricCard
           value={formatNumber(aggregatedMetrics.totalEngagedUsers)}
           label="Engasjerte brukere"
           helpTitle="Engasjerte brukere"
           helpText="Brukere som aktivt har interagert med Copilot ved å akseptere kodeforslag eller bruke chat-funksjonen."
-          background="surface-success"
-          textColor="text-green-100"
+          accentColor="green"
         />
         <MetricCard
           value={`${aggregatedMetrics.overallAcceptanceRate}%`}
           label="Aksepteringsrate"
           helpTitle="Aksepteringsrate"
           helpText="Prosentandel av Copilots kodeforslag som blir akseptert av utviklerne over hele perioden. Typisk ligger gode rater mellom 20-40%."
-          background="surface-info"
-          textColor="text-purple-100"
+          accentColor="purple"
         />
         <MetricCard
           value={formatNumber(aggregatedMetrics.totalSuggestions)}
           label="Totale kodeforslag"
           helpTitle="Totale kodeforslag"
           helpText="Totalt antall kodeforslag som Copilot har generert over hele perioden, inkludert både aksepterte og avviste forslag."
-          background="surface-warning"
-          textColor="text-orange-100"
+          accentColor="orange"
         />
       </HGrid>
 
@@ -361,6 +368,11 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
         </Heading>
         <LanguagesChart usage={usage} />
       </div>
+
+      {/* Language Distribution */}
+      <div className="mt-8">
+        <LanguageDistributionChart usage={usage} />
+      </div>
     </div>
   );
 
@@ -510,6 +522,9 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
         </Box>
       )}
 
+      {/* Lines of Code Chart */}
+      <LinesOfCodeChart usage={usage} />
+
       {/* Feature Adoption Breakdown */}
       {featureAdoptionMetrics && (
         <Box background="surface-subtle" padding="6" borderRadius="large">
@@ -644,38 +659,41 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
             GitHub-modeller og tilpassede modeller.
           </BodyShort>
 
-          <div className="overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHeaderCell scope="col">Modell</TableHeaderCell>
-                  <TableHeaderCell scope="col">Type</TableHeaderCell>
-                  <TableHeaderCell scope="col">Brukere</TableHeaderCell>
-                  <TableHeaderCell scope="col">Funksjoner</TableHeaderCell>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {modelUsageMetrics.map((model: ModelData) => (
-                  <TableRow key={model.name}>
-                    <TableDataCell>
-                      <BodyShort weight="semibold">{model.name}</BodyShort>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <BodyShort className={model.isCustom ? "text-purple-600" : "text-gray-600"}>
-                        {model.isCustom ? "Tilpasset" : "Standard"}
-                      </BodyShort>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <BodyShort>{formatNumber(model.users)}</BodyShort>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <BodyShort className="text-sm">{model.features.join(", ")}</BodyShort>
-                    </TableDataCell>
+          <HGrid columns={2} gap="6">
+            <div className="overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHeaderCell scope="col">Modell</TableHeaderCell>
+                    <TableHeaderCell scope="col">Type</TableHeaderCell>
+                    <TableHeaderCell scope="col">Brukere</TableHeaderCell>
+                    <TableHeaderCell scope="col">Funksjoner</TableHeaderCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {modelUsageMetrics.map((model: ModelData) => (
+                    <TableRow key={model.name}>
+                      <TableDataCell>
+                        <BodyShort weight="semibold">{model.name}</BodyShort>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <BodyShort className={model.isCustom ? "text-purple-600" : "text-gray-600"}>
+                          {model.isCustom ? "Tilpasset" : "Standard"}
+                        </BodyShort>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <BodyShort>{formatNumber(model.users)}</BodyShort>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <BodyShort className="text-sm">{model.features.join(", ")}</BodyShort>
+                      </TableDataCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <ModelUsageChart usage={usage} />
+          </HGrid>
         </div>
       )}
     </div>
@@ -709,7 +727,10 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
 }
 
 // Main page component using Partial Prerendering
-export default function Usage() {
+export default async function Usage({ searchParams }: { searchParams: Promise<{ days?: string }> }) {
+  const params = await searchParams;
+  const days = Math.min(Math.max(parseInt(params.days || "28", 10) || 28, 1), 100);
+
   return (
     <main className="p-6 mx-4 max-w-7xl">
       <section>
@@ -725,7 +746,7 @@ export default function Usage() {
             </div>
           }
         >
-          <CachedUsageData />
+          <CachedUsageData days={days} />
         </Suspense>
       </section>
     </main>
