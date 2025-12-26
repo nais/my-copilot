@@ -43,6 +43,9 @@ export default async function RootLayout({
           <InternalHeaderButton as="a" href="/overview">
             Lisensoversikt
           </InternalHeaderButton>
+          <InternalHeaderButton as="a" href="/best-practices">
+            Beste Praksis
+          </InternalHeaderButton>
           <Spacer />
           <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} />
         </InternalHeader>
@@ -55,6 +58,11 @@ export default async function RootLayout({
             <div>
               <h2 className="text-lg font-bold mb-2">Relevante Lenker</h2>
               <ul className="list-disc list-inside">
+                <li>
+                  <a href="/best-practices" className="text-blue-400 hover:underline">
+                    Beste Praksis og Læring
+                  </a>
+                </li>
                 <li>
                   <a href="https://docs.github.com/en/copilot" className="text-blue-400 hover:underline">
                     GitHub Copilot Dokumentasjon

@@ -19,6 +19,11 @@ export default async function Home() {
           <h2 className="text-2xl font-bold mb-2">Relevante Lenker</h2>
           <ul className="list-disc list-inside">
             <li>
+              <a href="/best-practices" className="text-blue-600 hover:underline">
+                Beste Praksis og Læring
+              </a>
+            </li>
+            <li>
               <a href="https://docs.github.com/en/copilot" className="text-blue-600 hover:underline">
                 GitHub Copilot Dokumentasjon
               </a>

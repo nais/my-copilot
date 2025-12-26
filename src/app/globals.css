@@ -1,10 +1,52 @@
 @import "tailwindcss";
-
-@layer components {
-  @import "@navikt/ds-css";
-}
+@import "@navikt/ds-css";
 
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+}
+
+/* Fix: NAV resets margin on typography. Override with higher specificity to allow Tailwind utilities */
+.navds-heading.mb-1 {
+  margin-bottom: calc(var(--spacing) * 1) !important;
+}
+.navds-heading.mb-2 {
+  margin-bottom: calc(var(--spacing) * 2) !important;
+}
+.navds-heading.mb-3 {
+  margin-bottom: calc(var(--spacing) * 3) !important;
+}
+.navds-heading.mb-4 {
+  margin-bottom: calc(var(--spacing) * 4) !important;
+}
+.navds-heading.mb-5 {
+  margin-bottom: calc(var(--spacing) * 5) !important;
+}
+.navds-heading.mb-6 {
+  margin-bottom: calc(var(--spacing) * 6) !important;
+}
+.navds-heading.mb-8 {
+  margin-bottom: calc(var(--spacing) * 8) !important;
+}
+.navds-heading.mt-2 {
+  margin-top: calc(var(--spacing) * 2) !important;
+}
+.navds-heading.mt-4 {
+  margin-top: calc(var(--spacing) * 4) !important;
+}
+.navds-heading.mt-6 {
+  margin-top: calc(var(--spacing) * 6) !important;
+}
+.navds-heading.mt-8 {
+  margin-top: calc(var(--spacing) * 8) !important;
+}
+
+.navds-body-short.mb-2 {
+  margin-bottom: calc(var(--spacing) * 2) !important;
+}
+.navds-body-short.mb-4 {
+  margin-bottom: calc(var(--spacing) * 4) !important;
+}
+.navds-body-short.mb-6 {
+  margin-bottom: calc(var(--spacing) * 6) !important;
 }
