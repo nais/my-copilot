@@ -4,6 +4,52 @@
 
 Self-service tool for managing GitHub Copilot subscriptions at Nav. Next.js 15 app deployed on NAIS with Azure AD authentication via sidecar proxy.
 
+---
+
+# NAV Development Standards
+
+These standards apply across NAV projects. Project-specific guidelines follow below.
+
+## NAV Principles
+
+- **Team First**: Autonomous teams with circles of autonomy, supported by Architecture Advice Process
+- **Product Development**: Continuous development and product-organized reuse over ad hoc approaches
+- **Essential Complexity**: Focus on essential complexity, avoid accidental complexity
+- **DORA Metrics**: Measure and improve team performance using DevOps Research and Assessment metrics
+
+## NAV Tech Stack
+
+- **Backend**: Kotlin with Ktor, PostgreSQL, Apache Kafka
+- **Frontend**: Next.js 15+, React, TypeScript, Aksel Design System
+- **Platform**: NAIS (Kubernetes on Google Cloud Platform)
+- **Auth**: Azure AD, TokenX, ID-porten, Maskinporten
+- **Observability**: Prometheus, Grafana Loki, Tempo (OpenTelemetry)
+
+## NAV Code Standards
+
+### Kotlin/Ktor Patterns
+
+- ApplicationBuilder pattern for bootstrapping
+- Sealed classes for environment configuration (Dev/Prod/Local)
+- Kotliquery with HikariCP for database access
+- Rapids & Rivers pattern for Kafka event handling
+
+### Next.js/Aksel Requirements
+
+- **CRITICAL**: Always use Aksel spacing tokens, never Tailwind padding/margin
+- Mobile-first with responsive props: `xs`, `sm`, `md`, `lg`, `xl`
+- Norwegian number formatting with space separators
+
+### NAIS Deployment
+
+- Manifests in `.nais/` directory
+- Required endpoints: `/isalive`, `/isready`, `/metrics`
+- OpenTelemetry auto-instrumentation for observability
+
+---
+
+# my-copilot Project Specifics
+
 ## Commands
 
 - **Check all**: `pnpm check` (runs ESLint, TypeScript, Prettier, Knip, Jest)
