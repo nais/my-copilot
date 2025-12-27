@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   build:
-    uses: nais/actions/.github/workflows/mise-build-deploy-nais.yaml@f48f094a6474ff06e70df118f21f13c1ac349d37 # ratchet:nais/actions/.github/workflows/mise-build-deploy-nais.yaml@main
+    uses: ./.github/workflows/mise-build-deploy-nais.yaml
     with:
       working-directory: apps/my-copilot
       mise-setup-tasks: '["install"]'
