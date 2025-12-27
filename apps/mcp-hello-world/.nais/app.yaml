@@ -1,0 +1,44 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: mcp-hello-world
+  namespace: {{namespace}}
+  labels:
+    team: {{team}}
+spec:
+  image: {{image}}
+  port: 8080
+  replicas:
+    min: {{replicas_min}}
+    max: {{replicas_max}}
+  resources:
+    limits:
+      memory: {{memory_limit}}
+    requests:
+      cpu: {{cpu_request}}
+      memory: {{memory_request}}
+  liveness:
+    path: /health
+    initialDelay: 5
+    timeout: 1
+    periodSeconds: 10
+    failureThreshold: 3
+  readiness:
+    path: /ready
+    initialDelay: 5
+    timeout: 1
+    periodSeconds: 10
+    failureThreshold: 3
+  ingresses:
+    {{#each ingresses}}
+    - {{this}}
+    {{/each}}
+  env:
+    - name: BASE_URL
+      value: "{{base_url}}"
+    - name: ALLOWED_ORGANIZATION
+      value: "{{allowed_organization}}"
+    - name: LOG_LEVEL
+      value: "{{log_level}}"
+  envFrom:
+    - secret: mcp-hello-world-secrets
