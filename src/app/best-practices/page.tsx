@@ -311,10 +311,10 @@ export default async function BestPractices() {
                 playsInline
                 className="w-full rounded-lg"
                 aria-label="GitHub Copilot demonstrasjon"
-                poster="/vldeos/hero-poster-lg.jpeg"
+                poster="/videos/hero-poster-lg.jpeg"
               >
-                <source src="/vldeos/hero-animation-lg.mp4" type="video/mp4" media="(min-width: 768px)" />
-                <source src="/vldeos/hero-animation-sm.mp4" type="video/mp4" />
+                <source src="/videos/hero-animation-lg.mp4" type="video/mp4" media="(min-width: 768px)" />
+                <source src="/videos/hero-animation-sm.mp4" type="video/mp4" />
               </video>
             </Box>
 

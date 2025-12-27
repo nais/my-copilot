@@ -12,6 +12,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+COPY public ./public
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
