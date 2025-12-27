@@ -6,7 +6,7 @@ permissions:
 
 jobs:
   auto-merge:
-    uses: nais/actions/.github/workflows/dependabot-auto-merge.yaml@main
+    uses: nais/actions/.github/workflows/dependabot-auto-merge.yaml@f48f094a6474ff06e70df118f21f13c1ac349d37 # ratchet:nais/actions/.github/workflows/dependabot-auto-merge.yaml@main
     secrets:
       DEPENDABOT_AUTO_MERGE_APP_ID: ${{ secrets.DEPENDABOT_AUTO_MERGE_APP_ID }}
       DEPENDABOT_AUTO_MERGE_APP_SECRET: ${{ secrets.DEPENDABOT_AUTO_MERGE_APP_SECRET }}

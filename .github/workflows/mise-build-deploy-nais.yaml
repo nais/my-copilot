@@ -1,0 +1,412 @@
+# Reusable workflow for projects using mise
+# This workflow is language-agnostic and expects the following tasks to be defined in mise.toml:
+#   - version: Generate version string (e.g., YYYYMMDD-gitsha)
+#   - Individual tasks: Configurable quality checks (e.g., tidy-check, fmt-check, lint, vet, check, test-race for Go projects)
+#   - build: Build task for your project
+# Projects can customize behavior through mise.toml without modifying this workflow
+
+name: Build and Deploy with mise
+
+on:
+  workflow_call:
+    inputs:
+      mise-task-version:
+        description: 'mise task name for version generation'
+        required: false
+        type: string
+        default: 'version'
+      mise-setup-tasks:
+        description: 'JSON array of mise setup tasks to run sequentially before other tasks (e.g., ["install:ts", "install:go"])'
+        required: false
+        type: string
+        default: '[]'
+      mise-tasks:
+        description: 'JSON array of mise tasks to run in parallel (e.g., ["tidy-check", "fmt-check", "lint", "vet", "check", "test-race"])'
+        required: false
+        type: string
+        default: '["tidy-check", "fmt-check", "lint", "vet", "check", "test-race"]'
+      mise-task-build:
+        description: 'mise task name for building'
+        required: false
+        type: string
+        default: 'build'
+      builds-docker:
+        description: 'Build and push Docker image'
+        required: false
+        type: boolean
+        default: true
+      dockerfile-path:
+        description: 'Path to Dockerfile'
+        required: false
+        type: string
+        default: './Dockerfile'
+      docker-context:
+        description: 'Docker build context'
+        required: false
+        type: string
+        default: '.'
+      deploys-to-nais:
+        description: 'Deploy to NAIS clusters'
+        required: false
+        type: boolean
+        default: false
+      nais-resource:
+        description: 'Path to NAIS application manifest'
+        required: false
+        type: string
+        default: '.nais/app.yaml'
+      nais-vars:
+        description: 'Path to NAIS environment variables. Use {cluster} placeholder for multi-cluster (e.g., .nais/{cluster}.yaml)'
+        required: false
+        type: string
+        default: '.nais/{cluster}.yaml'
+      nais-clusters:
+        description: 'JSON array of NAIS clusters to deploy to'
+        required: false
+        type: string
+        default: '["dev-gcp"]'
+      nais-team:
+        description: 'NAIS team name'
+        required: false
+        type: string
+        default: 'nais'
+      deploy-pr-to-dev:
+        description: 'Deploy pull requests to dev environment'
+        required: false
+        type: boolean
+        default: false
+      creates-git-tag:
+        description: 'Create and push git tag'
+        required: false
+        type: boolean
+        default: false
+      artifact-registry:
+        description: 'Docker registry for artifacts'
+        required: false
+        type: string
+        default: 'europe-north1-docker.pkg.dev'
+      artifact-repo:
+        description: 'Docker repository name'
+        required: false
+        type: string
+        default: 'nais-io/nais/images'
+      runner-size:
+        description: 'GitHub Actions runner size'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      runner-size-docker:
+        description: 'GitHub Actions runner size for Docker builds'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      working-directory:
+        description: 'Working directory for monorepo support'
+        required: false
+        type: string
+        default: '.'
+    secrets:
+      NAIS_IO_WORKLOAD_IDENTITY_PROVIDER:
+        required: false
+    outputs:
+      version:
+        description: 'Generated version string'
+        value: ${{ jobs.meta.outputs.version }}
+      name:
+        description: 'Repository name'
+        value: ${{ jobs.meta.outputs.name }}
+      image:
+        description: 'Full Docker image reference with tag'
+        value: ${{ jobs.docker.outputs.image }}
+
+jobs:
+  meta:
+    name: Metadata
+    permissions:
+      contents: read
+    runs-on: ${{ inputs.runner-size }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      name: ${{ steps.name.outputs.name }}
+      image-base: ${{ inputs.artifact-registry }}/${{ inputs.artifact-repo }}/${{ steps.name.outputs.name }}
+      image: ${{ inputs.artifact-registry }}/${{ inputs.artifact-repo }}/${{ steps.name.outputs.name }}:${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # ratchet:jdx/mise-action@v2
+        with:
+          experimental: true
+      - id: version
+        env:
+          MISE_TASK_VERSION: ${{ inputs.mise-task-version }}
+        run: echo "version=$(mise run "$MISE_TASK_VERSION")" >> ${GITHUB_OUTPUT}
+      - id: name
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: echo "name=$REPO_NAME" >> ${GITHUB_OUTPUT}
+
+  setup:
+    name: Setup
+    permissions:
+      contents: read
+    if: ${{ inputs.mise-setup-tasks != '[]' }}
+    runs-on: ${{ inputs.runner-size }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        if: hashFiles('**/pnpm-lock.yaml') != ''
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        if: hashFiles('**/package-lock.json') != ''
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # ratchet:jdx/mise-action@v2
+        with:
+          experimental: true
+      - name: Run setup tasks
+        env:
+          MISE_SETUP_TASKS: ${{ inputs.mise-setup-tasks }}
+        run: |
+          echo "$MISE_SETUP_TASKS" | jq -r '.[]' | while read task; do
+            echo "Running setup task: $task"
+            mise run "$task"
+          done
+
+  lint:
+    name: Check
+    permissions:
+      contents: read
+    needs: [setup]
+    if: ${{ always() && (needs.setup.result == 'success' || needs.setup.result == 'skipped') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        task: ${{ fromJson(inputs.mise-tasks) }}
+    runs-on: ${{ inputs.runner-size }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        if: hashFiles('**/pnpm-lock.yaml') != ''
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        if: hashFiles('**/package-lock.json') != ''
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # ratchet:jdx/mise-action@v2
+        with:
+          experimental: true
+      - name: Run setup tasks
+        if: ${{ inputs.mise-setup-tasks != '[]' }}
+        env:
+          MISE_SETUP_TASKS: ${{ inputs.mise-setup-tasks }}
+        run: |
+          echo "$MISE_SETUP_TASKS" | jq -r '.[]' | while read task; do
+            echo "Running setup task: $task"
+            mise run "$task"
+          done
+      - name: Run ${{ matrix.task }}
+        env:
+          MISE_TASK: ${{ matrix.task }}
+        run: mise run "$MISE_TASK"
+
+  build:
+    name: Build
+    permissions:
+      contents: read
+    needs: [setup]
+    if: ${{ always() && (needs.setup.result == 'success' || needs.setup.result == 'skipped') }}
+    runs-on: ${{ inputs.runner-size }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        if: hashFiles('**/pnpm-lock.yaml') != ''
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        if: hashFiles('**/package-lock.json') != ''
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # ratchet:jdx/mise-action@v2
+        with:
+          experimental: true
+      - name: Run setup tasks
+        if: ${{ inputs.mise-setup-tasks != '[]' }}
+        env:
+          MISE_SETUP_TASKS: ${{ inputs.mise-setup-tasks }}
+        run: |
+          echo "$MISE_SETUP_TASKS" | jq -r '.[]' | while read task; do
+            echo "Running setup task: $task"
+            mise run "$task"
+          done
+      - env:
+          MISE_TASK_BUILD: ${{ inputs.mise-task-build }}
+        run: mise run "$MISE_TASK_BUILD"
+
+  docker:
+    name: Build Docker Image
+    if: ${{ inputs.builds-docker }}
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ${{ inputs.runner-size-docker }}
+    needs: [meta, lint, build]
+    outputs:
+      image: ${{ steps.docker-push.outputs.image }}
+      telemetry: ${{ steps.docker-push.outputs.telemetry }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # ratchet:nais/docker-build-push@v0
+        id: docker-push
+        with:
+          team: ${{ inputs.nais-team }}
+          tag: ${{ needs.meta.outputs.version }}
+          push_image: ${{ github.ref == 'refs/heads/main' || (inputs.deploy-pr-to-dev && github.event_name == 'pull_request') }}
+          dockerfile: ${{ inputs.working-directory != '.' && format('{0}/{1}', inputs.working-directory, inputs.dockerfile-path) || inputs.dockerfile-path }}
+          docker_context: ${{ inputs.working-directory != '.' && format('{0}/{1}', inputs.working-directory, inputs.docker-context) || inputs.docker-context }}
+          cache_from: type=gha
+          cache_to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to NAIS
+    if: ${{ inputs.deploys-to-nais && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    needs: [meta, docker]
+    strategy:
+      matrix:
+        cluster: ${{ fromJson(inputs.nais-clusters) }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - name: Resolve paths
+        id: paths
+        env:
+          WORKING_DIR: ${{ inputs.working-directory }}
+          NAIS_RESOURCE: ${{ inputs.nais-resource }}
+          NAIS_VARS_PATTERN: ${{ inputs.nais-vars }}
+          CLUSTER: ${{ matrix.cluster }}
+        run: |
+          if [ "$WORKING_DIR" != "." ]; then
+            RESOURCE_PATH="$WORKING_DIR/$NAIS_RESOURCE"
+            VARS_PATTERN="$WORKING_DIR/$NAIS_VARS_PATTERN"
+          else
+            RESOURCE_PATH="$NAIS_RESOURCE"
+            VARS_PATTERN="$NAIS_VARS_PATTERN"
+          fi
+          VARS_PATH="${VARS_PATTERN//\{cluster\}/$CLUSTER}"
+          echo "resource=$RESOURCE_PATH" >> $GITHUB_OUTPUT
+          echo "vars=$VARS_PATH" >> $GITHUB_OUTPUT
+      - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: ${{ matrix.cluster }}
+          TEAM: ${{ inputs.nais-team }}
+          RESOURCE: ${{ steps.paths.outputs.resource }}
+          VARS: ${{ steps.paths.outputs.vars }}
+          IMAGE: ${{ needs.docker.outputs.image }}
+          TELEMETRY: ${{ needs.docker.outputs.telemetry }}
+
+  deploy-pr:
+    name: Deploy PR to dev
+    if: ${{ inputs.deploy-pr-to-dev && github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    needs: [meta, docker]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - name: Resolve paths
+        id: paths
+        env:
+          WORKING_DIR: ${{ inputs.working-directory }}
+          NAIS_RESOURCE: ${{ inputs.nais-resource }}
+        run: |
+          if [ "$WORKING_DIR" != "." ]; then
+            RESOURCE_PATH="$WORKING_DIR/$NAIS_RESOURCE"
+            VARS_PATH="$WORKING_DIR/.nais/dev-gcp.yaml"
+          else
+            RESOURCE_PATH="$NAIS_RESOURCE"
+            VARS_PATH=".nais/dev-gcp.yaml"
+          fi
+          echo "resource=$RESOURCE_PATH" >> $GITHUB_OUTPUT
+          echo "vars=$VARS_PATH" >> $GITHUB_OUTPUT
+      - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          TEAM: ${{ inputs.nais-team }}
+          RESOURCE: ${{ steps.paths.outputs.resource }}
+          VARS: ${{ steps.paths.outputs.vars }}
+          IMAGE: ${{ needs.docker.outputs.image }}
+          TELEMETRY: ${{ needs.docker.outputs.telemetry }}
+
+  tag:
+    name: Create Git Tag
+    if: ${{ inputs.creates-git-tag && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: meta
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - env:
+          VERSION: ${{ needs.meta.outputs.version }}
+        run: |
+          git tag "$VERSION"
+          git push origin "$VERSION"
