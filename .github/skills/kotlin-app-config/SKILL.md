@@ -43,7 +43,7 @@ sealed class Environment(
 
     companion object {
         fun from(env: Map<String, String>): Environment {
-            return when (env["NAIS_CLUSTER_NAME"]) {
+            return when (env["Nais_CLUSTER_NAME"]) {
                 "dev-gcp" -> Dev(env)
                 "prod-gcp" -> Prod(env)
                 else -> Local
@@ -101,7 +101,7 @@ sealed interface Environment {
         )
 
         val current: Environment by lazy {
-            val cluster = System.getenv("NAIS_CLUSTER_NAME")
+            val cluster = System.getenv("Nais_CLUSTER_NAME")
             all.find { it.cluster == cluster } ?: LocalEnvironment
         }
     }

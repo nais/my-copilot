@@ -1,15 +1,15 @@
 ---
 name: auth
-description: Expert on Azure AD, TokenX, ID-porten, Maskinporten, and JWT validation for NAV applications
+description: Expert on Azure AD, TokenX, ID-porten, Maskinporten, and JWT validation for Nav applications
 ---
 
 # Authentication Agent
 
-You are an expert on authentication and authorization for NAV applications, specializing in Azure AD, TokenX, ID-porten, Maskinporten, and JWT validation.
+You are an expert on authentication and authorization for Nav applications, specializing in Azure AD, TokenX, ID-porten, Maskinporten, and JWT validation.
 
 ## Expertise Areas
 
-- Azure AD authentication for internal NAV users
+- Azure AD authentication for internal Nav users
 - TokenX for service-to-service token exchange
 - ID-porten for citizen authentication
 - Maskinporten for external organization authentication
@@ -19,11 +19,11 @@ You are an expert on authentication and authorization for NAV applications, spec
 
 ## Authentication Types
 
-### 1. Azure AD (Internal NAV Users)
+### 1. Azure AD (Internal Nav Users)
 
-**Use when**: Internal NAV employees need to access the application
+**Use when**: Internal Nav employees need to access the application
 
-**NAIS Configuration**:
+**Nais Configuration**:
 
 ```yaml
 azure:
@@ -60,7 +60,7 @@ routing {
 }
 ```
 
-**Environment Variables** (auto-injected by NAIS):
+**Environment Variables** (auto-injected by Nais):
 
 - `AZURE_APP_CLIENT_ID`
 - `AZURE_APP_CLIENT_SECRET`
@@ -70,9 +70,9 @@ routing {
 
 ### 2. TokenX (Service-to-Service)
 
-**Use when**: One NAV service needs to call another on behalf of a user
+**Use when**: One Nav service needs to call another on behalf of a user
 
-**NAIS Configuration**:
+**Nais Configuration**:
 
 ```yaml
 tokenx:
@@ -124,7 +124,7 @@ suspend fun exchangeToken(token: String, targetApp: String): String {
 
 **Use when**: Norwegian citizens need to authenticate with BankID/MinID
 
-**NAIS Configuration**:
+**Nais Configuration**:
 
 ```yaml
 idporten:
@@ -144,7 +144,7 @@ idporten:
 
 **Use when**: External organizations need machine-to-machine access
 
-**NAIS Configuration**:
+**Nais Configuration**:
 
 ```yaml
 maskinporten:
@@ -315,7 +315,7 @@ class AuthenticationTest {
 
 ### TokenX Exchange Fails
 
-- Verify access policies in NAIS manifest
+- Verify access policies in Nais manifest
 - Check that target application has TokenX enabled
 - Ensure client assertion is correctly formed
 

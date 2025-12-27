@@ -55,36 +55,42 @@ const Tabs: React.FC<TabsProps> = ({ tabs, defaultTab }) => {
     <div className="w-full">
       {/* Tab Navigation */}
       <div className="border-b border-gray-200">
-        <nav className="flex space-x-2 bg-gray-50 rounded-t-lg p-1" role="tablist">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabChange(tab.id)}
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              aria-controls={`tabpanel-${tab.id}`}
-              disabled={isPending}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 ${
-                activeTab === tab.id
-                  ? "bg-white text-blue-600 shadow-sm border border-gray-200 border-b-white -mb-px relative z-10"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-100 cursor-pointer"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
+        <Box as="nav" padding="space-2" background="surface-subtle" className="rounded-t-lg" role="tablist">
+          <div className="flex" style={{ gap: "8px" }}>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`tabpanel-${tab.id}`}
+                disabled={isPending}
+                className={`rounded-md font-medium text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 ${
+                  activeTab === tab.id
+                    ? "bg-white text-blue-600 shadow-sm border border-gray-200 border-b-white -mb-px relative z-10"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100 cursor-pointer"
+                }`}
+                style={{ padding: "8px 16px" }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </Box>
       </div>
 
       {/* Tab Content */}
-      <div
-        className="bg-white rounded-b-lg rounded-tr-lg border border-gray-200 border-t-0 p-6 shadow-sm min-h-[400px] relative"
+      <Box
+        as="div"
+        padding="space-12"
+        background="surface-default"
+        className="rounded-b-lg rounded-tr-lg border border-gray-200 border-t-0 shadow-sm min-h-[400px] relative"
         role="tabpanel"
         id={`tabpanel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
       >
         {isPending ? <TabContentSkeleton /> : tabs.find((tab) => tab.id === activeTab)?.content}
-      </div>
+      </Box>
     </div>
   );
 };

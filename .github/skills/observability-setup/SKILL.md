@@ -1,11 +1,11 @@
 ---
 name: observability-setup
-description: Setting up Prometheus metrics, OpenTelemetry tracing, and health endpoints for NAIS applications
+description: Setting up Prometheus metrics, OpenTelemetry tracing, and health endpoints for Nais applications
 ---
 
 # Observability Setup Skill
 
-This skill provides patterns for setting up observability in NAIS applications.
+This skill provides patterns for setting up observability in Nais applications.
 
 ## Required Health Endpoints
 
@@ -125,7 +125,7 @@ class UserService(private val meterRegistry: PrometheusMeterRegistry) {
 
 ## OpenTelemetry Tracing
 
-NAIS enables OpenTelemetry auto-instrumentation by default. For manual spans:
+Nais enables OpenTelemetry auto-instrumentation by default. For manual spans:
 
 ```kotlin
 import io.opentelemetry.api.GlobalOpenTelemetry
@@ -190,7 +190,7 @@ fun processOrder(orderId: String) {
 }
 ```
 
-## NAIS Manifest
+## Nais Manifest
 
 ```yaml
 apiVersion: nais.io/v1alpha1
@@ -475,10 +475,10 @@ Or link from logs by clicking trace_id in Loki.
 - [ ] `/isalive` endpoint implemented
 - [ ] `/isready` endpoint with dependency checks (database, Kafka)
 - [ ] `/metrics` endpoint exposing Prometheus metrics
-- [ ] Health checks configured in NAIS manifest
+- [ ] Health checks configured in Nais manifest
 - [ ] Business metrics instrumented (counters, timers, gauges)
 - [ ] Structured logging with correlation IDs (trace_id, span_id)
-- [ ] OpenTelemetry auto-instrumentation enabled in NAIS manifest
+- [ ] OpenTelemetry auto-instrumentation enabled in Nais manifest
 - [ ] Alert rules created in `.nais/alert.yml`
 - [ ] Slack channel configured for alerts
 - [ ] Grafana dashboard created

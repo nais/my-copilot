@@ -1,4 +1,4 @@
-# NAV MCP Hello World
+# Nav MCP Hello World
 
 A reference MCP (Model Context Protocol) server demonstrating GitHub OAuth authentication for use with GitHub Copilot in VS Code.
 
@@ -96,7 +96,7 @@ Automatic deployment via GitHub Actions on merge to main and pull requests.
 - **Production**: `https://mcp-hello-world.nav.no`
 - **Development**: `https://mcp-hello-world.intern.dev.nav.no`
 
-Deployed to NAIS using the reusable `mise-build-deploy-nais` workflow.
+Deployed to Nais using the reusable `mise-build-deploy-nais` workflow.
 
 ## API Endpoints
 
@@ -113,7 +113,7 @@ Deployed to NAIS using the reusable `mise-build-deploy-nais` workflow.
 
 ## MCP Registry
 
-This server is registered in NAV's MCP registry as `io.github.navikt/hello-world`.
+This server is registered in Nav's MCP registry as `io.github.navikt/hello-world`.
 
 ## Security
 

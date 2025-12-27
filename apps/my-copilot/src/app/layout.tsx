@@ -8,7 +8,7 @@ import {
   InternalHeaderTitle,
   InternalHeaderUser,
 } from "@navikt/ds-react/InternalHeader";
-import { Spacer } from "@navikt/ds-react";
+import { Spacer, Box, HGrid } from "@navikt/ds-react";
 import { getUser } from "@/lib/auth";
 import Faro from "@/components/faro";
 import { MobileNav } from "@/components/mobile-nav";
@@ -54,8 +54,8 @@ export default async function RootLayout({
           <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} className="hidden md:flex" />
         </InternalHeader>
         <div className="bg-gray-100">{children}</div>
-        <footer className="text-white py-4 px-4 text-left text-md pb-10 pt-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Box as="footer" paddingBlock="space-20" paddingInline="space-8" className="text-white text-left text-md">
+          <HGrid columns={{ xs: 1, md: 3 }} gap="space-8">
             <div>
               <p>Bygget med GitHub Copilot</p>
             </div>
@@ -102,8 +102,8 @@ export default async function RootLayout({
                 </li>
               </ul>
             </div>
-          </div>
-        </footer>
+          </HGrid>
+        </Box>
       </body>
       <Faro />
     </html>

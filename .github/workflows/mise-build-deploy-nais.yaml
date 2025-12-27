@@ -46,27 +46,27 @@ on:
         type: string
         default: '.'
       deploys-to-nais:
-        description: 'Deploy to NAIS clusters'
+        description: 'Deploy to Nais clusters'
         required: false
         type: boolean
         default: false
       nais-resource:
-        description: 'Path to NAIS application manifest'
+        description: 'Path to Nais application manifest'
         required: false
         type: string
         default: '.nais/app.yaml'
       nais-vars:
-        description: 'Path to NAIS environment variables. Use {cluster} placeholder for multi-cluster (e.g., .nais/{cluster}.yaml)'
+        description: 'Path to Nais environment variables. Use {cluster} placeholder for multi-cluster (e.g., .nais/{cluster}.yaml)'
         required: false
         type: string
         default: '.nais/{cluster}.yaml'
       nais-clusters:
-        description: 'JSON array of NAIS clusters to deploy to'
+        description: 'JSON array of Nais clusters to deploy to'
         required: false
         type: string
         default: '["dev-gcp"]'
       nais-team:
-        description: 'NAIS team name'
+        description: 'Nais team name'
         required: false
         type: string
         default: 'nais'
@@ -106,7 +106,7 @@ on:
         type: string
         default: '.'
     secrets:
-      NAIS_IO_WORKLOAD_IDENTITY_PROVIDER:
+      Nais_IO_WORKLOAD_IDENTITY_PROVIDER:
         required: false
     outputs:
       version:
@@ -332,7 +332,7 @@ jobs:
           cache_to: type=gha,mode=max
 
   deploy:
-    name: Deploy to NAIS
+    name: Deploy to Nais
     if: ${{ inputs.deploys-to-nais && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     permissions:
@@ -347,16 +347,16 @@ jobs:
         id: paths
         env:
           WORKING_DIR: ${{ inputs.working-directory }}
-          NAIS_RESOURCE: ${{ inputs.nais-resource }}
-          NAIS_VARS_PATTERN: ${{ inputs.nais-vars }}
+          Nais_RESOURCE: ${{ inputs.nais-resource }}
+          Nais_VARS_PATTERN: ${{ inputs.nais-vars }}
           CLUSTER: ${{ matrix.cluster }}
         run: |
           if [ "$WORKING_DIR" != "." ]; then
-            RESOURCE_PATH="$WORKING_DIR/$NAIS_RESOURCE"
-            VARS_PATTERN="$WORKING_DIR/$NAIS_VARS_PATTERN"
+            RESOURCE_PATH="$WORKING_DIR/$Nais_RESOURCE"
+            VARS_PATTERN="$WORKING_DIR/$Nais_VARS_PATTERN"
           else
-            RESOURCE_PATH="$NAIS_RESOURCE"
-            VARS_PATTERN="$NAIS_VARS_PATTERN"
+            RESOURCE_PATH="$Nais_RESOURCE"
+            VARS_PATTERN="$Nais_VARS_PATTERN"
           fi
           VARS_PATH="${VARS_PATTERN//\{cluster\}/$CLUSTER}"
           echo "resource=$RESOURCE_PATH" >> $GITHUB_OUTPUT
@@ -384,13 +384,13 @@ jobs:
         id: paths
         env:
           WORKING_DIR: ${{ inputs.working-directory }}
-          NAIS_RESOURCE: ${{ inputs.nais-resource }}
+          Nais_RESOURCE: ${{ inputs.nais-resource }}
         run: |
           if [ "$WORKING_DIR" != "." ]; then
-            RESOURCE_PATH="$WORKING_DIR/$NAIS_RESOURCE"
+            RESOURCE_PATH="$WORKING_DIR/$Nais_RESOURCE"
             VARS_PATH="$WORKING_DIR/.nais/dev-gcp.yaml"
           else
-            RESOURCE_PATH="$NAIS_RESOURCE"
+            RESOURCE_PATH="$Nais_RESOURCE"
             VARS_PATH=".nais/dev-gcp.yaml"
           fi
           echo "resource=$RESOURCE_PATH" >> $GITHUB_OUTPUT

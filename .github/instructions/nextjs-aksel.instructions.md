@@ -6,7 +6,7 @@ applyTo: "src/**/*.{tsx,ts}"
 
 ## Spacing Rules
 
-**CRITICAL**: Always use NAV DS spacing tokens, never Tailwind padding/margin utilities.
+**CRITICAL**: Always use Nav DS spacing tokens, never Tailwind padding/margin utilities.
 
 ### ✅ Correct Patterns
 
@@ -216,7 +216,7 @@ describe("formatNumber", () => {
 });
 ```
 
-## Server Components (Next.js 15)
+## Server Components (Next.js 16)
 
 ```tsx
 // Server Component (default in App Router)

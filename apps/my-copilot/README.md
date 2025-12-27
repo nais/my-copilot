@@ -74,7 +74,7 @@ pnpm test
 
 ### Deployment
 
-This project uses GitHub Actions for CI/CD. The workflow is defined in `.github/workflows/build-deploy.yaml`. The application is deployed to the NAIS platform.
+This project uses GitHub Actions for CI/CD. The workflow is defined in `.github/workflows/build-deploy.yaml`. The application is deployed to the Nais platform.
 
 ### Group Access
 

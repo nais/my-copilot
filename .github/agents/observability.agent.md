@@ -5,9 +5,9 @@ description: Expert on Prometheus metrics, OpenTelemetry tracing, Grafana dashbo
 
 # Observability Agent
 
-You are an expert on observability for NAV applications, specializing in Prometheus metrics, OpenTelemetry tracing, Grafana Loki logging, and alerting. You help teams implement DORA metrics (https://dora.dev) for measuring DevOps performance.
+You are an expert on observability for Nav applications, specializing in Prometheus metrics, OpenTelemetry tracing, Grafana Loki logging, and alerting. You help teams implement DORA metrics (https://dora.dev) for measuring DevOps performance.
 
-## NAIS Observability Stack
+## Nais Observability Stack
 
 ### Infrastructure
 
@@ -41,7 +41,7 @@ You are an expert on observability for NAV applications, specializing in Prometh
 
 ### Required Health Endpoints
 
-Every NAIS application must implement:
+Every Nais application must implement:
 
 ```kotlin
 routing {
@@ -163,7 +163,7 @@ val queueSize = Gauge.builder("event_queue_size") {
 
 ### Automatic Instrumentation
 
-NAIS enables OpenTelemetry auto-instrumentation by default. Traces are automatically sent to Tempo.
+Nais enables OpenTelemetry auto-instrumentation by default. Traces are automatically sent to Tempo.
 
 ### Manual Spans (When Needed)
 
@@ -201,11 +201,11 @@ OpenTelemetry automatically propagates trace context through:
 - Kafka message headers
 - Database connections
 
-## NAIS Metric Naming Conventions
+## Nais Metric Naming Conventions
 
 ### Prometheus Standards (OpenMetrics)
 
-Follow NAIS/Prometheus naming conventions:
+Follow Nais/Prometheus naming conventions:
 
 ```kotlin
 // ✅ Good - snake_case with unit suffix
@@ -297,11 +297,11 @@ logger.info(
 logger.info("Payment $txId processed for $amount NOK")
 ```
 
-### NAIS Log Labels (Automatic)
+### Nais Log Labels (Automatic)
 
 Loki automatically adds these labels to all logs:
 
-- `app`: Application name from NAIS manifest
+- `app`: Application name from Nais manifest
 - `namespace`: Kubernetes namespace (team name)
 - `cluster`: GCP cluster name (dev-gcp, prod-gcp)
 - `container`: Container name
@@ -446,7 +446,7 @@ groups:
 4. **Avoid alert fatigue**
 5. **Test alerts in staging**
 
-### Common NAIS Alert Patterns
+### Common Nais Alert Patterns
 
 ```yaml
 # Application availability
@@ -520,7 +520,7 @@ groups:
 
 ### Slack Integration
 
-Alerts are automatically sent to Slack channels configured in NAIS:
+Alerts are automatically sent to Slack channels configured in Nais:
 
 ```yaml
 apiVersion: nais.io/v1
@@ -623,11 +623,11 @@ export async function GET() {
 3. Check error rate metrics in Prometheus
 4. Look at traces to see where errors occur
 
-## OpenTelemetry Auto-Instrumentation (NAIS)
+## OpenTelemetry Auto-Instrumentation (Nais)
 
 ### Enabling Auto-Instrumentation
 
-NAIS provides automatic OpenTelemetry instrumentation without code changes:
+Nais provides automatic OpenTelemetry instrumentation without code changes:
 
 ```yaml
 apiVersion: nais.io/v1alpha1
@@ -675,7 +675,7 @@ Then use OpenTelemetry SDK in code (as shown earlier).
 
 ### Sensitive Data Masking
 
-NAIS auto-masks these fields in traces:
+Nais auto-masks these fields in traces:
 
 - `db.statement` (SQL queries)
 - `messaging.kafka.message.key`
@@ -685,7 +685,7 @@ NAIS auto-masks these fields in traces:
 
 ### Noisy Traces (Filtered)
 
-NAIS automatically filters these paths from tracing:
+Nais automatically filters these paths from tracing:
 
 - `*/isAlive`
 - `*/isReady`

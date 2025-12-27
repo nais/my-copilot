@@ -5,7 +5,7 @@ description: Responsive layout patterns using Aksel spacing tokens with Box, VSt
 
 # Aksel Spacing Skill
 
-This skill provides responsive layout patterns using NAV Aksel Design System spacing tokens.
+This skill provides responsive layout patterns using Nav Aksel Design System spacing tokens.
 
 ## Critical Rule
 

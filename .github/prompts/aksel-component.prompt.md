@@ -3,7 +3,7 @@ name: aksel-component
 description: Scaffold a responsive React component using Aksel Design System with correct spacing tokens
 ---
 
-You are creating a new React component using NAV's Aksel Design System.
+You are creating a new React component using Nav's Aksel Design System.
 
 ## CRITICAL Rules
 

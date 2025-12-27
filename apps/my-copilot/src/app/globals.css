@@ -6,7 +6,7 @@
   --color-foreground: var(--foreground);
 }
 
-/* Fix: NAV resets margin on typography. Override with higher specificity to allow Tailwind utilities */
+/* Fix: Nav resets margin on typography. Override with higher specificity to allow Tailwind utilities */
 .navds-heading.mb-1 {
   margin-bottom: calc(var(--spacing) * 1) !important;
 }
@@ -86,7 +86,7 @@
   margin-top: calc(var(--spacing) * 4) !important;
 }
 
-/* Text color overrides - NAV sets specific colors that need !important to override */
+/* Text color overrides - Nav sets specific colors that need !important to override */
 .navds-heading[class*="text-"] {
   color: inherit !important;
 }
@@ -97,7 +97,7 @@
   color: inherit !important;
 }
 
-/* Font size overrides - NAV sets specific font sizes that need !important to override */
+/* Font size overrides - Nav sets specific font sizes that need !important to override */
 .navds-body-short.text-xs {
   font-size: 0.75rem !important;
   line-height: 1rem !important;
@@ -115,7 +115,7 @@
   line-height: 1.25rem !important;
 }
 
-/* Display overrides - NAV components need !important to respect Tailwind display utilities */
+/* Display overrides - Nav components need !important to respect Tailwind display utilities */
 .hidden {
   display: none !important;
 }
@@ -132,7 +132,7 @@
   display: grid !important;
 }
 
-/* Target NAV components specifically */
+/* Target Nav components specifically */
 .navds-internal-header__title.hidden,
 .navds-internal-header__button.hidden,
 .navds-internal-header__user.hidden {
@@ -163,7 +163,7 @@
     display: flex !important;
   }
 
-  /* Target NAV components specifically for md breakpoint */
+  /* Target Nav components specifically for md breakpoint */
   .navds-internal-header__title.md\:block,
   .navds-internal-header__button.md\:flex,
   .navds-internal-header__user.md\:flex {
