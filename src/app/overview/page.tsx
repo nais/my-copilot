@@ -1,6 +1,6 @@
 import { getCachedCopilotBilling } from "@/lib/cached-github";
 import { Suspense } from "react";
-import { Skeleton, Heading, BodyShort, Box } from "@navikt/ds-react";
+import { Skeleton, Heading, BodyShort, Box, VStack } from "@navikt/ds-react";
 
 function currencyFormat(num: number) {
   return `$${num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")} USD`;
@@ -9,14 +9,14 @@ function currencyFormat(num: number) {
 // Static header component (automatically prerendered)
 function OverviewHeader() {
   return (
-    <div className="mb-6">
-      <Heading size="xlarge" level="1" className="mb-2">
+    <VStack gap="space-8">
+      <Heading size="xlarge" level="1">
         Copilot Oversikt
       </Heading>
       <BodyShort className="text-gray-600">
         Oversikt over lisenser, kostnader og organisasjonsinnstillinger for GitHub Copilot
       </BodyShort>
-    </div>
+    </VStack>
   );
 }
 
@@ -145,21 +145,23 @@ async function BillingOverview() {
 // Main page component using Partial Prerendering
 export default function Overview() {
   return (
-    <main className="p-6 mx-4 max-w-7xl">
-      {/* Static content - automatically prerendered */}
-      <OverviewHeader />
+    <main className="max-w-7xl mx-auto">
+      <Box paddingBlock={{ xs: "space-16", md: "space-24" }} paddingInline={{ xs: "space-16", md: "space-40" }}>
+        {/* Static content - automatically prerendered */}
+        <OverviewHeader />
 
-      {/* Cached dynamic content - included in static shell */}
-      <Suspense
-        fallback={
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Skeleton variant="rectangle" height={400} />
-            <Skeleton variant="rectangle" height={400} />
-          </div>
-        }
-      >
-        <BillingOverview />
-      </Suspense>
+        {/* Cached dynamic content - included in static shell */}
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Skeleton variant="rectangle" height={400} />
+              <Skeleton variant="rectangle" height={400} />
+            </div>
+          }
+        >
+          <BillingOverview />
+        </Suspense>
+      </Box>
     </main>
   );
 }

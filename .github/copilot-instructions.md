@@ -26,6 +26,87 @@ formatNumber(151354); // "151 354" (space separator)
 import { Table, BodyShort, Heading, HGrid, Box, HelpText } from "@navikt/ds-react";
 ```
 
+### Spacing - Mobile-First Design
+
+Always use NAV DS spacing tokens, never Tailwind padding/margin utilities.
+
+**Page containers:**
+
+```typescript
+// ✅ Correct - responsive padding with NAV DS
+<main className="max-w-7xl mx-auto">
+  <Box paddingBlock={{ xs: "space-16", md: "space-24" }} paddingInline={{ xs: "space-16", md: "space-40" }}>
+    {children}
+  </Box>
+</main>
+
+// ❌ Wrong - Tailwind utilities
+<main className="p-4 mx-4">
+<main className="p-2 sm:p-6 mx-1 sm:mx-4">
+```
+
+**Section spacing:**
+
+```typescript
+// ✅ Correct - VStack with gap
+<VStack gap="space-24">
+  <section>...</section>
+  <section>...</section>
+</VStack>
+
+// ❌ Wrong - Tailwind classes
+<section className="mb-8">
+<div className="space-y-6">
+```
+
+**Component spacing:**
+
+```typescript
+// ✅ Correct - Box with responsive padding
+<Box
+  background="surface-subtle"
+  padding={{ xs: "space-16", md: "space-24" }}
+  borderRadius="large"
+>
+
+// HGrid with responsive gap
+<HGrid columns={{ xs: 1, md: 2, lg: 4 }} gap={{ xs: "space-16", md: "space-24" }}>
+
+// ❌ Wrong - numeric tokens without space- prefix or Tailwind
+<Box padding="4">
+<HGrid gap="6">
+```
+
+**Header spacing:**
+
+```typescript
+// ✅ Correct - VStack for vertical spacing
+<VStack gap="space-8">
+  <Heading size="xlarge" level="1">Title</Heading>
+  <BodyShort className="text-gray-600">Description</BodyShort>
+</VStack>
+
+// ❌ Wrong - Tailwind margin
+<Heading className="mb-2">Title</Heading>
+<BodyShort className="mb-4">Description</BodyShort>
+```
+
+**Responsive breakpoints:**
+
+- `xs`: 0px (mobile)
+- `sm`: 480px (large mobile)
+- `md`: 768px (tablet)
+- `lg`: 1024px (desktop)
+- `xl`: 1280px (large desktop)
+
+**Common spacing tokens:**
+
+- `space-8` (0.5rem / 8px) - tight spacing
+- `space-16` (1rem / 16px) - default spacing
+- `space-24` (1.5rem / 24px) - section spacing
+- `space-32` (2rem / 32px) - large section spacing
+- `space-40` (2.5rem / 40px) - page padding
+
 ### API Routes
 
 ```typescript

@@ -14,7 +14,7 @@ import ErrorState from "@/components/error-state";
 import PremiumRequestsContent from "@/components/premium-requests-content";
 import TimeframeSelector from "@/components/timeframe-selector";
 import { calculatePremiumMetrics } from "@/lib/billing-utils";
-import { Table, BodyShort, Heading, HGrid, Box, HelpText, Skeleton } from "@navikt/ds-react";
+import { Table, BodyShort, Heading, HGrid, Box, HelpText, Skeleton, HStack, VStack } from "@navikt/ds-react";
 import { TableBody, TableDataCell, TableHeader, TableHeaderCell, TableRow } from "@navikt/ds-react/Table";
 import {
   calculateAcceptanceRate,
@@ -35,19 +35,19 @@ import { formatNumber } from "@/lib/format";
 // Static header component (automatically prerendered)
 function UsageHeader() {
   return (
-    <div className="flex items-start justify-between mb-8">
-      <div>
-        <Heading size="xlarge" level="1" className="mb-2">
+    <HStack justify="space-between" align="start" gap="space-16" wrap={false}>
+      <VStack gap="space-8">
+        <Heading size="xlarge" level="1">
           Copilot Bruksstatistikk
         </Heading>
         <BodyShort className="text-gray-600">
           Viser organisasjonens bruk av GitHub Copilot med oppdaterte data
         </BodyShort>
-      </div>
+      </VStack>
       <Suspense fallback={<Skeleton variant="rectangle" width={192} height={40} />}>
         <TimeframeSelector />
       </Suspense>
-    </div>
+    </HStack>
   );
 }
 
@@ -105,7 +105,7 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
 
   // Tab content components
   const overviewContent = (
-    <div className="space-y-6">
+    <VStack gap="space-24">
       {/* Header */}
       <Heading size="medium">Oversikt over nøkkeltall</Heading>
 
@@ -266,17 +266,17 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
       </Box>
 
       {/* Charts Section */}
-      <div className="space-y-6">
+      <VStack gap="space-24">
         <Heading size="medium" level="3">
           Trendanalyse
         </Heading>
         <TrendChart usage={usage} />
-      </div>
-    </div>
+      </VStack>
+    </VStack>
   );
 
   const languagesContent = (
-    <div className="space-y-6">
+    <VStack gap="space-24">
       {/* Programming Languages Table */}
       <div className="overflow-hidden">
         <Heading size="medium" level="3" className="mb-4">
@@ -362,22 +362,20 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
       </div>
 
       {/* Languages Chart */}
-      <div className="mt-8">
-        <Heading size="medium" level="3" className="mb-4">
+      <VStack gap="space-16">
+        <Heading size="medium" level="3">
           Språkutvikling over tid
         </Heading>
         <LanguagesChart usage={usage} />
-      </div>
+      </VStack>
 
       {/* Language Distribution */}
-      <div className="mt-8">
-        <LanguageDistributionChart usage={usage} />
-      </div>
-    </div>
+      <LanguageDistributionChart usage={usage} />
+    </VStack>
   );
 
   const editorsContent = (
-    <div className="space-y-6">
+    <VStack gap="space-24">
       {/* Editor Statistics Table */}
       <div className="overflow-hidden">
         <Heading size="medium" level="3" className="mb-4">
@@ -456,17 +454,17 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
       </div>
 
       {/* Editors Chart */}
-      <div className="mt-8">
-        <Heading size="medium" level="3" className="mb-4">
+      <VStack gap="space-16">
+        <Heading size="medium" level="3">
           Editorbruk over tid
         </Heading>
         <EditorsChart usage={usage} />
-      </div>
-    </div>
+      </VStack>
+    </VStack>
   );
 
   const advancedMetricsContent = (
-    <div className="space-y-6">
+    <VStack gap="space-24">
       {/* Lines of Code Metrics */}
       {aggregatedMetrics && (
         <Box background="surface-subtle" padding="6" borderRadius="large">
@@ -578,7 +576,7 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
 
       {/* PR Summary Metrics */}
       {prSummaryMetrics && prSummaryMetrics.totalPRSummaries > 0 && (
-        <div className="space-y-4">
+        <VStack gap="space-16">
           <Heading size="medium" level="3">
             Pull request-sammendrag
           </Heading>
@@ -645,12 +643,12 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
               </Table>
             </div>
           )}
-        </div>
+        </VStack>
       )}
 
       {/* Model Usage Information */}
       {modelUsageMetrics && modelUsageMetrics.length > 0 && (
-        <div className="space-y-4">
+        <VStack gap="space-16">
           <Heading size="medium" level="3">
             AI-modeller i bruk
           </Heading>
@@ -694,9 +692,9 @@ async function UsageContent({ usage }: { usage: CopilotMetrics[] }) {
             </div>
             <ModelUsageChart usage={usage} />
           </HGrid>
-        </div>
+        </VStack>
       )}
-    </div>
+    </VStack>
   );
 
   const tabs = [
@@ -732,23 +730,25 @@ export default async function Usage({ searchParams }: { searchParams: Promise<{ 
   const days = Math.min(Math.max(parseInt(params.days || "28", 10) || 28, 1), 100);
 
   return (
-    <main className="p-6 mx-4 max-w-7xl">
-      <section>
-        {/* Static content - automatically prerendered */}
-        <UsageHeader />
+    <main className="max-w-7xl mx-auto">
+      <Box paddingBlock={{ xs: "space-16", md: "space-24" }} paddingInline={{ xs: "space-16", md: "space-40" }}>
+        <section>
+          {/* Static content - automatically prerendered */}
+          <UsageHeader />
 
-        {/* Cached dynamic content - included in static shell */}
-        <Suspense
-          fallback={
-            <div className="space-y-4">
-              <Skeleton variant="text" width="60%" />
-              <Skeleton variant="rectangle" height={400} />
-            </div>
-          }
-        >
-          <CachedUsageData days={days} />
-        </Suspense>
-      </section>
+          {/* Cached dynamic content - included in static shell */}
+          <Suspense
+            fallback={
+              <div className="space-y-4">
+                <Skeleton variant="text" width="60%" />
+                <Skeleton variant="rectangle" height={400} />
+              </div>
+            }
+          >
+            <CachedUsageData days={days} />
+          </Suspense>
+        </section>
+      </Box>
     </main>
   );
 }
