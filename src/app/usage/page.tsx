@@ -731,7 +731,10 @@ export default async function Usage({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <main className="max-w-7xl mx-auto">
-      <Box paddingBlock={{ xs: "space-16", md: "space-24" }} paddingInline={{ xs: "space-16", md: "space-40" }}>
+      <Box
+        paddingBlock={{ xs: "space-16", sm: "space-20", md: "space-24" }}
+        paddingInline={{ xs: "space-16", sm: "space-20", md: "space-32", lg: "space-40" }}
+      >
         <section>
           {/* Static content - automatically prerendered */}
           <UsageHeader />
