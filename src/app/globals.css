@@ -31,6 +31,9 @@
 .navds-heading.mt-2 {
   margin-top: calc(var(--spacing) * 2) !important;
 }
+.navds-heading.mt-3 {
+  margin-top: calc(var(--spacing) * 3) !important;
+}
 .navds-heading.mt-4 {
   margin-top: calc(var(--spacing) * 4) !important;
 }
@@ -44,9 +47,138 @@
 .navds-body-short.mb-2 {
   margin-bottom: calc(var(--spacing) * 2) !important;
 }
+.navds-body-short.mb-3 {
+  margin-bottom: calc(var(--spacing) * 3) !important;
+}
 .navds-body-short.mb-4 {
   margin-bottom: calc(var(--spacing) * 4) !important;
 }
 .navds-body-short.mb-6 {
   margin-bottom: calc(var(--spacing) * 6) !important;
+}
+.navds-body-short.mt-1 {
+  margin-top: calc(var(--spacing) * 1) !important;
+}
+.navds-body-short.mt-2 {
+  margin-top: calc(var(--spacing) * 2) !important;
+}
+.navds-body-short.mt-3 {
+  margin-top: calc(var(--spacing) * 3) !important;
+}
+.navds-body-short.mt-4 {
+  margin-top: calc(var(--spacing) * 4) !important;
+}
+
+/* Label overrides */
+.navds-label.mb-2 {
+  margin-bottom: calc(var(--spacing) * 2) !important;
+}
+.navds-label.mb-3 {
+  margin-bottom: calc(var(--spacing) * 3) !important;
+}
+.navds-label.mb-4 {
+  margin-bottom: calc(var(--spacing) * 4) !important;
+}
+.navds-label.mt-2 {
+  margin-top: calc(var(--spacing) * 2) !important;
+}
+.navds-label.mt-4 {
+  margin-top: calc(var(--spacing) * 4) !important;
+}
+
+/* Text color overrides - NAV sets specific colors that need !important to override */
+.navds-heading[class*="text-"] {
+  color: inherit !important;
+}
+.navds-body-short[class*="text-"] {
+  color: inherit !important;
+}
+.navds-label[class*="text-"] {
+  color: inherit !important;
+}
+
+/* Font size overrides - NAV sets specific font sizes that need !important to override */
+.navds-body-short.text-xs {
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+}
+.navds-body-short.text-sm {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+.navds-heading.text-xs {
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+}
+.navds-heading.text-sm {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+
+/* Display overrides - NAV components need !important to respect Tailwind display utilities */
+.hidden {
+  display: none !important;
+}
+.block {
+  display: block !important;
+}
+.flex {
+  display: flex !important;
+}
+.inline-flex {
+  display: inline-flex !important;
+}
+.grid {
+  display: grid !important;
+}
+
+/* Target NAV components specifically */
+.navds-internal-header__title.hidden,
+.navds-internal-header__button.hidden,
+.navds-internal-header__user.hidden {
+  display: none !important;
+}
+
+/* Responsive display utilities */
+@media (min-width: 640px) {
+  .sm\:hidden {
+    display: none !important;
+  }
+  .sm\:block {
+    display: block !important;
+  }
+  .sm\:flex {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:hidden {
+    display: none !important;
+  }
+  .md\:block {
+    display: block !important;
+  }
+  .md\:flex {
+    display: flex !important;
+  }
+
+  /* Target NAV components specifically for md breakpoint */
+  .navds-internal-header__title.md\:block,
+  .navds-internal-header__button.md\:flex,
+  .navds-internal-header__user.md\:flex {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:hidden {
+    display: none !important;
+  }
+  .lg\:block {
+    display: block !important;
+  }
+  .lg\:flex {
+    display: flex !important;
+  }
 }

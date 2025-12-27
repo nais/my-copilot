@@ -11,6 +11,7 @@ import {
 import { Spacer } from "@navikt/ds-react";
 import { getUser } from "@/lib/auth";
 import Faro from "@/components/faro";
+import { MobileNav } from "@/components/mobile-nav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,17 +38,20 @@ export default async function RootLayout({
           <InternalHeaderTitle as="a" href="/">
             Min Copilot
           </InternalHeaderTitle>
-          <InternalHeaderButton as="a" href="/usage">
+          <InternalHeaderButton as="a" href="/usage" className="hidden md:flex">
             Bruksstatistikk
           </InternalHeaderButton>
-          <InternalHeaderButton as="a" href="/overview">
+          <InternalHeaderButton as="a" href="/overview" className="hidden md:flex">
             Lisensoversikt
           </InternalHeaderButton>
-          <InternalHeaderButton as="a" href="/best-practices">
+          <InternalHeaderButton as="a" href="/best-practices" className="hidden md:flex">
             Beste Praksis
           </InternalHeaderButton>
           <Spacer />
-          <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} />
+          <div className="md:hidden flex items-center">
+            <MobileNav />
+          </div>
+          <InternalHeaderUser name={`${user.firstName} ${user.lastName}`} className="hidden md:flex" />
         </InternalHeader>
         <div className="bg-gray-100">{children}</div>
         <footer className="text-white py-4 px-4 text-left text-md pb-10 pt-10">

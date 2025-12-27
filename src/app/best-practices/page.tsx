@@ -85,15 +85,15 @@ function CodeBlock({ filename, children, maxHeight }: { filename: string; childr
 
 export default async function BestPractices() {
   return (
-    <main className="p-6 mx-4 max-w-7xl">
-      <section className="space-y-6">
+    <main className="p-2 sm:p-6 mx-1 sm:mx-4 max-w-7xl">
+      <section className="space-y-3 sm:space-y-6">
         {/* Header */}
         <div className="relative">
           <div className="absolute inset-0 overflow-hidden rounded-xl -z-10">
-            <Image src="/images/HeaderImage.jpeg" alt="" fill className="object-cover opacity-15" priority />
+            <Image src="/images/cli-headerimage.jpeg" alt="" fill className="object-cover opacity-15" priority />
             <div className="absolute inset-0 bg-linear-to-r from-white via-white/90 to-transparent" />
           </div>
-          <div className="py-4">
+          <div className="py-2 sm:py-4">
             <Heading size="xlarge" level="1" className="mb-2">
               Beste Praksis og Læring
             </Heading>
@@ -105,7 +105,7 @@ export default async function BestPractices() {
         </div>
 
         {/* 1. Styrker, Begrensninger og Farer */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             Styrker, Begrensninger og Farer
           </Heading>
@@ -114,7 +114,7 @@ export default async function BestPractices() {
             oppmerksom på.
           </BodyShort>
 
-          <HGrid columns={2} gap="6" className="mb-6">
+          <HGrid columns={{ xs: 1, md: 2 }} gap="6" className="mb-6">
             <div>
               <Heading size="medium" level="3" className="mb-4 text-green-700">
                 ✓ Hva Copilot gjør best
@@ -213,7 +213,7 @@ export default async function BestPractices() {
                 Farer du må kjenne til
               </Heading>
             </div>
-            <HGrid columns={2} gap="4">
+            <HGrid columns={{ xs: 1, md: 2 }} gap="4">
               <div className="space-y-3">
                 <div>
                   <BodyShort weight="semibold">Scope creep</BodyShort>
@@ -268,7 +268,7 @@ export default async function BestPractices() {
             <BodyShort className="text-gray-600 text-sm mb-3">
               GitHub har bygget inn disse sikkerhetsprinsippene i Copilot coding agent:
             </BodyShort>
-            <HGrid columns={3} gap="3">
+            <HGrid columns={{ xs: 1, sm: 2, lg: 3 }} gap="3">
               <div>
                 <BodyShort weight="semibold" className="text-sm">
                   Synlig kontekst
@@ -320,7 +320,7 @@ export default async function BestPractices() {
         </Box>
 
         {/* 2. Verktøy og Moduser */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             Verktøy og Moduser
           </Heading>
@@ -345,7 +345,7 @@ export default async function BestPractices() {
             </video>
           </Box>
 
-          <HGrid columns={3} gap="4" className="mb-6">
+          <HGrid columns={{ xs: 1, sm: 2, lg: 3 }} gap="4" className="mb-6">
             {/* IDE */}
             <Box background="surface-info-subtle" padding="4" borderRadius="medium">
               <div className="flex items-center gap-2 mb-3">
@@ -523,7 +523,7 @@ export default async function BestPractices() {
               beste modell automatisk. Multiplikatoren (1x, 3x, 0.33x) viser hvor mange requests som trekkes per
               forespørsel.
             </BodyShort>
-            <HGrid columns={3} gap="3">
+            <HGrid columns={{ xs: 1, sm: 2, lg: 3 }} gap="3">
               <div>
                 <Label size="small" className="text-green-700">
                   Auto (10 % rabatt)
@@ -567,7 +567,7 @@ export default async function BestPractices() {
         </Box>
 
         {/* 3. Forbered for Suksess */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             Forbered for Suksess
           </Heading>
@@ -603,7 +603,7 @@ export default async function BestPractices() {
                 copilot-instructions.md vs agents/*.md
               </Heading>
             </div>
-            <HGrid columns={2} gap="4">
+            <HGrid columns={{ xs: 1, md: 2 }} gap="4">
               <div>
                 <Label size="small" className="text-blue-700">
                   copilot-instructions.md
@@ -764,7 +764,7 @@ async function get(x) {
               <BodyShort className="text-gray-600 text-sm mb-3">
                 Analyse av over 2500 agents.md-filer viser at de beste dekker disse områdene:
               </BodyShort>
-              <HGrid columns={3} gap="3">
+              <HGrid columns={{ xs: 1, sm: 2, lg: 3 }} gap="3">
                 <div>
                   <BodyShort weight="semibold" className="text-sm">
                     1. Kommandoer
@@ -809,7 +809,7 @@ async function get(x) {
         </Box>
 
         {/* 4. Prompt Engineering */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             Prompt Engineering
           </Heading>
@@ -825,7 +825,7 @@ async function get(x) {
                 Vær spesifikk, ikke vag
               </Heading>
 
-              <HGrid columns={2} gap="4" className="mb-4">
+              <HGrid columns={{ xs: 1, md: 2 }} gap="4" className="mb-4">
                 <Box
                   background="surface-danger-subtle"
                   padding="4"
@@ -868,7 +868,7 @@ validation logic in middleware/auth.ts`}
                 Gi eksempler på forventet output
               </Heading>
 
-              <HGrid columns={2} gap="4" className="mb-4">
+              <HGrid columns={{ xs: 1, md: 2 }} gap="4" className="mb-4">
                 <Box
                   background="surface-danger-subtle"
                   padding="4"
@@ -926,7 +926,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
                 />
               </div>
 
-              <HGrid columns={2} gap="4">
+              <HGrid columns={{ xs: 1, md: 2 }} gap="4">
                 <Box background="surface-info-subtle" padding="4" borderRadius="medium">
                   <div className="flex items-center gap-2 mb-2">
                     <TasklistIcon className="text-blue-600" aria-hidden />
@@ -1009,7 +1009,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
                   Anti-mønstre å unngå
                 </Heading>
               </div>
-              <HGrid columns={2} gap="4">
+              <HGrid columns={{ xs: 1, md: 2 }} gap="4">
                 <div>
                   <BodyShort weight="semibold" className="text-sm">
                     Vage direktiver
@@ -1049,7 +1049,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
         </Box>
 
         {/* 5. WRAP-metoden */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             WRAP-metoden for Coding Agent
           </Heading>
@@ -1058,7 +1058,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
             kollega.
           </BodyShort>
 
-          <HGrid columns={2} gap="6">
+          <HGrid columns={{ xs: 1, md: 2 }} gap="6">
             <Box
               background="surface-success-subtle"
               padding="4"
@@ -1196,7 +1196,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
             <BodyShort className="text-gray-600 text-sm mb-3">
               GitHub bruker Copilot coding agent aktivt på github.com-kodebasen:
             </BodyShort>
-            <HGrid columns={3} gap="3">
+            <HGrid columns={{ xs: 1, sm: 2, lg: 3 }} gap="3">
               <div>
                 <BodyShort weight="semibold" className="text-sm">
                   Opprydding
@@ -1244,7 +1244,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
         </Box>
 
         {/* 6. Orkestrer og Styr Agenter */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             Orkestrer og Styr Agenter
           </Heading>
@@ -1265,7 +1265,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
 
           <div className="space-y-6">
             {/* Parallel vs Sequential */}
-            <HGrid columns={2} gap="4">
+            <HGrid columns={{ xs: 1, md: 2 }} gap="4">
               <Box background="surface-success-subtle" padding="4" borderRadius="medium">
                 <div className="flex items-center gap-2 mb-2">
                   <CheckmarkCircleIcon className="text-green-700" aria-hidden />
@@ -1336,7 +1336,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
               <BodyShort className="text-gray-600 text-sm mb-3">
                 Session logs viser agentens tankegang. Se etter disse tegnene:
               </BodyShort>
-              <HGrid columns={3} gap="3">
+              <HGrid columns={{ xs: 1, sm: 2, lg: 3 }} gap="3">
                 <div>
                   <div className="flex items-center gap-1">
                     <CheckmarkCircleIcon className="text-green-700" fontSize="1rem" aria-hidden />
@@ -1431,7 +1431,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
         </Box>
 
         {/* 7. Gjennomgå Copilots Arbeid */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             Gjennomgå Copilots Arbeid
           </Heading>
@@ -1449,7 +1449,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
             />
           </div>
 
-          <HGrid columns={3} gap="4">
+          <HGrid columns={{ xs: 1, sm: 2, lg: 3 }} gap="4">
             <Box
               background="surface-info-subtle"
               padding="4"
@@ -1556,7 +1556,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
                 Pro-tips for effektiv gjennomgang
               </Heading>
             </div>
-            <HGrid columns={2} gap="4">
+            <HGrid columns={{ xs: 1, md: 2 }} gap="4">
               <div>
                 <BodyShort weight="semibold" className="text-sm">
                   Be Copilot gjennomgå seg selv
@@ -1578,7 +1578,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
         </Box>
 
         {/* 8. Vanlige mønstre */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             Vanlige mønstre for Agent Mode
           </Heading>
@@ -1586,7 +1586,7 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
             Bygg spesialiserte agenter for repeterende oppgaver. Her er seks anbefalte agenter å starte med.
           </BodyShort>
 
-          <HGrid columns={3} gap="4">
+          <HGrid columns={{ xs: 1, sm: 2, lg: 3 }} gap="4">
             <Box background="surface-info-subtle" padding="4" borderRadius="medium">
               <div className="flex items-center gap-2 mb-2">
                 <BookIcon className="text-blue-700" aria-hidden />
@@ -1725,7 +1725,7 @@ description: Skriver tester for dette prosjektet
         </Box>
 
         {/* 9. Ressurser */}
-        <Box background="surface-subtle" padding="6" borderRadius="large">
+        <Box background="surface-subtle" padding={{ xs: "3", md: "6" }} borderRadius="large">
           <Heading size="large" level="2" className="mb-4">
             Ressurser
           </Heading>
@@ -1733,7 +1733,7 @@ description: Skriver tester for dette prosjektet
             Offisielle kilder, fellesskapsressurser og Nav-spesifikk dokumentasjon.
           </BodyShort>
 
-          <HGrid columns={2} gap="4">
+          <HGrid columns={{ xs: 1, md: 2 }} gap="4">
             <Box background="surface-info-subtle" padding="4" borderRadius="medium">
               <div className="flex items-center gap-2 mb-2">
                 <BookIcon className="text-blue-600" aria-hidden />
