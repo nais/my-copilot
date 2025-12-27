@@ -25,9 +25,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY --from=builder --chown=nonroot:nonroot /app/public ./public
+# Copy standalone output first
 COPY --from=builder --chown=nonroot:nonroot /app/.next/standalone ./
+# Copy static assets into standalone structure
 COPY --from=builder --chown=nonroot:nonroot /app/.next/static ./.next/static
+COPY --from=builder --chown=nonroot:nonroot /app/public ./public
 
 USER nonroot
 
