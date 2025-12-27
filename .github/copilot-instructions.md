@@ -16,9 +16,10 @@ Self-service tool for managing GitHub Copilot subscriptions at Nav. Next.js 15 a
 
 **Tech Stack:**
 
-- Next.js 15 with App Router
+- Next.js 16 with App Router
 - TypeScript strict mode
 - NAV Design System (@navikt/ds-react)
+- Tailwind CSS v4.1
 - Octokit for GitHub API
 - Jest for testing
 

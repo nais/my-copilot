@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { Heading, BodyShort, Box, HGrid, HelpText, Label, VStack } from "@navikt/ds-react";
 import { Carousel } from "@/components/carousel";
+import { CodeBlock } from "@/components/code-block";
 import {
   CheckmarkCircleIcon,
   XMarkOctagonIcon,
@@ -26,63 +27,6 @@ import {
   PencilWritingIcon,
   StarIcon,
 } from "@navikt/aksel-icons";
-
-// VS Code style code block component with optional max height
-function CodeBlock({ filename, children, maxHeight }: { filename: string; children: string; maxHeight?: string }) {
-  const contentId = `code-${filename.replace(/[^a-z0-9]/gi, "-")}`;
-  return (
-    <div className="rounded-lg overflow-hidden border border-gray-700 shadow-lg">
-      {/* Title bar */}
-      <div className="bg-[#323233] px-4 py-2 flex items-center gap-2">
-        <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-          <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-          <div className="w-3 h-3 rounded-full bg-[#28c840]" />
-        </div>
-        <span className="text-gray-400 text-xs ml-2 font-mono">{filename}</span>
-      </div>
-      {/* Code content with optional max height */}
-      <div className="bg-[#1e1e1e] relative group">
-        <input type="checkbox" id={contentId} className="peer hidden" />
-        <div
-          className="p-4 overflow-hidden transition-all duration-300"
-          style={
-            maxHeight
-              ? ({
-                  maxHeight: maxHeight,
-                  "--expanded-height": "none",
-                } as React.CSSProperties)
-              : undefined
-          }
-        >
-          <pre className="text-[#d4d4d4] text-xs font-mono whitespace-pre-wrap leading-relaxed">{children}</pre>
-        </div>
-        {maxHeight && (
-          <>
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-[#1e1e1e] to-transparent peer-checked:hidden pointer-events-none" />
-            <label
-              htmlFor={contentId}
-              className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-blue-400 hover:text-blue-300 cursor-pointer peer-checked:hidden bg-[#1e1e1e]/80 px-3 py-1 rounded-full"
-            >
-              Vis mer ↓
-            </label>
-            <label
-              htmlFor={contentId}
-              className="hidden peer-checked:block text-center text-xs text-blue-400 hover:text-blue-300 cursor-pointer py-2 border-t border-gray-700"
-            >
-              Vis mindre ↑
-            </label>
-          </>
-        )}
-        <style>{`
-          #${contentId}:checked ~ div {
-            max-height: none !important;
-          }
-        `}</style>
-      </div>
-    </div>
-  );
-}
 
 export default async function BestPractices() {
   return (
@@ -655,7 +599,7 @@ export default async function BestPractices() {
               </BodyShort>
             </Box>
 
-            {/* Comparison box */}
+            {/* Comparison table: Prompts vs Instructions vs Agents vs Skills */}
             <Box
               background="surface-warning-subtle"
               padding={{ xs: "space-12", sm: "space-16" }}
@@ -665,35 +609,77 @@ export default async function BestPractices() {
               <div className="flex items-center gap-2 mb-3">
                 <InformationIcon className="text-orange-600" aria-hidden />
                 <Heading size="small" level="3" className="text-orange-700">
-                  copilot-instructions.md vs agents/*.md
+                  Fire typer tilpasninger
                 </Heading>
               </div>
-              <HGrid columns={{ xs: 1, md: 2 }} gap="4">
+              <BodyShort className="text-gray-600 text-xs mb-3">
+                GitHub Copilot kan tilpasses på fire måter. Se{" "}
+                <a
+                  href="https://github.com/github/awesome-copilot"
+                  className="text-blue-600 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  github/awesome-copilot
+                </a>{" "}
+                for fellesskapets kuraterte eksempler.
+              </BodyShort>
+              <HGrid columns={{ xs: 1, md: 2, lg: 4 }} gap="4">
                 <div>
                   <Label size="small" className="text-blue-700">
-                    copilot-instructions.md
+                    Prompts
                   </Label>
                   <BodyShort className="text-gray-600 text-xs mt-1">
-                    Generelle regler for hele repoet. Leses automatisk av alle Copilot-funksjoner (chat, completions,
-                    agent). Bruk til: kodestil, teknisk stack, kommandoer, prosjektstruktur.
+                    <strong>Når:</strong> Engangsoppgaver
+                    <br />
+                    <strong>Aktivering:</strong> /prompt-name i chat
+                    <br />
+                    <strong>Eksempel:</strong> "Lag README for denne modulen"
+                    <br />
+                    <strong>Filformat:</strong> .github/prompts/*.prompt.md
                   </BodyShort>
                 </div>
                 <div>
                   <Label size="small" className="text-green-700">
-                    agents/*.md
+                    Instructions
                   </Label>
                   <BodyShort className="text-gray-600 text-xs mt-1">
-                    Spesialiserte agenter for spesifikke oppgaver. Krever YAML frontmatter med <code>name</code> og{" "}
-                    <code>description</code>. Bruk til: test-agent, migreringsagent, review-agent. Se{" "}
-                    <a
-                      href="https://github.com/NTCoding/claude-skillz"
-                      className="text-blue-600 hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      eksempler
-                    </a>
-                    .
+                    <strong>Når:</strong> Alltid aktiv
+                    <br />
+                    <strong>Aktivering:</strong> Automatisk på matchende filer
+                    <br />
+                    <strong>Eksempel:</strong> TypeScript kodestil, navnekonvensjoner
+                    <br />
+                    <strong>Filformat:</strong> .github/copilot-instructions.md eller
+                    .github/instructions/*.instructions.md
+                  </BodyShort>
+                </div>
+                <div>
+                  <Label size="small" className="text-orange-700">
+                    Agents
+                  </Label>
+                  <BodyShort className="text-gray-600 text-xs mt-1">
+                    <strong>Når:</strong> Spesialiserte oppgaver
+                    <br />
+                    <strong>Aktivering:</strong> @agent-name
+                    <br />
+                    <strong>Eksempel:</strong> test-agent, review-agent
+                    <br />
+                    <strong>Filformat:</strong> .github/agents/*.agent.md
+                  </BodyShort>
+                </div>
+                <div>
+                  <Label size="small" className="text-purple-700">
+                    Skills
+                  </Label>
+                  <BodyShort className="text-gray-600 text-xs mt-1">
+                    <strong>Når:</strong> Automatisk ved behov
+                    <br />
+                    <strong>Aktivering:</strong> Automatisk når relevant
+                    <br />
+                    <strong>Eksempel:</strong> PDF-ekstraksjon, API-testing
+                    <br />
+                    <strong>Filformat:</strong> .github/skills/*/SKILL.md med scripts/
                   </BodyShort>
                 </div>
               </HGrid>
@@ -702,6 +688,40 @@ export default async function BestPractices() {
             <VStack gap="space-24">
               {/* Horizontal scrollable instruction files */}
               <Carousel>
+                <VStack gap="space-16" className="w-100">
+                  <div className="flex items-center gap-2">
+                    <LightBulbIcon className="text-blue-600" aria-hidden />
+                    <Heading size="small" level="3">
+                      Prompts (Engangsoppgaver)
+                    </Heading>
+                  </div>
+                  <BodyShort className="text-gray-600 text-xs">Aktiver med /prompt-name i chat.</BodyShort>
+                  <CodeBlock filename=".github/prompts/create-readme.prompt.md" maxHeight="350px">{`---
+name: create-readme
+description: Generates a comprehensive README for a project
+---
+
+You are a technical documentation expert.
+
+Generate a comprehensive README.md that includes:
+
+1. Project title and description
+2. Installation instructions
+3. Usage examples with code blocks
+4. API documentation (if applicable)
+5. Contributing guidelines
+6. License information
+
+**Style:**
+- Use clear, concise language
+- Include code examples in relevant languages
+- Use badges for build status, coverage, etc.
+- Add a table of contents for long READMEs
+
+**Format:**
+Follow the structure used in popular open-source projects.`}</CodeBlock>
+                </VStack>
+
                 <VStack gap="space-16" className="w-100">
                   <div className="flex items-center gap-2">
                     <FileTextIcon className="text-blue-600" aria-hidden />
@@ -741,7 +761,7 @@ export default async function BestPractices() {
                     </Heading>
                   </div>
                   <BodyShort className="text-gray-600 text-xs">Spesialiserte agenter med YAML frontmatter.</BodyShort>
-                  <CodeBlock filename=".github/agents/test-agent.md" maxHeight="350px">{`---
+                  <CodeBlock filename=".github/agents/test-agent.agent.md" maxHeight="350px">{`---
 name: test-agent
 description: Skriver tester for dette prosjektet
 ---
@@ -804,6 +824,56 @@ async function get(x) {
   return await api.get('/users/' + x).data;
 }
 \`\`\``}</CodeBlock>
+                </VStack>
+
+                <VStack gap="space-16" className="w-100">
+                  <div className="flex items-center gap-2">
+                    <CogIcon className="text-purple-600" aria-hidden />
+                    <Heading size="small" level="3">
+                      Agent Skills
+                    </Heading>
+                  </div>
+                  <BodyShort className="text-gray-600 text-xs">
+                    Automatisk lastet når relevant. Støtter skript og ressurser.
+                  </BodyShort>
+                  <CodeBlock filename=".github/skills/pdf-extractor/SKILL.md" maxHeight="350px">{`---
+name: pdf-extractor
+description: Extracts text and form fields from PDF files
+---
+
+You are an expert at extracting information from PDF documents.
+
+## Your role
+- Extract text content from PDF files
+- Identify and extract form fields
+- Preserve document structure and formatting
+
+## Tools available
+This skill includes a Python script for PDF extraction:
+\`\`\`bash
+python scripts/extract_pdf.py <path-to-pdf>
+\`\`\`
+
+## Output format
+Return extracted data as structured JSON:
+\`\`\`json
+{
+  "text": "Full document text...",
+  "fields": [
+    {"name": "field1", "value": "...", "type": "text"}
+  ]
+}
+\`\`\`
+
+## Guidelines
+- Maintain original text formatting
+- Preserve table structures
+- Extract metadata (author, dates, etc.)
+
+## Boundaries
+✅ **Always:** Validate PDF file exists, handle errors gracefully
+⚠️ **Ask first:** Processing PDFs larger than 50MB
+🚫 **Never:** Modify source PDF files`}</CodeBlock>
                 </VStack>
               </Carousel>
 
@@ -1774,14 +1844,14 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
               <div className="flex items-center gap-2 mb-3">
                 <FileTextIcon className="text-blue-700" aria-hidden />
                 <Heading size="small" level="3" className="text-blue-700">
-                  Eksempel: .github/agents/test-agent.md
+                  Eksempel: .github/agents/test-agent.agent.md
                 </Heading>
               </div>
               <BodyShort className="text-gray-600 text-xs mb-2">
                 Følger GitHub sin anbefalte rekkefølge: Kommandoer → Testing → Prosjektstruktur → Kodestil →
                 Git-workflow → Grenser
               </BodyShort>
-              <CodeBlock filename=".github/agents/test-agent.md">{`---
+              <CodeBlock filename=".github/agents/test-agent.agent.md">{`---
 name: test-agent
 description: Skriver tester for dette prosjektet
 ---
@@ -1899,7 +1969,7 @@ description: Skriver tester for dette prosjektet
                 <div className="flex items-center gap-2 mb-2">
                   <StarIcon className="text-green-600" aria-hidden />
                   <Heading size="small" level="3">
-                    Fellesskapsressurser
+                    Fellesskapsressurser (offisielle)
                   </Heading>
                 </div>
                 <ul className="space-y-2">
@@ -1911,7 +1981,18 @@ description: Skriver tester for dette prosjektet
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Awesome Copilot – kuratert liste
+                      Awesome Copilot – offisiell kuratert samling av prompts, instructions, agents og skills
+                    </a>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-green-600">▪</span>
+                    <a
+                      href="https://github.com/anthropics/skills"
+                      className="text-green-600 hover:underline text-sm"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Anthropic Skills – offisielle eksempler på Agent Skills
                     </a>
                   </li>
                   <li className="flex gap-2">
