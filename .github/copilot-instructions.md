@@ -64,18 +64,13 @@ Self-service portal for managing GitHub Copilot subscriptions. Next.js 16 app wi
 
 Working directory: `apps/my-copilot`
 
-**Run after all changes:** `mise check` or `pnpm check`
+**Run after all changes:** `mise check`
 
 **Available tasks:**
 
-- `mise check` or `pnpm check` - Run all checks (ESLint, TypeScript, Prettier, Knip, Jest)
-- `mise test` or `pnpm test` - Run Jest tests
-- `mise dev` or `pnpm dev` - Start Next.js dev server (http://localhost:3000)
-- `mise build` or `pnpm build` - Build production bundle
-- `mise lint` or `pnpm lint` - Run ESLint only
-- `mise knip` or `pnpm knip` - Find unused files/dependencies
-- `mise install` or `pnpm install` - Install dependencies
-- `mise version` - Generate version string
+- `mise check` - Run all checks (ESLint, TypeScript, Prettier, Knip, Jest)
+- `mise test` - Run Jest tests
+- `mise dev` - Start Next.js dev server (http://localhost:3000)
 
 ### Tech Stack
 
@@ -180,23 +175,7 @@ Working directory: `apps/mcp-hello-world`
 
 - `mise check` - Run all checks (fmt, vet, staticcheck, lint, test)
 - `mise test` - Run tests with verbose output
-- `mise test:short` - Run tests without verbose output
-- `mise test:coverage` - Run tests with coverage report (generates coverage.html)
 - `mise dev` - Run with DEBUG logging (http://localhost:8080)
-- `mise run` - Run application locally
-- `mise build` - Build binary to bin/mcp-hello-world
-- `mise fmt` - Format code with gofmt and tidy go.mod
-- `mise vet` - Run go vet static analysis
-- `mise staticcheck` - Run staticcheck advanced analysis
-- `mise lint` - Run golangci-lint
-- `mise lint:fix` - Run golangci-lint with auto-fix
-- `mise install` - Download dependencies
-- `mise deps` - Download, verify, and tidy dependencies
-- `mise clean` - Clean build artifacts and test outputs
-- `mise version` - Generate version string (YYYYMMDD-HHMM-gitsha)
-- `mise all` - Run all checks, build, test, and docker build
-- `mise docker:build` - Build Docker image
-- `mise docker:run` - Run Docker container locally
 
 ### Tech Stack
 
@@ -265,24 +244,8 @@ Working directory: `apps/mcp-registry`
 
 - `mise check` - Run all checks (fmt, vet, staticcheck, lint, test)
 - `mise test` - Run tests with verbose output
-- `mise test:short` - Run tests without verbose output
-- `mise test:coverage` - Run tests with coverage report (generates coverage.html)
 - `mise validate` - Validate allowlist.json by starting server
 - `mise dev` - Run with DEBUG logging (http://localhost:8080)
-- `mise run` - Run application locally
-- `mise build` - Build binary to bin/mcp-registry
-- `mise fmt` - Format code with gofmt and tidy go.mod
-- `mise vet` - Run go vet static analysis
-- `mise staticcheck` - Run staticcheck advanced analysis
-- `mise lint` - Run golangci-lint
-- `mise lint:fix` - Run golangci-lint with auto-fix
-- `mise install` - Download dependencies
-- `mise deps` - Download, verify, and tidy dependencies
-- `mise clean` - Clean build artifacts and test outputs
-- `mise version` - Generate version string (YYYYMMDD-HHMM-gitsha)
-- `mise all` - Run all checks, build, test, and docker build
-- `mise docker:build` - Build Docker image
-- `mise docker:run` - Run Docker container locally
 
 ### Tech Stack
 
@@ -367,25 +330,13 @@ When working across applications:
 ```bash
 # Working on my-copilot
 cd apps/my-copilot
-mise check          # or: pnpm check
+mise check
 
 # Working on mcp-registry
 cd apps/mcp-registry
 mise validate       # validate allowlist.json
-mise check          # run all checks
-
-# Working on mcp-hello-world
-cd apps/mcp-hello-world
-mise test:coverage  # run tests with coverage
-mise check          # run all checks
+mise check
 
 # Back to root
 cd ../..
 ```
-
-**Common mise tasks across all apps:**
-- `mise check` - Run all checks (REQUIRED after changes)
-- `mise test` - Run tests
-- `mise dev` - Start development server
-- `mise build` - Build application
-- `mise version` - Generate version string
