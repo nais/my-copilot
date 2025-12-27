@@ -69,7 +69,7 @@ func main() {
 
 	store := NewTokenStore()
 	githubClient := NewGitHubClient(cfg.GitHubClientID, cfg.GitHubClientSecret)
-	oauthServer := NewOAuthServer(cfg.BaseURL, githubClient, store)
+	oauthServer := NewOAuthServer(cfg.BaseURL, githubClient, store, cfg.AllowedOrganization)
 	mcpHandler := NewMCPHandler(githubClient)
 	authMiddleware := NewAuthMiddleware(store)
 

@@ -12,9 +12,10 @@ import (
 )
 
 type OAuthServer struct {
-	BaseURL      string
-	GitHubClient *GitHubClient
-	Store        *TokenStore
+	BaseURL             string
+	GitHubClient        *GitHubClient
+	Store               *TokenStore
+	AllowedOrganization string
 }
 
 type AuthorizationServerMetadata struct {
@@ -32,11 +33,12 @@ type ProtectedResourceMetadata struct {
 	AuthorizationServers []string `json:"authorization_servers"`
 }
 
-func NewOAuthServer(baseURL string, githubClient *GitHubClient, store *TokenStore) *OAuthServer {
+func NewOAuthServer(baseURL string, githubClient *GitHubClient, store *TokenStore, allowedOrganization string) *OAuthServer {
 	return &OAuthServer{
-		BaseURL:      baseURL,
-		GitHubClient: githubClient,
-		Store:        store,
+		BaseURL:             baseURL,
+		GitHubClient:        githubClient,
+		Store:               store,
+		AllowedOrganization: allowedOrganization,
 	}
 }
 
@@ -148,7 +150,25 @@ func (s *OAuthServer) handleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slog.Info("user authenticated", "login", user.Login, "id", user.ID)
+	// Check organization membership
+	if s.AllowedOrganization != "" {
+		isMember, matchedOrg := s.GitHubClient.CheckOrgMembership(githubToken.AccessToken, []string{s.AllowedOrganization})
+		if !isMember {
+			slog.Warn("user not member of allowed organization",
+				"user", user.Login,
+				"allowed_org", s.AllowedOrganization,
+			)
+			http.Error(w, fmt.Sprintf("Access denied: You must be a member of the %s organization", s.AllowedOrganization), http.StatusForbidden)
+			return
+		}
+		slog.Info("user authorized",
+			"login", user.Login,
+			"id", user.ID,
+			"org", matchedOrg,
+		)
+	} else {
+		slog.Info("user authenticated", "login", user.Login, "id", user.ID)
+	}
 
 	mcpCode := generateSecureToken(32)
 	s.Store.SaveAuthCode(mcpCode, &AuthCode{
