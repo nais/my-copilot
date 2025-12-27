@@ -122,6 +122,8 @@ on:
 jobs:
   meta:
     name: Metadata
+    permissions:
+      contents: read
     runs-on: ${{ inputs.runner-size }}
     defaults:
       run:
@@ -149,6 +151,8 @@ jobs:
 
   setup:
     name: Setup
+    permissions:
+      contents: read
     if: ${{ inputs.mise-setup-tasks != '[]' }}
     runs-on: ${{ inputs.runner-size }}
     defaults:
@@ -192,6 +196,8 @@ jobs:
 
   lint:
     name: Check
+    permissions:
+      contents: read
     needs: [setup]
     if: ${{ always() && (needs.setup.result == 'success' || needs.setup.result == 'skipped') }}
     strategy:
@@ -245,6 +251,8 @@ jobs:
 
   build:
     name: Build
+    permissions:
+      contents: read
     needs: [setup]
     if: ${{ always() && (needs.setup.result == 'success' || needs.setup.result == 'skipped') }}
     runs-on: ${{ inputs.runner-size }}
