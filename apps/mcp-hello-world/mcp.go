@@ -352,7 +352,7 @@ func (h *MCPHandler) handleCallTool(req *JSONRPCRequest, user *UserContext) *JSO
 	case "hello_world":
 		result = CallToolResult{
 			Content: []TextContent{
-				{Type: "text", Text: fmt.Sprintf("Hello, World! 👋 Greetings from NAV MCP Hello World server. You are authenticated as @%s.", user.Login)},
+				{Type: "text", Text: fmt.Sprintf("Hello, World! 👋 Greetings from Nav MCP Hello World server. You are authenticated as @%s.", user.Login)},
 			},
 		}
 
@@ -363,7 +363,7 @@ func (h *MCPHandler) handleCallTool(req *JSONRPCRequest, user *UserContext) *JSO
 		}
 		result = CallToolResult{
 			Content: []TextContent{
-				{Type: "text", Text: fmt.Sprintf("Hello, %s! 🎉 Welcome to the NAV MCP Hello World server.", name)},
+				{Type: "text", Text: fmt.Sprintf("Hello, %s! 🎉 Welcome to the Nav MCP Hello World server.", name)},
 			},
 		}
 

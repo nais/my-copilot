@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Button } from "@navikt/ds-react";
+import { Button, Alert, Box, VStack, HGrid, Heading, BodyShort } from "@navikt/ds-react";
 import { User } from "@/lib/auth";
 
 interface SubscriptionDetailsProps {
@@ -131,96 +131,102 @@ const SubscriptionDetails: React.FC<{ user: User; showGroups?: boolean }> = ({ u
   return (
     <>
       {subscriptionError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-          <span className="block sm:inline">Error fetching subscription details: {subscriptionError}</span>
-        </div>
+        <Box paddingBlock="space-8">
+          <Alert variant="error">Error fetching subscription details: {subscriptionError}</Alert>
+        </Box>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="border p-4 rounded-lg">
+      <HGrid columns={{ xs: 1, md: 2 }} gap="space-8">
+        {" "}
+        <Box padding="space-8" borderRadius="medium" className="border">
+          {" "}
           {subscription && eligibility ? (
-            <>
-              <p className="mb-2">
+            <VStack gap="space-4">
+              <BodyShort>
                 <strong>Plan:</strong>{" "}
                 {subscription.plan_type
                   ? subscription.plan_type === "business"
                     ? "Bedriftsplan"
                     : "Individuell Plan"
                   : "Ikke tilgjengelig"}
-              </p>
-              <p className="mb-2">
+              </BodyShort>
+              <BodyShort>
                 <strong>Status:</strong>{" "}
                 {subscription.pending_cancellation_date
                   ? "Kansellering Pågår"
                   : subscription.updated_at
                     ? "Aktiv"
                     : "Inaktiv"}
-              </p>
-              <p className="mb-2">
+              </BodyShort>
+              <BodyShort>
                 <strong>Sist Oppdatert:</strong>{" "}
                 {subscription.updated_at ? new Date(subscription.updated_at).toLocaleDateString() : "Ikke tilgjengelig"}
-              </p>
-              <p className="mb-2">
+              </BodyShort>
+              <BodyShort>
                 <strong>Siste Aktivitet:</strong>{" "}
                 {subscription.last_activity_at
                   ? new Date(subscription.last_activity_at).toLocaleDateString()
                   : "Ikke tilgjengelig"}
-              </p>
-              <p className="mb-2">
+              </BodyShort>
+              <BodyShort>
                 <strong>Siste Editor:</strong> {subscription.last_activity_editor || "Ikke tilgjengelig"}
-              </p>
+              </BodyShort>
               <SubscriptionActionButton subscription={subscription} onClick={handleClick} />
-            </>
+            </VStack>
           ) : subscription && !eligibility ? (
-            <p>
+            <BodyShort>
               Du har ikke tilgang til å få GitHub Copilot nå. GitHub Copilot er bare tilgjengelig for ansatte og
               konsulenter i Utvikling og Data.
-            </p>
+            </BodyShort>
           ) : (
-            <div role="status" className="max-w-sm animate-pulse">
-              <div className="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
-              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
-              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
-              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+            <VStack gap="space-4" role="status" className="max-w-sm animate-pulse">
+              <div className="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-48"></div>
+              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-90"></div>
+              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-82.5"></div>
+              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-75"></div>
+              <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-90"></div>
               <span className="sr-only">Loading...</span>
-            </div>
+            </VStack>
           )}
-        </div>
-        <div className="border p-4 rounded-lg">
-          <h3 className="text-xl font-semibold mb-2">Brukerinformasjon</h3>
-          <p className="mb-2">
-            <strong>Navn:</strong> {user.firstName} {user.lastName}
-          </p>
-          <p className="mb-2">
-            <strong>E-post:</strong> {user.email}
-          </p>
-          <div className="mb-2">
-            <strong>GitHub:</strong>
-            {githubUsername ? (
-              <span>
-                {" "}
-                <a href={`https://github.com/${githubUsername}`}>{githubUsername}</a>
-              </span>
-            ) : (
-              <div role="status" className="inline-block animate-pulse ml-2">
-                <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 w-32"></div>
+        </Box>
+        <Box padding="space-8" borderRadius="medium" className="border">
+          <VStack gap="space-4">
+            <Heading size="medium" level="3">
+              Brukerinformasjon
+            </Heading>
+            <BodyShort>
+              <strong>Navn:</strong> {user.firstName} {user.lastName}
+            </BodyShort>
+            <BodyShort>
+              <strong>E-post:</strong> {user.email}
+            </BodyShort>
+            <div>
+              <strong>GitHub:</strong>
+              {githubUsername ? (
+                <span>
+                  {" "}
+                  <a href={`https://github.com/${githubUsername}`}>{githubUsername}</a>
+                </span>
+              ) : (
+                <div role="status" className="inline-block animate-pulse" style={{ marginLeft: "8px" }}>
+                  <div className="h-5 bg-gray-200 rounded-full dark:bg-gray-700 w-32"></div>
+                </div>
+              )}
+            </div>
+            {showGroups && (
+              <div>
+                <strong>Grupper:</strong>
+                <ul className="list-disc list-inside" style={{ marginLeft: "16px" }}>
+                  {user.groups.map((group, index) => (
+                    <li key={index}>{group}</li>
+                  ))}
+                </ul>
               </div>
             )}
-          </div>
-          {showGroups && (
-            <div className="mb-2">
-              <strong>Grupper:</strong>
-              <ul className="list-disc list-inside ml-4">
-                {user.groups.map((group, index) => (
-                  <li key={index}>{group}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
+          </VStack>
+        </Box>
+      </HGrid>
     </>
   );
 };

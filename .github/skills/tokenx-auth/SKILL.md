@@ -1,13 +1,13 @@
 ---
 name: tokenx-auth
-description: Service-to-service authentication using TokenX token exchange in NAIS
+description: Service-to-service authentication using TokenX token exchange in Nais
 ---
 
 # TokenX Authentication Skill
 
 This skill provides patterns for secure service-to-service authentication using TokenX.
 
-## NAIS Manifest Setup
+## Nais Manifest Setup
 
 ```yaml
 apiVersion: nais.io/v1alpha1
@@ -33,7 +33,7 @@ This creates environment variables:
 
 ## Token Exchange with Caching
 
-Production pattern from [navikt/tms-ktor-token-support](https://github.com/navikt/tms-ktor-token-support) - used across 198+ NAV repositories:
+Production pattern from [navikt/tms-ktor-token-support](https://github.com/navikt/tms-ktor-token-support) - used across 198+ Nav repositories:
 
 ```kotlin
 import com.github.benmanes.caffeine.cache.Cache
@@ -359,7 +359,7 @@ class TokenXTest {
 
 ## Security Checklist
 
-- [ ] TokenX enabled in NAIS manifest
+- [ ] TokenX enabled in Nais manifest
 - [ ] Access policy defined for outbound calls
 - [ ] Token validation on all protected endpoints
 - [ ] Client assertion signed with private JWK

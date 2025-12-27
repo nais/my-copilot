@@ -1,6 +1,6 @@
 # MCP Registry
 
-Public registry service for NAV-approved MCP servers, implementing the [MCP Registry v0.1 specification](https://github.com/modelcontextprotocol/registry).
+Public registry service for Nav-approved MCP servers, implementing the [MCP Registry v0.1 specification](https://github.com/modelcontextprotocol/registry).
 
 **Public URL:** `https://mcp-registry.nav.no`
 
@@ -83,7 +83,7 @@ Automatic via GitHub Actions on merge to main.
     {
       "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
       "name": "io.github.navikt/github-mcp",
-      "description": "NAV's GitHub MCP Server",
+      "description": "Nav's GitHub MCP Server",
       "version": "1.0.0",
       "status": "active",
       "publishedAt": "2025-01-15T00:00:00Z",

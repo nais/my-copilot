@@ -1,6 +1,6 @@
 # Nav Copilot Customizations
 
-This repository contains reusable GitHub Copilot customizations (agents, instructions, prompts, and skills) for building Nav applications following Nav's development standards and NAIS platform patterns.
+This repository contains reusable GitHub Copilot customizations (agents, instructions, prompts, and skills) for building Nav applications following Nav's development standards and Nais platform patterns.
 
 ## 📚 Overview
 
@@ -55,7 +55,7 @@ Use for:
 
 ### @security-champion
 
-Expert on Nav security practices and NAIS security
+Expert on Nav security practices and Nais security
 
 Use for:
 
@@ -66,7 +66,7 @@ Use for:
 
 ### @nais-platform
 
-Expert on NAIS platform deployment
+Expert on Nais platform deployment
 
 Use for:
 
@@ -143,7 +143,7 @@ Scaffold responsive React components with Aksel Design System.
 
 ### #kafka-topic
 
-Add Kafka topic to NAIS manifest and create event handlers.
+Add Kafka topic to Nais manifest and create event handlers.
 
 ```text
 #kafka-topic Add topic for user-events
@@ -151,7 +151,7 @@ Add Kafka topic to NAIS manifest and create event handlers.
 
 ### #nais-manifest
 
-Generate production-ready NAIS application manifest.
+Generate production-ready Nais application manifest.
 
 ```text
 #nais-manifest Create manifest with PostgreSQL and Azure AD
@@ -199,8 +199,8 @@ These customizations enforce Nav's core principles:
 ### Tech Stack
 
 - **Backend**: Kotlin, Ktor, PostgreSQL, Kafka
-- **Frontend**: Next.js 15+, React, TypeScript, Aksel Design System
-- **Platform**: NAIS (Kubernetes on GCP)
+- **Frontend**: Next.js 16+, React, TypeScript, Aksel Design System
+- **Platform**: Nais (Kubernetes on GCP)
 - **Auth**: Azure AD, TokenX, ID-porten, Maskinporten
 - **Observability**: Prometheus, Grafana Loki, Tempo (OpenTelemetry)
 
@@ -214,8 +214,8 @@ Self-service tool for managing GitHub Copilot subscriptions at Nav.
 
 - **Location**: `apps/my-copilot/`
 - **Tech**: Next.js 16, TypeScript, Aksel Design System, Octokit
-- **Auth**: Azure AD JWT validation via NAIS sidecar proxy
-- **Deployment**: NAIS (dev-gcp, prod-gcp)
+- **Auth**: Azure AD JWT validation via Nais sidecar proxy
+- **Deployment**: Nais (dev-gcp, prod-gcp)
 
 **Commands:**
 
@@ -229,7 +229,7 @@ pnpm build      # Production build
 
 ### mcp-registry
 
-Public registry service for NAV-approved MCP servers.
+Public registry service for Nav-approved MCP servers.
 
 - **Location**: `apps/mcp-registry/`
 - **Tech**: Go 1.25, HTTP server implementing MCP Registry v0.1 spec
@@ -286,6 +286,6 @@ See [LICENSE](LICENSE) file.
 
 ## 🔗 Resources
 
-- [NAIS Documentation](https://doc.nais.io)
+- [Nais Documentation](https://doc.nais.io)
 - [Aksel Design System](https://aksel.Nav.no)
 - [Nav GitHub](https://github.com/Navikt)

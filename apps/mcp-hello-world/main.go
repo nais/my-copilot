@@ -123,9 +123,9 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	_, _ = w.Write([]byte(`<!DOCTYPE html>
 <html>
-<head><title>NAV MCP Hello World</title></head>
+<head><title>Nav MCP Hello World</title></head>
 <body>
-<h1>NAV MCP Hello World Server</h1>
+<h1>Nav MCP Hello World Server</h1>
 <p>This is a reference MCP (Model Context Protocol) server with GitHub OAuth authentication.</p>
 <h2>Endpoints</h2>
 <ul>

@@ -736,9 +736,9 @@ Follow the structure used in popular open-source projects.`}</CodeBlock>
                   >{`# Prosjektinstruksjoner for Copilot
 
 ## Teknisk stack
-- Next.js 15 med App Router
+- Next.js 16 med App Router
 - TypeScript strict mode
-- NAV Design System (@navikt/ds-react)
+- Nav Design System (@navikt/ds-react)
 - Tailwind CSS for utilities
 
 ## Kodestil

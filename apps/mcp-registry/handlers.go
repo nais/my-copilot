@@ -37,9 +37,9 @@ func metricsHandler(w http.ResponseWriter, _ *http.Request) {
 
 func rootHandler(w http.ResponseWriter, _ *http.Request) {
 	respondJSON(w, http.StatusOK, map[string]interface{}{
-		"service":     "NAV MCP Registry",
+		"service":     "Nav MCP Registry",
 		"version":     "1.0.0",
-		"description": "NAV internal MCP server registry providing approved servers for GitHub Copilot",
+		"description": "Nav internal MCP server registry providing approved servers for GitHub Copilot",
 		"endpoints": map[string]string{
 			"servers":        "/v0.1/servers",
 			"server_version": "/v0.1/servers/{serverName}/versions/{version}",

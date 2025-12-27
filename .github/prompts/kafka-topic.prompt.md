@@ -1,11 +1,11 @@
 ---
 name: kafka-topic
-description: Add Kafka topic configuration to NAIS manifest and create Rapids & Rivers event handler
+description: Add Kafka topic configuration to Nais manifest and create Rapids & Rivers event handler
 ---
 
-You are helping configure Kafka integration for a NAV application using the Rapids & Rivers pattern.
+You are helping configure Kafka integration for a Nav application using the Rapids & Rivers pattern.
 
-## Step 1: Add Kafka Configuration to NAIS Manifest
+## Step 1: Add Kafka Configuration to Nais Manifest
 
 Update `.nais/app.yaml` to include Kafka:
 
@@ -231,4 +231,4 @@ Remind the user to:
 1. Document the event schema in their repository
 2. Add the new event to the team's event catalog
 3. Update the README with event flow diagrams
-4. Configure appropriate Kafka topic permissions in NAIS
+4. Configure appropriate Kafka topic permissions in Nais

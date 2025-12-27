@@ -1,31 +1,37 @@
-# Copilot Instructions for my-copilot
+# Copilot Instructions for navikt/copilot
 
-## Project Overview
+## Repository Overview
 
-Self-service tool for managing GitHub Copilot subscriptions at Nav. Next.js 15 app deployed on NAIS with Azure AD authentication via sidecar proxy.
+Monorepo containing NAV's GitHub Copilot ecosystem tools:
+
+- **my-copilot** - Self-service portal for managing Copilot subscriptions (Next.js 16)
+- **mcp-hello-world** - Reference MCP server with GitHub OAuth (Go)
+- **mcp-registry** - Public registry for NAV-approved MCP servers (Go)
+
+All applications deployed on NAIS platform with environment-specific configurations.
 
 ---
 
-# NAV Development Standards
+# Nav Development Standards
 
-These standards apply across NAV projects. Project-specific guidelines follow below.
+These standards apply across Nav projects. Project-specific guidelines follow below.
 
-## NAV Principles
+## Nav Principles
 
 - **Team First**: Autonomous teams with circles of autonomy, supported by Architecture Advice Process
 - **Product Development**: Continuous development and product-organized reuse over ad hoc approaches
 - **Essential Complexity**: Focus on essential complexity, avoid accidental complexity
 - **DORA Metrics**: Measure and improve team performance using DevOps Research and Assessment metrics
 
-## NAV Tech Stack
+## Nav Tech Stack
 
 - **Backend**: Kotlin with Ktor, PostgreSQL, Apache Kafka
-- **Frontend**: Next.js 15+, React, TypeScript, Aksel Design System
-- **Platform**: NAIS (Kubernetes on Google Cloud Platform)
+- **Frontend**: Next.js 16+, React, TypeScript, Aksel Design System
+- **Platform**: Nais (Kubernetes on Google Cloud Platform)
 - **Auth**: Azure AD, TokenX, ID-porten, Maskinporten
 - **Observability**: Prometheus, Grafana Loki, Tempo (OpenTelemetry)
 
-## NAV Code Standards
+## Nav Code Standards
 
 ### Kotlin/Ktor Patterns
 
@@ -40,7 +46,7 @@ These standards apply across NAV projects. Project-specific guidelines follow be
 - Mobile-first with responsive props: `xs`, `sm`, `md`, `lg`, `xl`
 - Norwegian number formatting with space separators
 
-### NAIS Deployment
+### Nais Deployment
 
 - Manifests in `.nais/` directory
 - Required endpoints: `/isalive`, `/isready`, `/metrics`
@@ -48,69 +54,91 @@ These standards apply across NAV projects. Project-specific guidelines follow be
 
 ---
 
-# my-copilot Project Specifics
+# Application-Specific Guidelines
 
-## Commands
+## apps/my-copilot (Next.js + TypeScript)
 
-- **Check all**: `pnpm check` (runs ESLint, TypeScript, Prettier, Knip, Jest)
-- **Test**: `pnpm test` (runs Jest with TypeScript)
-- **Dev server**: `pnpm dev` (starts Next.js at http://localhost:3000)
-- **Build**: `pnpm build` (production build)
-- **Lint**: `pnpm lint` (ESLint only)
+Self-service portal for managing GitHub Copilot subscriptions. Next.js 16 app with Azure AD authentication.
 
-## Project Knowledge
+### Commands
 
-**Tech Stack:**
+Working directory: `apps/my-copilot`
+
+**Run after all changes:** `mise check` or `pnpm check`
+
+**Available tasks:**
+
+- `mise check` or `pnpm check` - Run all checks (ESLint, TypeScript, Prettier, Knip, Jest)
+- `mise test` or `pnpm test` - Run Jest tests
+- `mise dev` or `pnpm dev` - Start Next.js dev server (http://localhost:3000)
+- `mise build` or `pnpm build` - Build production bundle
+- `mise lint` or `pnpm lint` - Run ESLint only
+- `mise knip` or `pnpm knip` - Find unused files/dependencies
+- `mise install` or `pnpm install` - Install dependencies
+- `mise version` - Generate version string
+
+### Tech Stack
 
 - Next.js 16 with App Router
 - TypeScript strict mode
-- NAV Design System (@navikt/ds-react)
+- Nav Design System (@navikt/ds-react)
 - Tailwind CSS v4.1
 - Octokit for GitHub API
 - Jest for testing
 
-**File Structure:**
+### File Structure
 
 ```
-src/
-├── app/              # Next.js 15 App Router pages
+apps/my-copilot/src/
+├── app/              # Next.js App Router pages
 │   ├── api/         # API routes for Copilot data
 │   ├── usage/       # Analytics dashboard
 │   └── overview/    # License management
 ├── components/       # Reusable React components
 └── lib/             # Utilities and business logic
-    ├── auth.ts      # Authentication logic
-    ├── github.ts    # GitHub API client
+    ├── auth.ts      # Azure AD JWT validation
+    ├── github.ts    # GitHub API client (Octokit)
     └── data-utils.ts # Data aggregation
 ```
 
-**Architecture:**
+### Key Patterns
 
-- **Auth**: Azure AD JWT validation, mock user in dev mode (`src/lib/auth.ts`)
-- **GitHub**: Octokit with App auth for Copilot API (`src/lib/github.ts`)
-- **Data**: Aggregates daily metrics across time periods (`src/lib/data-utils.ts`)
-- **Routes**: `/` (subscription), `/usage` (analytics), `/overview` (licenses)
-
-## Testing
-
-- **Framework**: Jest with TypeScript
-- **Location**: `*.test.ts` files next to source
-- **Run**: `pnpm test`
-- **Coverage**: Focus on `lib/` utilities
-- **Before commits**: All tests must pass
-
-## Code Style
-
-### Spacing - Mobile-First Design
-
-Always use NAV DS spacing tokens, never Tailwind padding/margin utilities.
-
-**Page containers:**
+**Authentication:**
 
 ```typescript
-// ✅ Good - responsive padding with NAV DS
+const user = await getUser(); // redirects if not auth
+const user = await getUser(false); // returns null if not auth
+```
+
+**API Routes:**
+
+```typescript
+// ✅ Explicit error handling
+export async function GET() {
+  const { usage, error } = await getCopilotUsage("navikt");
+  if (error) return NextResponse.json({ error }, { status: 500 });
+  return NextResponse.json(usage);
+}
+```
+
+**Number Formatting:**
+
+```typescript
+import { formatNumber } from "@/lib/format";
+formatNumber(151354); // "151 354" (Norwegian locale)
+```
+
+### Spacing Rules - Mobile-First Design
+
+**CRITICAL**: Always use Nav DS spacing tokens, never Tailwind padding/margin utilities.
+
+```typescript
+// ✅ Good - Nav DS Box with responsive padding
 <main className="max-w-7xl mx-auto">
-  <Box paddingBlock={{ xs: "space-16", md: "space-24" }} paddingInline={{ xs: "space-16", md: "space-40" }}>
+  <Box
+    paddingBlock={{ xs: "space-16", md: "space-24" }}
+    paddingInline={{ xs: "space-16", md: "space-40" }}
+  >
     {children}
   </Box>
 </main>
@@ -119,86 +147,245 @@ Always use NAV DS spacing tokens, never Tailwind padding/margin utilities.
 <main className="p-4 mx-4">
 ```
 
-**Component spacing:**
+**Responsive breakpoints**: `xs` (0px), `sm` (480px), `md` (768px), `lg` (1024px), `xl` (1280px)
 
-```typescript
-// ✅ Good - Box with responsive padding
-<Box
-  background="surface-subtle"
-  padding={{ xs: "space-16", md: "space-24" }}
-  borderRadius="large"
->
+**Common spacing tokens**: `space-8`, `space-16`, `space-24`, `space-32`, `space-40`
 
-// ❌ Bad - numeric tokens without space- prefix
-<Box padding="4">
+### Testing
+
+- Framework: Jest with TypeScript
+- Location: `*.test.ts` files next to source
+- Run: `pnpm test` in `apps/my-copilot`
+- Focus on `lib/` utilities
+
+### Boundaries
+
+✅ Always: Use Nav DS spacing tokens, run `mise check` after all changes, TypeScript strict mode
+⚠️ Ask first: Auth changes, GitHub API modifications, data aggregation changes
+🚫 Never: Tailwind p-/m- utilities, commit secrets, skip type checking
+
+---
+
+## apps/mcp-hello-world (Go + MCP)
+
+Reference MCP server demonstrating GitHub OAuth authentication for VS Code integration.
+
+### Commands
+
+Working directory: `apps/mcp-hello-world`
+
+**Run after all changes:** `mise check`
+
+**Available tasks:**
+
+- `mise check` - Run all checks (fmt, vet, staticcheck, lint, test)
+- `mise test` - Run tests with verbose output
+- `mise test:short` - Run tests without verbose output
+- `mise test:coverage` - Run tests with coverage report (generates coverage.html)
+- `mise dev` - Run with DEBUG logging (http://localhost:8080)
+- `mise run` - Run application locally
+- `mise build` - Build binary to bin/mcp-hello-world
+- `mise fmt` - Format code with gofmt and tidy go.mod
+- `mise vet` - Run go vet static analysis
+- `mise staticcheck` - Run staticcheck advanced analysis
+- `mise lint` - Run golangci-lint
+- `mise lint:fix` - Run golangci-lint with auto-fix
+- `mise install` - Download dependencies
+- `mise deps` - Download, verify, and tidy dependencies
+- `mise clean` - Clean build artifacts and test outputs
+- `mise version` - Generate version string (YYYYMMDD-HHMM-gitsha)
+- `mise all` - Run all checks, build, test, and docker build
+- `mise docker:build` - Build Docker image
+- `mise docker:run` - Run Docker container locally
+
+### Tech Stack
+
+- Go with standard library
+- OAuth 2.1 with PKCE
+- MCP JSON-RPC protocol
+- Streamable HTTP transport
+
+### Architecture
+
+```
+VS Code (MCP Client) ←→ mcp-hello-world (OAuth + MCP Server) ←→ GitHub OAuth
 ```
 
-**Responsive breakpoints:**
+**Flow:**
+1. VS Code discovers OAuth metadata via `/.well-known/oauth-authorization-server`
+2. User authenticates via GitHub
+3. Server validates org membership and issues access token
+4. VS Code uses token to call MCP tools
 
-- `xs`: 0px (mobile), `sm`: 480px, `md`: 768px, `lg`: 1024px, `xl`: 1280px
+### Available MCP Tools
 
-**Common spacing tokens:**
+- `hello_world` - Returns greeting with authenticated GitHub username
+- `greet` - Personalized greeting message
+- `whoami` - Authenticated user information
+- `echo` - Echo back message
+- `get_time` - Current server time
 
-- `space-8` (8px), `space-16` (16px), `space-24` (24px), `space-32` (32px), `space-40` (40px)
+### Configuration
 
-### Norwegian Locale Numbers
+| Variable               | Description                    | Default                 |
+| ---------------------- | ------------------------------ | ----------------------- |
+| `PORT`                 | Server port                    | `8080`                  |
+| `BASE_URL`             | Public URL for OAuth redirects | `http://localhost:8080` |
+| `GITHUB_CLIENT_ID`     | GitHub OAuth App client ID     | (required)              |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth App client secret | (required)              |
+| `ALLOWED_ORGANIZATION` | Required GitHub org membership | `navikt`                |
+| `LOG_LEVEL`            | Log level                      | `INFO`                  |
 
-```typescript
-// ✅ Good
-import { formatNumber } from "@/lib/format";
-formatNumber(151354); // "151 354" (space separator)
+### Key Files
 
-// ❌ Bad
-const formatted = num.toLocaleString(); // Uses browser locale
-```
+- `main.go` - Application entry point
+- `oauth.go` - OAuth 2.1 + PKCE implementation
+- `mcp.go` - MCP JSON-RPC protocol handlers
+- `github.go` - GitHub API integration
 
-### API Routes
+### Boundaries
 
-```typescript
-// ✅ Good - explicit error handling
-export async function GET() {
-  const { usage, error } = await getCopilotUsage("navikt");
-  if (error) return NextResponse.json({ error }, { status: 500 });
-  return NextResponse.json(usage);
+✅ Always: Run `mise check` after all changes, validate OAuth flow, test org membership
+⚠️ Ask first: OAuth implementation changes, MCP protocol updates
+🚫 Never: Commit secrets, skip security validation, bypass org checks
+
+---
+
+## apps/mcp-registry (Go + Public API)
+
+Public registry service for NAV-approved MCP servers, implementing MCP Registry v0.1 specification.
+
+### Commands
+
+Working directory: `apps/mcp-registry`
+
+**Run after all changes:** `mise check`
+
+**Available tasks:**
+
+- `mise check` - Run all checks (fmt, vet, staticcheck, lint, test)
+- `mise test` - Run tests with verbose output
+- `mise test:short` - Run tests without verbose output
+- `mise test:coverage` - Run tests with coverage report (generates coverage.html)
+- `mise validate` - Validate allowlist.json by starting server
+- `mise dev` - Run with DEBUG logging (http://localhost:8080)
+- `mise run` - Run application locally
+- `mise build` - Build binary to bin/mcp-registry
+- `mise fmt` - Format code with gofmt and tidy go.mod
+- `mise vet` - Run go vet static analysis
+- `mise staticcheck` - Run staticcheck advanced analysis
+- `mise lint` - Run golangci-lint
+- `mise lint:fix` - Run golangci-lint with auto-fix
+- `mise install` - Download dependencies
+- `mise deps` - Download, verify, and tidy dependencies
+- `mise clean` - Clean build artifacts and test outputs
+- `mise version` - Generate version string (YYYYMMDD-HHMM-gitsha)
+- `mise all` - Run all checks, build, test, and docker build
+- `mise docker:build` - Build Docker image
+- `mise docker:run` - Run Docker container locally
+
+### Tech Stack
+
+- Go with standard library
+- MCP Registry v0.1 specification
+- JSON Schema validation
+- Prometheus metrics
+
+### Configuration
+
+| Variable           | Description                       | Default                  |
+| ------------------ | --------------------------------- | ------------------------ |
+| `PORT`             | Server port                       | `8080`                   |
+| `LOG_LEVEL`        | Log level                         | `INFO`                   |
+| `LOGGED_ENDPOINTS` | Endpoints to log                  | `/,/v0.1/servers`        |
+| `DOMAIN_INTERNAL`  | Internal domain for templates     | `intern.dev.nav.no`      |
+| `DOMAIN_EXTERNAL`  | External domain for templates     | `ekstern.dev.nav.no`     |
+
+### API Endpoints
+
+| Endpoint                                          | Description                |
+| ------------------------------------------------- | -------------------------- |
+| `GET /`                                           | Service information        |
+| `GET /v0.1/servers`                               | List all MCP servers       |
+| `GET /v0.1/servers/{name}/versions/{version}`     | Get specific server        |
+| `GET /v0.1/servers/{name}/versions/latest`        | Get latest server version  |
+| `GET /health`                                     | Health check               |
+| `GET /ready`                                      | Readiness check            |
+| `GET /metrics`                                    | Prometheus metrics         |
+
+**Note**: Server names with `/` must be URL-encoded (e.g., `io.github.navikt/github-mcp` → `io.github.navikt%2Fgithub-mcp`)
+
+### Key Files
+
+- `main.go` - Application entry point and routing
+- `handlers.go` - HTTP request handlers
+- `config.go` - Configuration and environment loading
+- `validation.go` - allowlist.json validation
+- `types.go` - Data structures
+- `allowlist.json` - Registry data (MCP Server JSON Schema)
+
+### Server Name Format
+
+Reverse-DNS with exactly one `/`:
+
+- Format: `{namespace}/{name}` (e.g., `io.github.navikt/github-mcp`)
+- Pattern: `^[a-zA-Z0-9][a-zA-Z0-9.-]*[a-zA-Z0-9]/[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]$`
+
+### Domain Templates
+
+Use `{{domain_internal}}` and `{{domain_external}}` in `allowlist.json` for environment-specific URLs:
+
+```json
+{
+  "remotes": [{
+    "type": "streamable-http",
+    "url": "https://my-server.{{domain_internal}}/mcp"
+  }]
 }
-
-// ❌ Bad - no error handling
-export async function GET() {
-  const usage = await getCopilotUsage("navikt");
-  return NextResponse.json(usage);
-}
 ```
 
-### Auth Check
+### Boundaries
 
-```typescript
-const user = await getUser(); // redirects if not auth
-const user = await getUser(false); // returns null if not auth
+✅ Always: Validate allowlist.json with `mise validate`, run `mise check` after all changes, follow MCP spec
+⚠️ Ask first: Registry format changes, validation rules, API endpoints
+🚫 Never: Bypass security validation, skip schema validation, modify spec compliance
+
+---
+
+# Monorepo Navigation
+
+When working across applications:
+
+1. **Check context**: Determine which app the request relates to
+2. **Change directory**: Use `cd apps/{app-name}` before running commands
+3. **Use mise tasks**: All apps support `mise` commands (preferred)
+4. **Verify changes**: Always run `mise check` after making changes
+5. **Reference paths**: Use workspace-relative paths from repo root
+
+**Example workflow:**
+
+```bash
+# Working on my-copilot
+cd apps/my-copilot
+mise check          # or: pnpm check
+
+# Working on mcp-registry
+cd apps/mcp-registry
+mise validate       # validate allowlist.json
+mise check          # run all checks
+
+# Working on mcp-hello-world
+cd apps/mcp-hello-world
+mise test:coverage  # run tests with coverage
+mise check          # run all checks
+
+# Back to root
+cd ../..
 ```
 
-## Boundaries
-
-✅ **Always:**
-
-- Use NAV DS spacing tokens (space-8, space-16, etc.)
-- Run `pnpm check` after code changes
-- Follow existing patterns in the codebase
-- Use TypeScript strict mode
-- Write tests for new utilities in `lib/`
-
-⚠️ **Ask first:**
-
-- Changing authentication logic
-- Modifying GitHub API integration
-- Altering data aggregation algorithms
-- Changing routing structure
-
-🚫 **Never:**
-
-- Use Tailwind padding/margin utilities (use NAV DS Box/VStack/HGrid)
-- Use numeric padding without `space-` prefix
-- Commit secrets or API keys
-- Skip type checking
-- Modify production deployment config
-- Add code comments unless explicitly asked
-- Create documentation files unless explicitly asked
+**Common mise tasks across all apps:**
+- `mise check` - Run all checks (REQUIRED after changes)
+- `mise test` - Run tests
+- `mise dev` - Start development server
+- `mise build` - Build application
+- `mise version` - Generate version string
