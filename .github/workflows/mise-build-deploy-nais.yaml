@@ -147,7 +147,15 @@ jobs:
       - id: name
         env:
           REPO_NAME: ${{ github.event.repository.name }}
-        run: echo "name=$REPO_NAME" >> ${GITHUB_OUTPUT}
+          WORKING_DIR: ${{ inputs.working-directory }}
+        run: |
+          # Extract app name from working directory (e.g., apps/mcp-hello-world -> mcp-hello-world)
+          if [ "$WORKING_DIR" != "." ]; then
+            APP_NAME=$(basename "$WORKING_DIR")
+          else
+            APP_NAME="$REPO_NAME"
+          fi
+          echo "name=$APP_NAME" >> ${GITHUB_OUTPUT}
 
   setup:
     name: Setup

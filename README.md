@@ -212,6 +212,7 @@ These customizations enforce Nav's core principles:
 
 Self-service tool for managing GitHub Copilot subscriptions at Nav.
 
+- **Location**: `apps/my-copilot/`
 - **Tech**: Next.js 16, TypeScript, Aksel Design System, Octokit
 - **Auth**: Azure AD JWT validation via NAIS sidecar proxy
 - **Deployment**: NAIS (dev-gcp, prod-gcp)
@@ -219,10 +220,47 @@ Self-service tool for managing GitHub Copilot subscriptions at Nav.
 **Commands:**
 
 ```bash
+cd apps/my-copilot
 pnpm dev        # Start dev server
 pnpm check      # Run all checks (ESLint, TypeScript, Prettier, Knip, Jest)
 pnpm test       # Run Jest tests
 pnpm build      # Production build
+```
+
+### mcp-registry
+
+Public registry service for NAV-approved MCP servers.
+
+- **Location**: `apps/mcp-registry/`
+- **Tech**: Go 1.25, HTTP server implementing MCP Registry v0.1 spec
+- **Public URL**: `https://mcp-registry.nav.no`
+- **Purpose**: Enables GitHub Copilot enterprise to discover and use approved MCP servers
+
+**Commands:**
+
+```bash
+cd apps/mcp-registry
+mise run dev       # Run with DEBUG logging
+mise run check     # Run all checks (fmt, vet, staticcheck, lint, test)
+mise run validate  # Validate allowlist.json
+```
+
+### mcp-hello-world
+
+Reference MCP server demonstrating GitHub OAuth authentication.
+
+- **Location**: `apps/mcp-hello-world/`
+- **Tech**: Go 1.25, OAuth 2.1 with PKCE, MCP JSON-RPC
+- **Purpose**: Template for building authenticated MCP servers with organization access control
+- **Registry**: Published as `io.github.navikt/hello-world`
+
+**Commands:**
+
+```bash
+cd apps/mcp-hello-world
+mise run dev      # Run with DEBUG logging
+mise run check    # Run all checks (fmt, vet, lint, test)
+mise run build    # Build binary
 ```
 
 ---

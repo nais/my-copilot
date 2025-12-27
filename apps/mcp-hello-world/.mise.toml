@@ -1,0 +1,126 @@
+[tools]
+go = "1.25"
+golangci-lint = "latest"
+"go:honnef.co/go/tools/cmd/staticcheck" = "latest"
+
+[tasks.version]
+description = "Generate version string (YYYYMMDD-gitsha)"
+run = "echo $(date +%Y.%m.%d)-$(date +%H.%M)-$(git rev-parse --short HEAD)"
+
+[tasks.install]
+description = "Download dependencies"
+run = "go mod download"
+
+[tasks.build]
+description = "Build the Go application"
+run = "go build -o bin/mcp-hello-world ."
+
+[tasks.test]
+description = "Run all tests with verbose output"
+run = "go test -v ./..."
+
+[tasks."test:coverage"]
+description = "Run tests with coverage report"
+run = [
+  "go test -v -cover -coverprofile=coverage.out ./...",
+  "go tool cover -html=coverage.out -o coverage.html",
+  "echo 'Coverage report: coverage.html'",
+]
+
+[tasks."test:short"]
+description = "Run tests without verbose output"
+run = "go test ./..."
+
+[tasks.lint]
+description = "Run linters (golangci-lint)"
+run = "golangci-lint run ./..."
+
+[tasks."lint:fix"]
+description = "Run linters and auto-fix issues"
+run = "golangci-lint run --fix ./..."
+
+[tasks.fmt]
+description = "Format code with gofmt"
+run = ["gofmt -w .", "go mod tidy"]
+
+[tasks.vet]
+description = "Run go vet for static analysis"
+run = "go vet ./..."
+
+[tasks.staticcheck]
+description = "Run staticcheck for advanced static analysis"
+run = "staticcheck ./..."
+
+[tasks.check]
+description = "Run all checks (fmt, vet, staticcheck, lint, test)"
+depends = ["fmt", "vet", "staticcheck", "lint", "test:short"]
+
+[tasks.all]
+description = "Run all checks, build, test and docker build"
+depends = ["check", "build", "test", "docker:build"]
+
+[tasks.validate]
+description = "Validate allowlist.json by starting server"
+run = '''
+#!/usr/bin/env bash
+set -e
+echo "Validating allowlist.json..."
+
+if curl -sf http://localhost:8080/health > /dev/null 2>&1; then
+  echo "Using existing server on port 8080..."
+  if curl -f http://localhost:8080/v0.1/servers > /dev/null 2>&1; then
+    echo "✅ Validation successful"
+    exit 0
+  else
+    echo "❌ Validation failed"
+    exit 1
+  fi
+fi
+
+go run . &
+SERVER_PID=$!
+sleep 3
+if curl -f http://localhost:8080/health > /dev/null 2>&1 && \
+   curl -f http://localhost:8080/v0.1/servers > /dev/null 2>&1; then
+  echo "✅ Validation successful"
+  EXIT_CODE=0
+else
+  echo "❌ Validation failed"
+  EXIT_CODE=1
+fi
+kill $SERVER_PID 2>/dev/null || true
+exit $EXIT_CODE
+'''
+
+[tasks.run]
+description = "Run the application locally"
+run = "go run ."
+
+[tasks.dev]
+description = "Run with development settings (DEBUG log level)"
+env = { LOG_LEVEL = "DEBUG", LOGGED_ENDPOINTS = "/,/health,/ready,/v0.1/servers" }
+run = "go run ."
+
+[tasks.clean]
+description = "Clean build artifacts and test outputs"
+run = ["rm -rf bin/", "rm -f coverage.out coverage.html", "go clean"]
+
+[tasks.deps]
+description = "Download and verify dependencies"
+run = ["go mod download", "go mod verify", "go mod tidy"]
+
+[tasks."docker:build"]
+description = "Build Docker image"
+run = '''
+VERSION=${VERSION:-$(git rev-parse --short HEAD)}
+docker build -t ghcr.io/navikt/mcp-hello-world:$VERSION .
+docker tag ghcr.io/navikt/mcp-hello-world:$VERSION ghcr.io/navikt/mcp-hello-world:latest
+'''
+
+[tasks."docker:run"]
+description = "Run Docker container locally"
+run = "docker run --rm -p 8080:8080 ghcr.io/navikt/mcp-hello-world:latest"
+
+[env]
+GO111MODULE = "on"
+CGO_ENABLED = "0"

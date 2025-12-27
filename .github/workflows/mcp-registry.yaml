@@ -1,0 +1,36 @@
+name: mcp-registry build-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/mcp-registry/**'
+      - '.github/workflows/mcp-registry.yaml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/mcp-registry/**'
+      - '.github/workflows/mcp-registry.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/mise-build-deploy-nais.yaml
+    with:
+      working-directory: apps/mcp-registry
+      mise-setup-tasks: '["install"]'
+      mise-tasks: '["lint", "check"]'
+      deploys-to-nais: true
+      deploy-pr-to-dev: true
+      nais-team: copilot
+      nais-clusters: '["dev-gcp", "prod-gcp"]'
+    secrets:
+      NAIS_IO_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
