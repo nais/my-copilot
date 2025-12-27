@@ -132,10 +132,10 @@ jobs:
       image-base: ${{ inputs.artifact-registry }}/${{ inputs.artifact-repo }}/${{ steps.name.outputs.name }}
       image: ${{ inputs.artifact-registry }}/${{ inputs.artifact-repo }}/${{ steps.name.outputs.name }}:${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # ratchet:jdx/mise-action@v2
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # ratchet:jdx/mise-action@v2
         with:
           experimental: true
       - id: version
@@ -155,7 +155,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
         with:
           path: |
@@ -178,7 +178,7 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
-      - uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # ratchet:jdx/mise-action@v2
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # ratchet:jdx/mise-action@v2
         with:
           experimental: true
       - name: Run setup tasks
@@ -203,7 +203,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
         with:
           path: |
@@ -226,7 +226,7 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
-      - uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # ratchet:jdx/mise-action@v2
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # ratchet:jdx/mise-action@v2
         with:
           experimental: true
       - name: Run setup tasks
@@ -252,7 +252,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
         with:
           path: |
@@ -275,7 +275,7 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
-      - uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # ratchet:jdx/mise-action@v2
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # ratchet:jdx/mise-action@v2
         with:
           experimental: true
       - name: Run setup tasks
@@ -303,8 +303,8 @@ jobs:
       image: ${{ steps.docker-push.outputs.image }}
       telemetry: ${{ steps.docker-push.outputs.telemetry }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v4
-      - uses: nais/docker-build-push@v0
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # ratchet:nais/docker-build-push@v0
         id: docker-push
         with:
           team: ${{ inputs.nais-team }}
@@ -326,7 +326,7 @@ jobs:
       matrix:
         cluster: ${{ fromJson(inputs.nais-clusters) }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
       - name: Resolve vars path
         id: vars
         env:
@@ -335,7 +335,7 @@ jobs:
         run: |
           VARS_PATH="${NAIS_VARS_PATTERN//\{cluster\}/$CLUSTER}"
           echo "path=$VARS_PATH" >> $GITHUB_OUTPUT
-      - uses: nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: ${{ matrix.cluster }}
           TEAM: ${{ inputs.nais-team }}
@@ -353,8 +353,8 @@ jobs:
       contents: read
     needs: [meta, docker]
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v4
-      - uses: nais/deploy/actions/deploy@v2
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
           TEAM: ${{ inputs.nais-team }}
@@ -371,7 +371,7 @@ jobs:
       contents: write
     needs: meta
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
       - env:
           VERSION: ${{ needs.meta.outputs.version }}
         run: |
