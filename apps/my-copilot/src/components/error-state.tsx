@@ -1,4 +1,4 @@
-import { Heading, BodyShort } from "@navikt/ds-react";
+import { Heading, BodyShort, Box, VStack } from "@navikt/ds-react";
 
 interface ErrorStateProps {
   title?: string;
@@ -7,13 +7,15 @@ interface ErrorStateProps {
 
 export default function ErrorState({ title = "Copilot Bruksstatistikk", message }: ErrorStateProps) {
   return (
-    <main className="p-6 mx-4 max-w-7xl">
-      <section className="mb-8">
-        <Heading size="xlarge" level="1" className="mb-6">
-          {title}
-        </Heading>
-        <BodyShort className={message.startsWith("Feil") ? "text-red-500" : ""}>{message}</BodyShort>
-      </section>
+    <main className="max-w-7xl">
+      <Box paddingBlock="space-12" paddingInline="space-8">
+        <VStack gap="space-12">
+          <Heading size="xlarge" level="1">
+            {title}
+          </Heading>
+          <BodyShort className={message.startsWith("Feil") ? "text-red-500" : ""}>{message}</BodyShort>
+        </VStack>
+      </Box>
     </main>
   );
 }

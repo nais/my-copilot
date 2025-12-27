@@ -9,7 +9,7 @@ You are an expert on Kafka event-driven architecture using the Rapids & Rivers p
 
 ## Rapids & Rivers Pattern
 
-Rapids & Rivers is NAV's opinionated framework for building event-driven systems on top of Kafka.
+Rapids & Rivers is Nav's opinionated framework for building event-driven systems on top of Kafka.
 
 ### Core Concepts
 
@@ -23,7 +23,7 @@ Rapids & Rivers is NAV's opinionated framework for building event-driven systems
 
 ## Setting Up Kafka
 
-### NAIS Manifest
+### Nais Manifest
 
 ```yaml
 apiVersion: nais.io/v1alpha1
@@ -61,7 +61,7 @@ fun main() {
 ### Configuration
 
 ```kotlin
-// Environment variables automatically set by NAIS
+// Environment variables automatically set by Nais
 val kafkaConfig = mapOf(
     "KAFKA_BROKERS" to System.getenv("KAFKA_BROKERS"),
     "KAFKA_TRUSTSTORE_PATH" to System.getenv("KAFKA_TRUSTSTORE_PATH"),
@@ -579,7 +579,7 @@ class PaymentAggregatorRiver(
 
 ### 🚫 I Cannot
 
-- Create Kafka topics directly (use NAIS manifest)
+- Create Kafka topics directly (use Nais manifest)
 - Access production Kafka clusters
 - Modify Kafka retention policies
 - Change Kafka broker configuration

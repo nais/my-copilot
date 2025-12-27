@@ -1,5 +1,3 @@
-import React from "react";
-import Image from "next/image";
 import { Heading, BodyShort, Box, HGrid, HelpText, Label, VStack } from "@navikt/ds-react";
 import { Carousel } from "@/components/carousel";
 import { CodeBlock } from "@/components/code-block";
@@ -39,7 +37,8 @@ export default async function BestPractices() {
           {/* Header */}
           <div className="relative">
             <div className="absolute inset-0 overflow-hidden rounded-xl -z-10">
-              <Image src="/images/cli-headerimage.jpeg" alt="" fill className="object-cover opacity-15" priority />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/cli-headerimage.jpeg" alt="" className="w-full h-full object-cover opacity-15" />
               <div className="absolute inset-0 bg-linear-to-r from-white via-white/90 to-transparent" />
             </div>
             <div className="py-2 sm:py-4">
@@ -332,11 +331,10 @@ export default async function BestPractices() {
                     I editoren (IDE)
                   </Heading>
                 </div>
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/images/github-copilot-agent-mode.jpeg"
                   alt="Copilot Agent Mode i VS Code"
-                  width={400}
-                  height={225}
                   className="w-full rounded-md mb-3 border border-blue-200"
                 />
                 <div className="space-y-3">
@@ -388,11 +386,10 @@ export default async function BestPractices() {
                     På GitHub.com
                   </Heading>
                 </div>
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/images/github-copilot-coding-agent.jpeg"
                   alt="Copilot Coding Agent på GitHub"
-                  width={400}
-                  height={225}
                   className="w-full rounded-md mb-3 border border-green-200"
                 />
                 <div className="space-y-3">
@@ -454,11 +451,10 @@ export default async function BestPractices() {
                     I terminalen (CLI)
                   </Heading>
                 </div>
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/images/github-copilot-cli.jpeg"
                   alt="Copilot i terminalen"
-                  width={400}
-                  height={225}
                   className="w-full rounded-md mb-3 border border-orange-200"
                 />
                 <div className="space-y-3">
@@ -736,9 +732,9 @@ Follow the structure used in popular open-source projects.`}</CodeBlock>
                   >{`# Prosjektinstruksjoner for Copilot
 
 ## Teknisk stack
-- Next.js 15 med App Router
+- Next.js 16 med App Router
 - TypeScript strict mode
-- NAV Design System (@navikt/ds-react)
+- Nav Design System (@navikt/ds-react)
 - Tailwind CSS for utilities
 
 ## Kodestil
@@ -1046,11 +1042,11 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
 
                 {/* Plan Mode Image */}
                 <div className="mb-4 rounded-lg overflow-hidden border border-gray-200 shadow-sm relative aspect-video">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src="/images/copilot-in-vs-code-hero-plan-mode.jpeg"
                     alt="Plan Mode i VS Code - Copilot analyserer og planlegger oppgaven"
-                    fill
-                    className="object-cover"
+                    className="w-full h-full object-cover"
                   />
                 </div>
 
@@ -1407,11 +1403,11 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
 
             {/* Mission Control Hero Image */}
             <div className="mb-6 rounded-lg overflow-hidden border border-gray-200 shadow-sm relative aspect-video">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="/images/agents-on-github-hero-mission-control.jpeg"
                 alt="Mission Control dashboard for Copilot agenter"
-                fill
-                className="object-cover"
+                className="w-full h-full object-cover"
               />
             </div>
 
@@ -1571,11 +1567,11 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
                   </div>
                   {/* Session log screenshot */}
                   <div className="rounded-lg overflow-hidden border border-gray-200 shadow-sm relative aspect-video">
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src="/images/chat-reasoning.png"
                       alt="Session log med agentens resonnering og verktøykall"
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 </HGrid>
@@ -1598,11 +1594,11 @@ formatNOK(1000000) → "1 000 000,00 kr"`}
 
             {/* Code Review Image */}
             <div className="mb-6 rounded-lg overflow-hidden border border-gray-200 shadow-sm relative aspect-video">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="/images/github-copilot-code-review-updated.jpeg"
                 alt="Copilot Code Review på GitHub"
-                fill
-                className="object-cover"
+                className="w-full h-full object-cover"
               />
             </div>
 
