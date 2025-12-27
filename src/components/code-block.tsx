@@ -33,8 +33,8 @@ export function CodeBlock({ filename, children, maxHeight }: CodeBlockProps) {
             style={
               hasMaxHeight
                 ? ({
-                  maxHeight: maxHeight,
-                } as React.CSSProperties)
+                    maxHeight: maxHeight,
+                  } as React.CSSProperties)
                 : undefined
             }
           >
