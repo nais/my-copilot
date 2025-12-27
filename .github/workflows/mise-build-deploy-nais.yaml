@@ -335,20 +335,30 @@ jobs:
         cluster: ${{ fromJson(inputs.nais-clusters) }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
-      - name: Resolve vars path
-        id: vars
+      - name: Resolve paths
+        id: paths
         env:
+          WORKING_DIR: ${{ inputs.working-directory }}
+          NAIS_RESOURCE: ${{ inputs.nais-resource }}
           NAIS_VARS_PATTERN: ${{ inputs.nais-vars }}
           CLUSTER: ${{ matrix.cluster }}
         run: |
-          VARS_PATH="${NAIS_VARS_PATTERN//\{cluster\}/$CLUSTER}"
-          echo "path=$VARS_PATH" >> $GITHUB_OUTPUT
+          if [ "$WORKING_DIR" != "." ]; then
+            RESOURCE_PATH="$WORKING_DIR/$NAIS_RESOURCE"
+            VARS_PATTERN="$WORKING_DIR/$NAIS_VARS_PATTERN"
+          else
+            RESOURCE_PATH="$NAIS_RESOURCE"
+            VARS_PATTERN="$NAIS_VARS_PATTERN"
+          fi
+          VARS_PATH="${VARS_PATTERN//\{cluster\}/$CLUSTER}"
+          echo "resource=$RESOURCE_PATH" >> $GITHUB_OUTPUT
+          echo "vars=$VARS_PATH" >> $GITHUB_OUTPUT
       - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: ${{ matrix.cluster }}
           TEAM: ${{ inputs.nais-team }}
-          RESOURCE: ${{ inputs.nais-resource }}
-          VARS: ${{ steps.vars.outputs.path }}
+          RESOURCE: ${{ steps.paths.outputs.resource }}
+          VARS: ${{ steps.paths.outputs.vars }}
           IMAGE: ${{ needs.docker.outputs.image }}
           TELEMETRY: ${{ needs.docker.outputs.telemetry }}
 
@@ -362,12 +372,27 @@ jobs:
     needs: [meta, docker]
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
+      - name: Resolve paths
+        id: paths
+        env:
+          WORKING_DIR: ${{ inputs.working-directory }}
+          NAIS_RESOURCE: ${{ inputs.nais-resource }}
+        run: |
+          if [ "$WORKING_DIR" != "." ]; then
+            RESOURCE_PATH="$WORKING_DIR/$NAIS_RESOURCE"
+            VARS_PATH="$WORKING_DIR/.nais/dev-gcp.yaml"
+          else
+            RESOURCE_PATH="$NAIS_RESOURCE"
+            VARS_PATH=".nais/dev-gcp.yaml"
+          fi
+          echo "resource=$RESOURCE_PATH" >> $GITHUB_OUTPUT
+          echo "vars=$VARS_PATH" >> $GITHUB_OUTPUT
       - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
           TEAM: ${{ inputs.nais-team }}
-          RESOURCE: ${{ inputs.nais-resource }}
-          VARS: .nais/dev-gcp.yaml
+          RESOURCE: ${{ steps.paths.outputs.resource }}
+          VARS: ${{ steps.paths.outputs.vars }}
           IMAGE: ${{ needs.docker.outputs.image }}
           TELEMETRY: ${{ needs.docker.outputs.telemetry }}
 
