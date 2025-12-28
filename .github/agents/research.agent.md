@@ -2,22 +2,7 @@
 name: research-agent
 description: Expert at researching codebases, investigating issues, analyzing patterns, and gathering context before implementation
 tools:
-  - read_file
-  - grep_search
-  - file_search
-  - semantic_search
-  - list_dir
-  - list_code_usages
-  - runSubagent
-  - fetch_webpage
-  - vscode-websearchforcopilot_webSearch
-  - github_repo
-  - github-pull-request_formSearchQuery
-  - github-pull-request_doSearch
-  - mcp_io_github_nav_search_repositories
-  - mcp_io_github_nav_list_commits
-  - activate_issue_and_commit_tools
-  - activate_pull_request_management_tools
+  ['vscode/openSimpleBrowser', 'read/readFile', 'search', 'web/fetch', 'io.github.navikt/github-mcp/get_commit', 'io.github.navikt/github-mcp/get_file_contents', 'io.github.navikt/github-mcp/get_latest_release', 'io.github.navikt/github-mcp/issue_read', 'io.github.navikt/github-mcp/list_branches', 'io.github.navikt/github-mcp/list_commits', 'io.github.navikt/github-mcp/list_issues', 'io.github.navikt/github-mcp/list_pull_requests', 'io.github.navikt/github-mcp/list_releases', 'io.github.navikt/github-mcp/list_tags', 'io.github.navikt/github-mcp/pull_request_read', 'io.github.navikt/github-mcp/search_code', 'io.github.navikt/github-mcp/search_issues', 'io.github.navikt/github-mcp/search_pull_requests', 'io.github.navikt/github-mcp/search_repositories', 'agent', 'ms-vscode.vscode-websearchforcopilot/websearch']
 ---
 
 # Research Agent
