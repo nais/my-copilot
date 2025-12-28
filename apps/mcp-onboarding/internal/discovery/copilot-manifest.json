@@ -38,7 +38,10 @@
       "filePath": ".github/agents/auth.agent.md",
       "useCases": [
         "Azure AD integration",
-        "TokenX token exchange"
+        "TokenX token exchange",
+        "Network policies",
+        "Secrets management",
+        "GDPR compliance"
       ],
       "installUrl": "vscode:chat-agent/install?url=https://raw.githubusercontent.com/navikt/copilot/main/.github/agents/auth.agent.md",
       "rawUrl": "https://raw.githubusercontent.com/navikt/copilot/main/.github/agents/auth.agent.md"
@@ -59,7 +62,13 @@
       "useCases": [
         "Adding PostgreSQL/Kafka",
         "Creating Kafka event consumers",
-        "Designing event schemas"
+        "Designing event schemas",
+        "Health endpoints",
+        "Business metrics",
+        "OpenTelemetry tracing",
+        "Network policies",
+        "Secrets management",
+        "GDPR compliance"
       ],
       "installUrl": "vscode:chat-agent/install?url=https://raw.githubusercontent.com/navikt/copilot/main/.github/agents/kafka.agent.md",
       "rawUrl": "https://raw.githubusercontent.com/navikt/copilot/main/.github/agents/kafka.agent.md"
@@ -116,7 +125,10 @@
         "Designing event schemas",
         "Health endpoints",
         "Business metrics",
-        "OpenTelemetry tracing"
+        "OpenTelemetry tracing",
+        "Network policies",
+        "Secrets management",
+        "GDPR compliance"
       ],
       "installUrl": "vscode:chat-agent/install?url=https://raw.githubusercontent.com/navikt/copilot/main/.github/agents/observability.agent.md",
       "rawUrl": "https://raw.githubusercontent.com/navikt/copilot/main/.github/agents/observability.agent.md"
@@ -135,9 +147,6 @@
         "Designing event schemas",
         "Converting Tailwind to Aksel tokens",
         "Responsive layouts",
-        "Health endpoints",
-        "Business metrics",
-        "OpenTelemetry tracing",
         "Network policies",
         "Secrets management",
         "GDPR compliance"
