@@ -5,11 +5,19 @@ on:
     branches: [main]
     paths:
       - 'apps/mcp-hello-world/**'
+      - '.github/agents/**'
+      - '.github/instructions/**'
+      - '.github/prompts/**'
+      - '.github/skills/**'
       - '.github/workflows/mcp-hello-world.yaml'
   pull_request:
     branches: [main]
     paths:
       - 'apps/mcp-hello-world/**'
+      - '.github/agents/**'
+      - '.github/instructions/**'
+      - '.github/prompts/**'
+      - '.github/skills/**'
       - '.github/workflows/mcp-hello-world.yaml'
   workflow_dispatch:
 

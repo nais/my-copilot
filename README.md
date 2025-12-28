@@ -13,7 +13,76 @@ This repository provides specialized GitHub Copilot customizations for the Nav e
 
 ## 🔧 How to Use
 
-### Installing Customizations
+### Quick Install (One-Click)
+
+Install customizations directly in VS Code using install badges in the documentation:
+
+- **[View all Agents →](docs/README.agents.md)** - Click to install individual agents
+- **[View all Instructions →](docs/README.instructions.md)** - Click to install coding standards
+- **[View all Prompts →](docs/README.prompts.md)** - Click to install scaffolding templates
+
+### Discover & Search with MCP
+
+Use our **MCP Discovery Server** to browse and install customizations directly from GitHub Copilot Chat.
+
+#### For Nav Users (Enterprise Allow List)
+
+This MCP server is pre-approved on Nav's enterprise allow list and available through the MCP registry:
+
+**1. Install from Extensions View:**
+
+- Open VS Code Extensions view (`Cmd+Shift+X`)
+- Search for `@mcp` in the search bar
+- Find **Nav Copilot Discovery** in the MCP servers list
+- Click **Install**
+
+**2. Or install from IntelliJ:**
+
+- Open Settings → **Tools** → **MCP Servers**
+- Browse available MCP servers
+- Install **Nav Copilot Discovery**
+
+**3. Use Discovery Tools** in Copilot Chat:
+
+```text
+@workspace /mcp list_agents
+@workspace /mcp search_customizations query:"kafka"
+@workspace /mcp get_installation_guide type:"agent" name:"nais-agent"
+```
+
+#### For Non-Nav Users (Manual Configuration)
+
+**1. Add to VS Code Settings** (`settings.json`):
+
+```json
+{
+  "github.copilot.chat.mcp.enabled": true,
+  "github.copilot.chat.mcp.servers": {
+    "nav-discovery": {
+      "type": "streamable-http",
+      "url": "https://mcp-hello-world.nav.no/mcp"
+    }
+  }
+}
+```
+
+**2. Authenticate** via GitHub OAuth (requires Nav organization membership)
+
+**3. Use Discovery Tools** in Copilot Chat:
+
+```text
+@workspace /mcp list_agents
+@workspace /mcp search_customizations query:"kafka"
+@workspace /mcp get_installation_guide type:"agent" name:"nais-agent"
+```
+
+**Available Discovery Tools:**
+
+- `list_agents`, `list_instructions`, `list_prompts`, `list_skills` - Browse all customizations
+- `search_customizations` - Search by query, type, or tags
+- `get_installation_guide` - Get install instructions for any customization
+
+### Install with VS Code Tasks
 
 Run the task: **"Install Nav Copilot Customizations"** from VS Code tasks menu (`Cmd+Shift+P` → "Tasks: Run Task")
 
@@ -153,20 +222,29 @@ mise run validate  # Validate allowlist.json
 
 ### mcp-hello-world
 
-Reference MCP server demonstrating GitHub OAuth authentication.
+Reference MCP server with GitHub OAuth authentication and **Nav Copilot customization discovery**.
 
 - **Location**: `apps/mcp-hello-world/`
-- **Tech**: Go 1.25, OAuth 2.1 with PKCE, MCP JSON-RPC
-- **Purpose**: Template for building authenticated MCP servers with organization access control
-- **Registry**: Published as `io.github.navikt/hello-world`
+- **Tech**: Go 1.25, OAuth 2.1 with PKCE, MCP JSON-RPC, YAML frontmatter parsing
+- **Public URL**: `https://mcp-hello-world.nav.no/mcp`
+- **Purpose**:
+  - Template for building authenticated MCP servers with organization access control
+  - Discovery server for browsing and installing Nav Copilot customizations
+- **Registry**: Published as `io.github.navikt/hello-world-discovery`
+- **Features**:
+  - 🔐 GitHub OAuth with Nav organization validation
+  - 🔍 Search across 6 agents, 4 instructions, 3 prompts
+  - 📦 Dynamic manifest generation from `.github` files
+  - 🚀 One-click installation guides
 
 **Commands:**
 
 ```bash
 cd apps/mcp-hello-world
-mise run dev      # Run with DEBUG logging
-mise run check    # Run all checks (fmt, vet, lint, test)
-mise run build    # Build binary
+mise run generate  # Generate customizations manifest from .github files
+mise run dev       # Run with DEBUG logging
+mise run check     # Run all checks (fmt, vet, lint, test)
+mise run build     # Build binary
 ```
 
 ---

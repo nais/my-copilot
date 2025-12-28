@@ -1,2 +1,4 @@
 apps/mcp-registry/bin/mcp-registry
 apps/mcp-hello-world/bin/mcp-hello-world
+apps/mcp-hello-world/bin/generate-manifest
+apps/mcp-hello-world/coverage.out

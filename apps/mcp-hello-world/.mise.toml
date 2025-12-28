@@ -51,13 +51,38 @@ run = "go vet ./..."
 description = "Run staticcheck for advanced static analysis"
 run = "staticcheck ./..."
 
+[tasks.generate]
+description = "Generate customizations manifest from .github files"
+run = "go run ./cmd/generate-manifest"
+
+[tasks."generate:check"]
+description = "Check if generated manifest is up to date"
+run = '''
+#!/usr/bin/env bash
+set -e
+
+echo "Generating manifest..."
+go run ./cmd/generate-manifest
+
+if git diff --exit-code internal/discovery/copilot-manifest.json > /dev/null 2>&1; then
+  echo "✅ Manifest is up to date"
+  exit 0
+else
+  echo "❌ Manifest is out of date. Run 'mise generate' to update it."
+  echo ""
+  echo "Differences:"
+  git diff internal/discovery/copilot-manifest.json
+  exit 1
+fi
+'''
+
 [tasks.check]
 description = "Run all checks (fmt, vet, staticcheck, lint, test)"
-depends = ["fmt", "vet", "staticcheck", "lint", "test:short"]
+depends = ["fmt", "vet", "staticcheck", "lint", "test:short", "generate:check"]
 
 [tasks.all]
 description = "Run all checks, build, test and docker build"
-depends = ["check", "build", "test", "docker:build"]
+depends = ["check", "generate", "build", "test", "docker:build"]
 
 [tasks.validate]
 description = "Validate allowlist.json by starting server"
@@ -91,10 +116,6 @@ fi
 kill $SERVER_PID 2>/dev/null || true
 exit $EXIT_CODE
 '''
-
-[tasks.run]
-description = "Run the application locally"
-run = "go run ."
 
 [tasks.dev]
 description = "Run with development settings (DEBUG log level)"

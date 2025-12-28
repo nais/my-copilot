@@ -1,6 +1,6 @@
-# Nav MCP Hello World
+# Nav MCP Hello World + Discovery
 
-A reference MCP (Model Context Protocol) server demonstrating GitHub OAuth authentication for use with GitHub Copilot in VS Code.
+A reference MCP (Model Context Protocol) server demonstrating GitHub OAuth authentication and NAV Copilot customization discovery for use with GitHub Copilot in VS Code.
 
 ## Overview
 
@@ -10,24 +10,28 @@ This server implements:
 - **GitHub OAuth proxy** - Acts as OAuth authorization server, proxying to GitHub
 - **Organization access control** - Validates user membership in allowed GitHub organizations
 - **MCP JSON-RPC** - Full protocol implementation with streamable HTTP transport
+- **Customization Discovery** - Browse and install NAV Copilot agents, instructions, prompts, and skills
 
 ## Architecture
 
-```
-┌─────────────────┐     ┌─────────────────────────┐     ┌─────────────┐
-│   VS Code       │────▶│  mcp-hello-world    │────▶│   GitHub    │
-│   (MCP Client)  │◀────│  (OAuth + MCP Server)   │◀────│   OAuth     │
-└─────────────────┘     └─────────────────────────┘     └─────────────┘
+```text
+┌─────────────────┐     ┌──────────────────────────────┐     ┌─────────────┐
+│   VS Code       │────▶│  mcp-hello-world + Discovery │────▶│   GitHub    │
+│   (MCP Client)  │◀────│  (OAuth + MCP + Discovery)   │◀────│   OAuth     │
+└─────────────────┘     └──────────────────────────────┘     └─────────────┘
 ```
 
 **Flow:**
+
 1. VS Code discovers OAuth metadata via `/.well-known/oauth-authorization-server`
 2. User is redirected to GitHub for authentication
 3. Server exchanges GitHub code for tokens and validates org membership
 4. Server issues its own access token mapped to GitHub session
-5. VS Code uses token to call MCP tools
+5. VS Code uses token to call MCP tools (both hello-world and discovery)
 
 ## Available Tools
+
+### Hello World Tools
 
 | Tool          | Description                                                  |
 | ------------- | ------------------------------------------------------------ |
@@ -36,6 +40,33 @@ This server implements:
 | `whoami`      | Returns information about the authenticated GitHub user      |
 | `echo`        | Echoes back a provided message                               |
 | `get_time`    | Returns current server time in various formats               |
+
+### Discovery Tools
+
+| Tool                     | Description                                         | Parameters                             |
+| ------------------------ | --------------------------------------------------- | -------------------------------------- |
+| `search_customizations`  | Search NAV Copilot customizations                   | `query`, `type`, `tags` (all optional) |
+| `list_agents`            | List all NAV Copilot agents                         | `category` (optional)                  |
+| `list_instructions`      | List all NAV Copilot instructions                   | None                                   |
+| `list_prompts`           | List all NAV Copilot prompts                        | None                                   |
+| `list_skills`            | List all NAV Copilot skills                         | None                                   |
+| `get_installation_guide` | Get installation guide for a specific customization | `type` (required), `name` (required)   |
+
+### Discovery Tool Examples
+
+```javascript
+// Search for all agents related to "nais"
+search_customizations({ query: "nais", type: "agent" })
+
+// List all frontend-related customizations
+search_customizations({ tags: ["frontend"] })
+
+// List all agents in the platform category
+list_agents({ category: "platform" })
+
+// Get installation guide for nais-agent
+get_installation_guide({ type: "agent", name: "nais-agent" })
+```
 
 ## Configuration
 
@@ -80,14 +111,30 @@ curl http://localhost:8080/mcp
 ## Development
 
 ```bash
-mise run version  # Generate version string
-mise run install  # Download dependencies
-mise run check    # Run all checks (fmt, vet, lint, test)
-mise run test     # Run tests
-mise run build    # Build binary to bin/mcp-hello-world
-mise run dev      # Run with DEBUG logging
-mise run lint     # Run golangci-lint
+mise run version    # Generate version string (YYYYMMDD-gitsha)
+mise run install    # Download dependencies
+mise run generate   # Generate copilot-manifest.json from .github files
+mise run check      # Run all checks (fmt, vet, lint, test, generate:check)
+mise run test       # Run tests
+mise run build      # Build binary to bin/mcp-hello-world
+mise run dev        # Run with DEBUG logging
+mise run lint       # Run golangci-lint
 ```
+
+### Generating Customizations Manifest
+
+The customizations manifest is **embedded** into the binary at compile time using Go's `embed` directive. This ensures the manifest is always available and cannot get out of sync with the binary.
+
+**Generating the manifest:**
+```bash
+mise generate    # or: go run ./cmd/generate-manifest
+```
+
+This creates `internal/discovery/copilot-manifest.json` which is embedded into the binary.
+
+**CI Check**: The `mise check` command includes `generate:check` which fails if the manifest is out of date. This ensures the embedded manifest stays synchronized with the `.github` files.
+
+Always run `mise run generate` after adding or modifying agent, instruction, prompt, or skill files.
 
 ## Deployment
 
@@ -113,7 +160,11 @@ Deployed to Nais using the reusable `mise-build-deploy-nais` workflow.
 
 ## MCP Registry
 
-This server is registered in Nav's MCP registry as `io.github.navikt/hello-world`.
+This server is registered in Nav's MCP registry:
+
+- **Server Name**: `io.github.navikt/hello-world-discovery`
+- **Version**: 2.0.0
+- **Capabilities**: OAuth 2.1, Hello World tools, NAV Copilot customization discovery
 
 ## Security
 
