@@ -149,7 +149,7 @@ jobs:
           REPO_NAME: ${{ github.event.repository.name }}
           WORKING_DIR: ${{ inputs.working-directory }}
         run: |
-          # Extract app name from working directory (e.g., apps/mcp-hello-world -> mcp-hello-world)
+          # Extract app name from working directory (e.g., apps/mcp-onboarding -> mcp-onboarding)
           if [ "$WORKING_DIR" != "." ]; then
             APP_NAME=$(basename "$WORKING_DIR")
           else

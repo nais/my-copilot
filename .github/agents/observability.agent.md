@@ -1,5 +1,5 @@
 ---
-name: observability
+name: observability-agent
 description: Expert on Prometheus metrics, OpenTelemetry tracing, Grafana dashboards, and alerting
 ---
 

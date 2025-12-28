@@ -10,15 +10,19 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/navikt/copilot/mcp-onboarding/internal/discovery"
 )
 
 type MCPHandler struct {
-	githubClient *GitHubClient
+	githubClient     *GitHubClient
+	discoveryService *discovery.Service
 }
 
-func NewMCPHandler(githubClient *GitHubClient) *MCPHandler {
+func NewMCPHandler(githubClient *GitHubClient, discoveryService *discovery.Service) *MCPHandler {
 	return &MCPHandler{
-		githubClient: githubClient,
+		githubClient:     githubClient,
+		discoveryService: discoveryService,
 	}
 }
 
@@ -247,8 +251,8 @@ func (h *MCPHandler) handleInitialize(req *JSONRPCRequest) *JSONRPCResponse {
 			},
 		},
 		ServerInfo: ServerInfo{
-			Name:    "mcp-hello-world",
-			Version: "1.0.0",
+			Name:    "mcp-onboarding",
+			Version: "2.0.0",
 		},
 	}
 
@@ -320,6 +324,90 @@ func (h *MCPHandler) handleListTools(req *JSONRPCRequest) *JSONRPCResponse {
 					}
 				},
 				"required": []
+			}`),
+		},
+		{
+			Name:        "search_customizations",
+			Description: "Search NAV Copilot customizations (agents, instructions, prompts, skills) by query, type, and tags",
+			InputSchema: json.RawMessage(`{
+				"type": "object",
+				"properties": {
+					"query": {
+						"type": "string",
+						"description": "Search query to match against names, descriptions, and tags"
+					},
+					"type": {
+						"type": "string",
+						"description": "Filter by customization type",
+						"enum": ["agent", "instruction", "prompt", "skill"]
+					},
+					"tags": {
+						"type": "array",
+						"description": "Filter by tags",
+						"items": {"type": "string"}
+					}
+				},
+				"required": []
+			}`),
+		},
+		{
+			Name:        "list_agents",
+			Description: "List all NAV Copilot agents with their descriptions and use cases",
+			InputSchema: json.RawMessage(`{
+				"type": "object",
+				"properties": {
+					"category": {
+						"type": "string",
+						"description": "Filter by category (platform, security, backend, frontend)"
+					}
+				},
+				"required": []
+			}`),
+		},
+		{
+			Name:        "list_instructions",
+			Description: "List all NAV Copilot instructions with their descriptions",
+			InputSchema: json.RawMessage(`{
+				"type": "object",
+				"properties": {},
+				"required": []
+			}`),
+		},
+		{
+			Name:        "list_prompts",
+			Description: "List all NAV Copilot prompts with their descriptions",
+			InputSchema: json.RawMessage(`{
+				"type": "object",
+				"properties": {},
+				"required": []
+			}`),
+		},
+		{
+			Name:        "list_skills",
+			Description: "List all NAV Copilot skills with their descriptions",
+			InputSchema: json.RawMessage(`{
+				"type": "object",
+				"properties": {},
+				"required": []
+			}`),
+		},
+		{
+			Name:        "get_installation_guide",
+			Description: "Generate installation instructions for a specific customization",
+			InputSchema: json.RawMessage(`{
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"description": "Customization type",
+						"enum": ["agent", "instruction", "prompt", "skill"]
+					},
+					"name": {
+						"type": "string",
+						"description": "Customization name (e.g., 'nais-agent', 'kotlin-ktor')"
+					}
+				},
+				"required": ["type", "name"]
 			}`),
 		},
 	}
@@ -403,6 +491,166 @@ This information is from your GitHub OAuth session.`, user.Login, user.ID)
 		result = CallToolResult{
 			Content: []TextContent{
 				{Type: "text", Text: fmt.Sprintf("Current server time: %s", timeStr)},
+			},
+		}
+
+	case "search_customizations":
+		query, _ := params.Arguments["query"].(string)
+		customType, _ := params.Arguments["type"].(string)
+		tagsRaw, _ := params.Arguments["tags"].([]interface{})
+
+		var tags []string
+		for _, t := range tagsRaw {
+			if tagStr, ok := t.(string); ok {
+				tags = append(tags, tagStr)
+			}
+		}
+
+		results := h.discoveryService.Search(query, customType, tags)
+
+		jsonBytes, err := json.MarshalIndent(results, "", "  ")
+		if err != nil {
+			return &JSONRPCResponse{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &JSONRPCError{
+					Code:    -32603,
+					Message: "Internal error",
+				},
+			}
+		}
+
+		result = CallToolResult{
+			Content: []TextContent{
+				{Type: "text", Text: fmt.Sprintf("Found %d customizations:\n\n```json\n%s\n```", len(results), string(jsonBytes))},
+			},
+		}
+
+	case "list_agents":
+		category, _ := params.Arguments["category"].(string)
+		agents := h.discoveryService.ListByType(discovery.TypeAgent, category)
+
+		jsonBytes, err := json.MarshalIndent(agents, "", "  ")
+		if err != nil {
+			return &JSONRPCResponse{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &JSONRPCError{
+					Code:    -32603,
+					Message: "Internal error",
+				},
+			}
+		}
+
+		result = CallToolResult{
+			Content: []TextContent{
+				{Type: "text", Text: fmt.Sprintf("NAV Copilot Agents (%d total):\n\n```json\n%s\n```", len(agents), string(jsonBytes))},
+			},
+		}
+
+	case "list_instructions":
+		instructions := h.discoveryService.ListByType(discovery.TypeInstruction, "")
+
+		jsonBytes, err := json.MarshalIndent(instructions, "", "  ")
+		if err != nil {
+			return &JSONRPCResponse{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &JSONRPCError{
+					Code:    -32603,
+					Message: "Internal error",
+				},
+			}
+		}
+
+		result = CallToolResult{
+			Content: []TextContent{
+				{Type: "text", Text: fmt.Sprintf("NAV Copilot Instructions (%d total):\n\n```json\n%s\n```", len(instructions), string(jsonBytes))},
+			},
+		}
+
+	case "list_prompts":
+		prompts := h.discoveryService.ListByType(discovery.TypePrompt, "")
+
+		jsonBytes, err := json.MarshalIndent(prompts, "", "  ")
+		if err != nil {
+			return &JSONRPCResponse{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &JSONRPCError{
+					Code:    -32603,
+					Message: "Internal error",
+				},
+			}
+		}
+
+		result = CallToolResult{
+			Content: []TextContent{
+				{Type: "text", Text: fmt.Sprintf("NAV Copilot Prompts (%d total):\n\n```json\n%s\n```", len(prompts), string(jsonBytes))},
+			},
+		}
+
+	case "list_skills":
+		skills := h.discoveryService.ListByType(discovery.TypeSkill, "")
+
+		jsonBytes, err := json.MarshalIndent(skills, "", "  ")
+		if err != nil {
+			return &JSONRPCResponse{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &JSONRPCError{
+					Code:    -32603,
+					Message: "Internal error",
+				},
+			}
+		}
+
+		result = CallToolResult{
+			Content: []TextContent{
+				{Type: "text", Text: fmt.Sprintf("NAV Copilot Skills (%d total):\n\n```json\n%s\n```", len(skills), string(jsonBytes))},
+			},
+		}
+
+	case "get_installation_guide":
+		typeStr, _ := params.Arguments["type"].(string)
+		name, _ := params.Arguments["name"].(string)
+
+		var customType discovery.CustomizationType
+		switch typeStr {
+		case "agent":
+			customType = discovery.TypeAgent
+		case "instruction":
+			customType = discovery.TypeInstruction
+		case "prompt":
+			customType = discovery.TypePrompt
+		case "skill":
+			customType = discovery.TypeSkill
+		default:
+			return &JSONRPCResponse{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &JSONRPCError{
+					Code:    -32602,
+					Message: fmt.Sprintf("Invalid type: %s", typeStr),
+				},
+			}
+		}
+
+		guide, err := h.discoveryService.GenerateInstallationGuide(customType, name)
+		if err != nil {
+			return &JSONRPCResponse{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &JSONRPCError{
+					Code:    -32602,
+					Message: err.Error(),
+				},
+			}
+		}
+
+		result = CallToolResult{
+			Content: []TextContent{
+				{Type: "text", Text: guide},
 			},
 		}
 

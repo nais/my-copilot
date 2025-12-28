@@ -659,7 +659,7 @@ export default async function BestPractices() {
                     <br />
                     <strong>Aktivering:</strong> @agent-name
                     <br />
-                    <strong>Eksempel:</strong> test-agent, review-agent
+                    <strong>Eksempel:</strong> @nais-agent, @aksel-agent, @kafka-agent
                     <br />
                     <strong>Filformat:</strong> .github/agents/*.agent.md
                   </BodyShort>

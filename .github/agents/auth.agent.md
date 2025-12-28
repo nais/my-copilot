@@ -1,5 +1,5 @@
 ---
-name: auth
+name: auth-agent
 description: Expert on Azure AD, TokenX, ID-porten, Maskinporten, and JWT validation for Nav applications
 ---
 

@@ -1,2 +1,5 @@
 apps/mcp-registry/bin/mcp-registry
-apps/mcp-hello-world/bin/mcp-hello-world
+apps/mcp-onboarding/bin/mcp-onboarding
+apps/mcp-onboarding/bin/generate-manifest
+apps/mcp-onboarding/coverage.out
+apps/mcp-onboarding/bin/mcp-hello-world

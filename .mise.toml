@@ -1,0 +1,54 @@
+# Root-level mise tasks for the monorepo
+# These tasks orchestrate running tasks across all apps
+
+[tasks.check]
+description = "Run all checks across all apps"
+run = '''
+#!/usr/bin/env bash
+set -e
+
+echo "🔍 Running checks across all apps..."
+echo ""
+
+cd apps/mcp-onboarding && echo "📦 mcp-onboarding:" && mise check && echo ""
+cd ../mcp-registry && echo "📦 mcp-registry:" && mise check && echo ""
+cd ../my-copilot && echo "📦 my-copilot:" && mise check && echo ""
+
+echo "✅ All checks passed"
+'''
+
+[tasks.test]
+description = "Run tests across all apps"
+run = '''
+#!/usr/bin/env bash
+set -e
+
+echo "🧪 Running tests across all apps..."
+echo ""
+
+cd apps/mcp-onboarding && echo "📦 mcp-onboarding:" && mise test && echo ""
+cd ../mcp-registry && echo "📦 mcp-registry:" && mise test && echo ""
+cd ../my-copilot && echo "📦 my-copilot:" && mise test && echo ""
+
+echo "✅ All tests passed"
+'''
+
+[tasks.build]
+description = "Build all apps"
+run = '''
+#!/usr/bin/env bash
+set -e
+
+echo "🔨 Building all apps..."
+echo ""
+
+cd apps/mcp-onboarding && echo "📦 mcp-onboarding:" && mise build && echo ""
+cd ../mcp-registry && echo "📦 mcp-registry:" && mise build && echo ""
+cd ../my-copilot && echo "📦 my-copilot:" && mise build && echo ""
+
+echo "✅ All apps built successfully"
+'''
+
+[tasks.all]
+description = "Run all checks, tests, and builds across all apps"
+depends = ["check", "test", "build"]

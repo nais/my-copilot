@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/navikt/copilot/mcp-onboarding/internal/discovery"
 )
 
 type Config struct {
@@ -70,7 +72,21 @@ func main() {
 	store := NewTokenStore()
 	githubClient := NewGitHubClient(cfg.GitHubClientID, cfg.GitHubClientSecret)
 	oauthServer := NewOAuthServer(cfg.BaseURL, githubClient, store, cfg.AllowedOrganization)
-	mcpHandler := NewMCPHandler(githubClient)
+
+	// Initialize discovery service with embedded manifest
+	discoveryService := discovery.NewService("navikt", "copilot", "main", cfg.BaseURL)
+	if err := discoveryService.LoadManifest(); err != nil {
+		slog.Error("failed to load embedded manifest", "error", err)
+		os.Exit(1)
+	}
+	manifest := discoveryService.GetManifest()
+	slog.Info("loaded customizations manifest",
+		"agents", len(manifest.Agents),
+		"instructions", len(manifest.Instructions),
+		"prompts", len(manifest.Prompts),
+		"skills", len(manifest.Skills),
+	)
+	mcpHandler := NewMCPHandler(githubClient, discoveryService)
 	authMiddleware := NewAuthMiddleware(store)
 
 	mux := http.NewServeMux()
@@ -93,7 +109,7 @@ func main() {
 		IdleTimeout:  120 * time.Second,
 	}
 
-	slog.Info("starting mcp-hello-world server",
+	slog.Info("starting mcp-onboarding server",
 		"port", cfg.Port,
 		"base_url", cfg.BaseURL,
 		"allowed_org", cfg.AllowedOrganization,
@@ -123,10 +139,10 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	_, _ = w.Write([]byte(`<!DOCTYPE html>
 <html>
-<head><title>Nav MCP Hello World</title></head>
+<head><title>Nav MCP Hello World + Discovery</title></head>
 <body>
-<h1>Nav MCP Hello World Server</h1>
-<p>This is a reference MCP (Model Context Protocol) server with GitHub OAuth authentication.</p>
+<h1>Nav MCP Hello World + Discovery Server</h1>
+<p>This is a reference MCP (Model Context Protocol) server with GitHub OAuth authentication and NAV Copilot customization discovery.</p>
 <h2>Endpoints</h2>
 <ul>
 <li><a href="/.well-known/oauth-authorization-server">OAuth Authorization Server Metadata</a></li>
@@ -140,6 +156,12 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 <li><code>whoami</code> - Returns information about the authenticated user</li>
 <li><code>echo</code> - Echoes back a message</li>
 <li><code>get_time</code> - Returns the current server time</li>
+<li><code>search_customizations</code> - Search NAV Copilot customizations</li>
+<li><code>list_agents</code> - List all NAV Copilot agents</li>
+<li><code>list_instructions</code> - List all NAV Copilot instructions</li>
+<li><code>list_prompts</code> - List all NAV Copilot prompts</li>
+<li><code>list_skills</code> - List all NAV Copilot skills</li>
+<li><code>get_installation_guide</code> - Get installation guide for a customization</li>
 </ul>
 </body>
 </html>`))

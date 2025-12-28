@@ -1,5 +1,5 @@
 ---
-name: kafka-events
+name: kafka-agent
 description: Expert on Rapids & Rivers event-driven architecture, Kafka patterns, and event schema design
 ---
 

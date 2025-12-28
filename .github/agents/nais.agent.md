@@ -1,5 +1,5 @@
 ---
-name: nais-platform
+name: nais-agent
 description: Expert on Nais deployment, GCP resources, Kafka topics, and platform troubleshooting
 ---
 

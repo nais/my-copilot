@@ -1,5 +1,5 @@
 ---
-name: security-champion
+name: security-champion-agent
 description: Expert on Nav security practices, Nais security features, and threat modeling
 ---
 
