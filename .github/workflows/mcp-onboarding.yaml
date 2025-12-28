@@ -10,6 +10,7 @@ on:
       - '.github/prompts/**'
       - '.github/skills/**'
       - '.github/workflows/mcp-onboarding.yaml'
+      - '.github/workflows/mise-build-deploy-nais.yaml'
   pull_request:
     branches: [main]
     paths:
@@ -19,6 +20,7 @@ on:
       - '.github/prompts/**'
       - '.github/skills/**'
       - '.github/workflows/mcp-onboarding.yaml'
+      - '.github/workflows/mise-build-deploy-nais.yaml'
   workflow_dispatch:
 
 concurrency:

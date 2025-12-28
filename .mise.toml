@@ -10,9 +10,17 @@ set -e
 echo "🔍 Running checks across all apps..."
 echo ""
 
-cd apps/mcp-onboarding && echo "📦 mcp-onboarding:" && mise check && echo ""
-cd ../mcp-registry && echo "📦 mcp-registry:" && mise check && echo ""
-cd ../my-copilot && echo "📦 my-copilot:" && mise check && echo ""
+echo "📦 mcp-onboarding:"
+(cd apps/mcp-onboarding && mise check)
+echo ""
+
+echo "📦 mcp-registry:"
+(cd apps/mcp-registry && mise check)
+echo ""
+
+echo "📦 my-copilot:"
+(cd apps/my-copilot && mise check)
+echo ""
 
 echo "✅ All checks passed"
 '''
@@ -26,9 +34,17 @@ set -e
 echo "🧪 Running tests across all apps..."
 echo ""
 
-cd apps/mcp-onboarding && echo "📦 mcp-onboarding:" && mise test && echo ""
-cd ../mcp-registry && echo "📦 mcp-registry:" && mise test && echo ""
-cd ../my-copilot && echo "📦 my-copilot:" && mise test && echo ""
+echo "📦 mcp-onboarding:"
+(cd apps/mcp-onboarding && mise test)
+echo ""
+
+echo "📦 mcp-registry:"
+(cd apps/mcp-registry && mise test)
+echo ""
+
+echo "📦 my-copilot:"
+(cd apps/my-copilot && mise test)
+echo ""
 
 echo "✅ All tests passed"
 '''
@@ -42,9 +58,17 @@ set -e
 echo "🔨 Building all apps..."
 echo ""
 
-cd apps/mcp-onboarding && echo "📦 mcp-onboarding:" && mise build && echo ""
-cd ../mcp-registry && echo "📦 mcp-registry:" && mise build && echo ""
-cd ../my-copilot && echo "📦 my-copilot:" && mise build && echo ""
+echo "📦 mcp-onboarding:"
+(cd apps/mcp-onboarding && mise build)
+echo ""
+
+echo "📦 mcp-registry:"
+(cd apps/mcp-registry && mise build)
+echo ""
+
+echo "📦 my-copilot:"
+(cd apps/my-copilot && mise build)
+echo ""
 
 echo "✅ All apps built successfully"
 '''
