@@ -1,4 +1,3 @@
-````chatagent
 ---
 name: research-agent
 description: Expert at researching codebases, investigating issues, analyzing patterns, and gathering context before implementation
