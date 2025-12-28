@@ -1,5 +1,5 @@
 ---
-name: aksel-design
+name: aksel-agent
 description: Expert on Nav Aksel Design System, spacing tokens, responsive layouts, and component patterns
 ---
 
