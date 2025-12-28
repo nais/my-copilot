@@ -5,7 +5,7 @@
 Monorepo containing NAV's GitHub Copilot ecosystem tools:
 
 - **my-copilot** - Self-service portal for managing Copilot subscriptions (Next.js 16)
-- **mcp-hello-world** - Reference MCP server with GitHub OAuth (Go)
+- **mcp-onboarding** - Reference MCP server with GitHub OAuth (Go)
 - **mcp-registry** - Public registry for NAV-approved MCP servers (Go)
 
 All applications deployed on NAIS platform with environment-specific configurations.
@@ -161,13 +161,13 @@ formatNumber(151354); // "151 354" (Norwegian locale)
 
 ---
 
-## apps/mcp-hello-world (Go + MCP)
+## apps/mcp-onboarding (Go + MCP)
 
 Reference MCP server demonstrating GitHub OAuth authentication for VS Code integration.
 
 ### Commands
 
-Working directory: `apps/mcp-hello-world`
+Working directory: `apps/mcp-onboarding`
 
 **Run after all changes:** `mise check`
 
@@ -187,7 +187,7 @@ Working directory: `apps/mcp-hello-world`
 ### Architecture
 
 ```
-VS Code (MCP Client) ←→ mcp-hello-world (OAuth + MCP Server) ←→ GitHub OAuth
+VS Code (MCP Client) ←→ mcp-onboarding (OAuth + MCP Server) ←→ GitHub OAuth
 ```
 
 **Flow:**

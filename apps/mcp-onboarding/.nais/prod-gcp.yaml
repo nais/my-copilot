@@ -7,7 +7,7 @@ memory_limit: 256Mi
 cpu_request: 100m
 memory_request: 128Mi
 ingresses:
-  - https://mcp-hello-world.intern.nav.no
-base_url: https://mcp-hello-world.intern.nav.no
+  - https://mcp-onboarding.intern.nav.no
+base_url: https://mcp-onboarding.intern.nav.no
 allowed_organization: navikt
 log_level: INFO

@@ -13,7 +13,7 @@ run = "go mod download"
 
 [tasks.build]
 description = "Build the Go application"
-run = "go build -o bin/mcp-hello-world ."
+run = "go build -o bin/mcp-onboarding ."
 
 [tasks.test]
 description = "Run all tests with verbose output"
@@ -134,13 +134,13 @@ run = ["go mod download", "go mod verify", "go mod tidy"]
 description = "Build Docker image"
 run = '''
 VERSION=${VERSION:-$(git rev-parse --short HEAD)}
-docker build -t ghcr.io/navikt/mcp-hello-world:$VERSION .
-docker tag ghcr.io/navikt/mcp-hello-world:$VERSION ghcr.io/navikt/mcp-hello-world:latest
+docker build -t ghcr.io/navikt/mcp-onboarding:$VERSION .
+docker tag ghcr.io/navikt/mcp-onboarding:$VERSION ghcr.io/navikt/mcp-onboarding:latest
 '''
 
 [tasks."docker:run"]
 description = "Run Docker container locally"
-run = "docker run --rm -p 8080:8080 ghcr.io/navikt/mcp-hello-world:latest"
+run = "docker run --rm -p 8080:8080 ghcr.io/navikt/mcp-onboarding:latest"
 
 [env]
 GO111MODULE = "on"

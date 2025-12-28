@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/navikt/copilot/mcp-hello-world/internal/discovery"
+	"github.com/navikt/copilot/mcp-onboarding/internal/discovery"
 )
 
 func main() {

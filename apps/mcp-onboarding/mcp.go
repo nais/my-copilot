@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/navikt/copilot/mcp-hello-world/internal/discovery"
+	"github.com/navikt/copilot/mcp-onboarding/internal/discovery"
 )
 
 type MCPHandler struct {
@@ -251,7 +251,7 @@ func (h *MCPHandler) handleInitialize(req *JSONRPCRequest) *JSONRPCResponse {
 			},
 		},
 		ServerInfo: ServerInfo{
-			Name:    "mcp-hello-world-discovery",
+			Name:    "mcp-onboarding",
 			Version: "2.0.0",
 		},
 	}

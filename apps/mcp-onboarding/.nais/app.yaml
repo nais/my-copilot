@@ -1,7 +1,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: mcp-hello-world
+  name: mcp-onboarding
   namespace: {{namespace}}
   labels:
     team: {{team}}
@@ -41,4 +41,4 @@ spec:
     - name: LOG_LEVEL
       value: "{{log_level}}"
   envFrom:
-    - secret: mcp-hello-world-secrets
+    - secret: mcp-onboarding-secrets

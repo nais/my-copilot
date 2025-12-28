@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/navikt/copilot/mcp-hello-world/internal/discovery"
+	"github.com/navikt/copilot/mcp-onboarding/internal/discovery"
 	"gopkg.in/yaml.v3"
 )
 

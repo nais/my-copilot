@@ -60,7 +60,7 @@ This MCP server is pre-approved on Nav's enterprise allow list and available thr
   "github.copilot.chat.mcp.servers": {
     "nav-discovery": {
       "type": "streamable-http",
-      "url": "https://mcp-hello-world.nav.no/mcp"
+      "url": "https://mcp-onboarding.nav.no/mcp"
     }
   }
 }
@@ -169,7 +169,7 @@ These customizations enforce Nav's core principles:
 │   ├── README.prompts.md
 │   ├── README.skills.md
 │   └── README.collections.md
-└── apps/                 # Nav applications (my-copilot, mcp-registry, mcp-hello-world)
+└── apps/                 # Nav applications (my-copilot, mcp-registry, mcp-onboarding)
 ```
 
 ## 🎯 Why Use Nav Copilot Customizations?
@@ -220,17 +220,17 @@ mise run check     # Run all checks (fmt, vet, staticcheck, lint, test)
 mise run validate  # Validate allowlist.json
 ```
 
-### mcp-hello-world
+### mcp-onboarding
 
 Reference MCP server with GitHub OAuth authentication and **Nav Copilot customization discovery**.
 
-- **Location**: `apps/mcp-hello-world/`
+- **Location**: `apps/mcp-onboarding/`
 - **Tech**: Go 1.25, OAuth 2.1 with PKCE, MCP JSON-RPC, YAML frontmatter parsing
-- **Public URL**: `https://mcp-hello-world.nav.no/mcp`
+- **Public URL**: `https://mcp-onboarding.nav.no/mcp`
 - **Purpose**:
   - Template for building authenticated MCP servers with organization access control
   - Discovery server for browsing and installing Nav Copilot customizations
-- **Registry**: Published as `io.github.navikt/hello-world-discovery`
+- **Registry**: Published as `io.github.navikt/mcp-onboarding`
 - **Features**:
   - 🔐 GitHub OAuth with Nav organization validation
   - 🔍 Search across 6 agents, 4 instructions, 3 prompts
@@ -240,7 +240,7 @@ Reference MCP server with GitHub OAuth authentication and **Nav Copilot customiz
 **Commands:**
 
 ```bash
-cd apps/mcp-hello-world
+cd apps/mcp-onboarding
 mise run generate  # Generate customizations manifest from .github files
 mise run dev       # Run with DEBUG logging
 mise run check     # Run all checks (fmt, vet, lint, test)

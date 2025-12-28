@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/navikt/copilot/mcp-hello-world/internal/discovery"
+	"github.com/navikt/copilot/mcp-onboarding/internal/discovery"
 )
 
 type Config struct {
@@ -109,7 +109,7 @@ func main() {
 		IdleTimeout:  120 * time.Second,
 	}
 
-	slog.Info("starting mcp-hello-world server",
+	slog.Info("starting mcp-onboarding server",
 		"port", cfg.Port,
 		"base_url", cfg.BaseURL,
 		"allowed_org", cfg.AllowedOrganization,

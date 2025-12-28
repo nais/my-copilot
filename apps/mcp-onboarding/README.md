@@ -1,4 +1,4 @@
-# Nav MCP Hello World + Discovery
+# Nav MCP Onboarding
 
 A reference MCP (Model Context Protocol) server demonstrating GitHub OAuth authentication and NAV Copilot customization discovery for use with GitHub Copilot in VS Code.
 
@@ -16,7 +16,7 @@ This server implements:
 
 ```text
 ┌─────────────────┐     ┌──────────────────────────────┐     ┌─────────────┐
-│   VS Code       │────▶│  mcp-hello-world + Discovery │────▶│   GitHub    │
+│   VS Code       │────▶│  mcp-onboarding + Discovery │────▶│   GitHub    │
 │   (MCP Client)  │◀────│  (OAuth + MCP + Discovery)   │◀────│   OAuth     │
 └─────────────────┘     └──────────────────────────────┘     └─────────────┘
 ```
@@ -116,7 +116,7 @@ mise run install    # Download dependencies
 mise run generate   # Generate copilot-manifest.json from .github files
 mise run check      # Run all checks (fmt, vet, lint, test, generate:check)
 mise run test       # Run tests
-mise run build      # Build binary to bin/mcp-hello-world
+mise run build      # Build binary to bin/mcp-onboarding
 mise run dev        # Run with DEBUG logging
 mise run lint       # Run golangci-lint
 ```
@@ -140,8 +140,8 @@ Always run `mise run generate` after adding or modifying agent, instruction, pro
 
 Automatic deployment via GitHub Actions on merge to main and pull requests.
 
-- **Production**: `https://mcp-hello-world.nav.no`
-- **Development**: `https://mcp-hello-world.intern.dev.nav.no`
+- **Production**: `https://mcp-onboarding.nav.no`
+- **Development**: `https://mcp-onboarding.intern.dev.nav.no`
 
 Deployed to Nais using the reusable `mise-build-deploy-nais` workflow.
 
@@ -162,7 +162,7 @@ Deployed to Nais using the reusable `mise-build-deploy-nais` workflow.
 
 This server is registered in Nav's MCP registry:
 
-- **Server Name**: `io.github.navikt/hello-world-discovery`
+- **Server Name**: `io.github.navikt/mcp-onboarding`
 - **Version**: 2.0.0
 - **Capabilities**: OAuth 2.1, Hello World tools, NAV Copilot customization discovery
 
