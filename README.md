@@ -1,19 +1,19 @@
-# Nav Copilot Customizations
+# 🤖 Nav Copilot Customizations
 
-This repository contains reusable GitHub Copilot customizations (agents, instructions, prompts, and skills) for building Nav applications following Nav's development standards and Nais platform patterns.
+A curated collection of GitHub Copilot customizations for building Nav applications following Nav's development standards, including Aksel design system, Nais platform patterns, and Security Playbook.
 
-## 📚 Overview
+## 🚀 What is Nav Copilot Customizations?
 
-All customizations are located in the `.github` directory and can be installed using the VS Code tasks provided in this repository.
+This repository provides specialized GitHub Copilot customizations for the Nav ecosystem:
 
-- **6 Agents** - Specialized AI assistants for specific domains
-- **4 Instructions** - File-pattern-based code generation rules
-- **3 Prompts** - Quick scaffolding templates
-- **5 Skills** - Production patterns from Nav repositories
+- **🤖 [6 Custom Agents](#-agents)** - Specialized AI assistants for Nav-specific domains (Nais, Aksel, Kafka, Auth, Observability, Security)
+- **📋 [4 Instructions](#-instructions)** - File-pattern-based coding standards that apply automatically
+- **⚡ [3 Prompts](#-prompts)** - Quick scaffolding templates for common Nav patterns
+- **🎯 [5 Skills](#-skills)** - Production-proven patterns extracted from real Nav repositories
 
-## 🚀 Quick Start
+## 🔧 How to Use
 
-### Install All Customizations
+### Installing Customizations
 
 Run the task: **"Install Nav Copilot Customizations"** from VS Code tasks menu (`Cmd+Shift+P` → "Tasks: Run Task")
 
@@ -29,159 +29,41 @@ Or install individually:
 
 ## 🤖 Agents
 
-Specialized AI assistants you can invoke with `@agent-name` in Copilot Chat.
+Specialized AI assistants for the Nav ecosystem. Use them by calling `@agent-name` in Copilot Chat or when assigning issues to Copilot coding agent.
 
-### @auth
+**Available agents:** @nais-agent, @auth-agent, @kafka-agent, @aksel-agent, @observability-agent, @security-champion-agent
 
-Expert on Azure AD, TokenX, ID-porten authentication
-
-Use for:
-
-- Azure AD authentication for internal Nav users
-- TokenX service-to-service token exchange
-- ID-porten citizen authentication (BankID/MinID)
-- JWT validation and role-based access control
-
-### @aksel-design
-
-Expert on Nav Aksel Design System
-
-Use for:
-
-- Converting Tailwind spacing to Aksel tokens
-- Responsive layouts with Box, VStack, HStack, HGrid
-- Mobile-first design (xs, sm, md, lg, xl breakpoints)
-- Norwegian number formatting
-
-### @security-champion
-
-Expert on Nav security practices and Nais security
-
-Use for:
-
-- Network policies and access controls
-- Secrets management with Azure Key Vault
-- GDPR compliance (data retention, audit logging)
-- Security testing and vulnerability response
-
-### @nais-platform
-
-Expert on Nais platform deployment
-
-Use for:
-
-- Creating `.nais/app.yaml` manifests
-- Adding PostgreSQL, Kafka, observability
-- Health endpoints configuration
-- Troubleshooting pod startup issues
-
-### @kafka-events
-
-Expert on Rapids & Rivers event-driven architecture
-
-Use for:
-
-- Creating Kafka event consumers (Rivers)
-- Designing event schemas (past tense, immutable)
-- Publishing events with proper metadata
-- Testing with TestRapid
-
-### @observability
-
-Expert on Prometheus, OpenTelemetry, Grafana
-
-Use for:
-
-- Health endpoints (`/isalive`, `/isready`, `/metrics`)
-- Business metrics and alerting rules
-- OpenTelemetry tracing
-- DORA metrics tracking
+👉 **[View full agent documentation →](docs/README.agents.md)**
 
 ---
 
 ## 📋 Instructions
 
-File-pattern-based rules that Copilot applies automatically when creating or modifying files.
+File-pattern-based rules that Copilot applies automatically when creating or modifying files matching specific patterns.
 
-### Testing Instructions
+**Available instructions:** Testing, Kotlin/Ktor, Next.js/Aksel, Database migrations
 
-**Applies to:** `**/*.test.{ts,tsx,kt,kts}`
-
-Standards for Kotlin (Kotest) and TypeScript (Jest) tests with coverage requirements.
-
-### Kotlin/Ktor Instructions
-
-**Applies to:** `**/*.kt`
-
-ApplicationBuilder patterns, sealed class config, Kotliquery database access, Rapids & Rivers.
-
-### Next.js/Aksel Instructions
-
-**Applies to:** `src/**/*.{tsx,ts}`
-
-**CRITICAL**: Enforces Aksel spacing tokens instead of Tailwind padding/margin. Mobile-first responsive design.
-
-### Database Instructions
-
-**Applies to:** `**/db/migration/**/*.sql`
-
-Flyway migration standards: naming conventions, schema patterns, safe alterations.
+👉 **[View full instructions documentation →](docs/README.instructions.md)**
 
 ---
 
 ## ⚡ Prompts
 
-Quick scaffolding templates accessible via Copilot Chat.
+Quick scaffolding templates accessible via Copilot Chat using `/prompt-name` or `#prompt-name`.
 
-### #aksel-component
+**Available prompts:** #aksel-component, #kafka-topic, #nais-manifest
 
-Scaffold responsive React components with Aksel Design System.
-
-```text
-#aksel-component Create a user profile card
-```
-
-### #kafka-topic
-
-Add Kafka topic to Nais manifest and create event handlers.
-
-```text
-#kafka-topic Add topic for user-events
-```
-
-### #nais-manifest
-
-Generate production-ready Nais application manifest.
-
-```text
-#nais-manifest Create manifest with PostgreSQL and Azure AD
-```
+👉 **[View full prompts documentation →](docs/README.prompts.md)**
 
 ---
 
 ## 🎯 Skills
 
-Production patterns extracted from real Nav repositories.
+Production patterns extracted from real Nav repositories with bundled templates and resources.
 
-### TokenX Auth
+**Available skills:** TokenX Auth, Observability Setup, Aksel Spacing, Kotlin App Config, Flyway Migration
 
-Service-to-service authentication with token exchange and caching patterns.
-
-### Observability Setup
-
-Complete observability: health endpoints, metrics, tracing, alerts, DORA metrics.
-
-### Aksel Spacing
-
-Responsive layout patterns using Aksel spacing tokens (NO Tailwind padding/margin).
-
-### Kotlin App Config
-
-Type-safe environment configuration with sealed classes (Local/Dev/Prod).
-
-### Flyway Migration
-
-Database migrations with versioned SQL scripts and safe schema changes.
+👉 **[View full skills documentation →](docs/README.skills.md)**
 
 ---
 
@@ -203,6 +85,30 @@ These customizations enforce Nav's core principles:
 - **Platform**: Nais (Kubernetes on GCP)
 - **Auth**: Azure AD, TokenX, ID-porten, Maskinporten
 - **Observability**: Prometheus, Grafana Loki, Tempo (OpenTelemetry)
+
+## 📖 Repository Structure
+
+```plaintext
+├── .github/
+│   ├── agents/           # Custom GitHub Copilot agents (.agent.md)
+│   ├── instructions/     # File-pattern-based coding standards (.instructions.md)
+│   ├── prompts/          # Task-specific scaffolding templates (.prompt.md)
+│   └── skills/           # Production patterns with bundled resources
+├── docs/                 # Detailed documentation for each customization type
+│   ├── README.agents.md
+│   ├── README.instructions.md
+│   ├── README.prompts.md
+│   ├── README.skills.md
+│   └── README.collections.md
+└── apps/                 # Nav applications (my-copilot, mcp-registry, mcp-hello-world)
+```
+
+## 🎯 Why Use Nav Copilot Customizations?
+
+- **Nav-Specific**: Pre-configured for Nais platform, Aksel Design System, and Nav tech stack
+- **Production-Proven**: Patterns extracted from real Nav applications
+- **Consistent Standards**: Enforces Nav development principles and best practices
+- **Developer Productivity**: Reduces context-switching and repetitive setup work
 
 ---
 
@@ -269,12 +175,12 @@ mise run build    # Build binary
 
 To add new customizations:
 
-1. **Agents**: Add `*.agent.md` to `.github/agents/`
+1. **Agents**: Add `*.agent.md` to `.github/agents/` following the [agent naming conventions](#-agents)
 2. **Instructions**: Add `*.instructions.md` to `.github/instructions/`
 3. **Prompts**: Add `*.prompt.md` to `.github/prompts/`
 4. **Skills**: Add folder with `SKILL.md` to `.github/skills/`
 
-Update the tasks in `.vscode/tasks.json` to include installation steps for new files.
+For detailed contribution guidelines and development setup, see [AGENTS.md](AGENTS.md).
 
 ---
 
