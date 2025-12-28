@@ -131,8 +131,6 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       name: ${{ steps.name.outputs.name }}
-      image-base: ${{ inputs.artifact-registry }}/${{ inputs.artifact-repo }}/${{ steps.name.outputs.name }}
-      image: ${{ inputs.artifact-registry }}/${{ inputs.artifact-repo }}/${{ steps.name.outputs.name }}:${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
         with:
