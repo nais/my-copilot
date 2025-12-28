@@ -6,11 +6,13 @@ on:
     paths:
       - 'apps/mcp-registry/**'
       - '.github/workflows/mcp-registry.yaml'
+      - '.github/workflows/mise-build-deploy-nais.yaml'
   pull_request:
     branches: [main]
     paths:
       - 'apps/mcp-registry/**'
       - '.github/workflows/mcp-registry.yaml'
+      - '.github/workflows/mise-build-deploy-nais.yaml'
   workflow_dispatch:
 
 concurrency:
