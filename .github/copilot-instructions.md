@@ -340,3 +340,15 @@ mise check
 # Back to root
 cd ../..
 ```
+
+---
+
+# Build and Verify
+
+**IMPORTANT**: After making any code or documentation changes, run `mise all` from the repository root to build and verify all applications:
+
+```bash
+mise all
+```
+
+This runs all checks across all applications to ensure nothing is broken.
