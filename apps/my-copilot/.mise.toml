@@ -18,6 +18,10 @@ description = "Run ESLint"
 run = "pnpm check"
 description = "Run lint, typecheck, and tests"
 
+[tasks.test]
+run = "pnpm test"
+description = "Run Jest tests"
+
 [tasks.build]
 run = "pnpm build"
 description = "Build Next.js production bundle"
