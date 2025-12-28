@@ -149,13 +149,13 @@
       "type": "agent",
       "name": "security-champion-agent",
       "displayName": "@security-champion-agent",
-      "description": "Expert on Nav security practices, Nais security features, and threat modeling",
-      "category": "platform",
+      "description": "Expert on Nav security architecture, threat modeling, compliance, and holistic security practices",
+      "category": "security",
       "tags": [
-        "nais",
-        "kubernetes",
-        "deployment",
-        "infrastructure"
+        "security",
+        "compliance",
+        "gdpr",
+        "vulnerability"
       ],
       "filePath": ".github/agents/security-champion.agent.md",
       "useCases": [
