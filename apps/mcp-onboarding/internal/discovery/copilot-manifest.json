@@ -123,6 +123,30 @@
     },
     {
       "type": "agent",
+      "name": "research-agent",
+      "displayName": "@research-agent",
+      "description": "Expert at researching codebases, investigating issues, analyzing patterns, and gathering context before implementation",
+      "filePath": ".github/agents/research.agent.md",
+      "useCases": [
+        "Creating .nais/app.yaml manifests",
+        "Azure AD integration",
+        "TokenX token exchange",
+        "Creating Kafka event consumers",
+        "Designing event schemas",
+        "Converting Tailwind to Aksel tokens",
+        "Responsive layouts",
+        "Health endpoints",
+        "Business metrics",
+        "OpenTelemetry tracing",
+        "Network policies",
+        "Secrets management",
+        "GDPR compliance"
+      ],
+      "installUrl": "vscode:chat-agent/install?url=https://raw.githubusercontent.com/navikt/copilot/main/.github/agents/research.agent.md",
+      "rawUrl": "https://raw.githubusercontent.com/navikt/copilot/main/.github/agents/research.agent.md"
+    },
+    {
+      "type": "agent",
       "name": "security-champion-agent",
       "displayName": "@security-champion-agent",
       "description": "Expert on Nav security practices, Nais security features, and threat modeling",
