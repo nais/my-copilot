@@ -52,6 +52,53 @@ These standards apply across Nav projects. Project-specific guidelines follow be
 - Required endpoints: `/isalive`, `/isready`, `/metrics`
 - OpenTelemetry auto-instrumentation for observability
 
+### Writing Effective Agents
+
+Based on [GitHub's analysis of 2,500+ repositories](https://github.blog/ai-and-ml/github-copilot/how-to-write-a-great-agents-md-lessons-from-over-2500-repositories/), follow these patterns when creating or updating agents in `.github/agents/`:
+
+**Structure (in order):**
+
+1. **Frontmatter** - Name and description in YAML
+2. **Persona** - One sentence: who you are and what you specialize in
+3. **Commands** - Executable commands early, with flags and expected output
+4. **Related Agents** - Table of agents to delegate to
+5. **Core Content** - Code examples over explanations (show, don't tell)
+6. **Boundaries** - Three-tier system at the end
+
+**Six Core Areas to Cover:**
+
+- Commands (with flags and options)
+- Testing patterns
+- Project structure
+- Code style (✅ Good / ❌ Bad examples)
+- Git workflow
+- Boundaries
+
+**Three-Tier Boundaries:**
+
+```markdown
+## Boundaries
+
+### ✅ Always
+- Run `mise check` after changes
+- Use parameterized queries
+
+### ⚠️ Ask First
+- Modifying production configs
+- Changing auth mechanisms
+
+### 🚫 Never
+- Commit secrets to git
+- Skip input validation
+```
+
+**Key Principles:**
+
+- **Commands early**: Put executable commands near the top, not buried at the bottom
+- **Code over prose**: Show real code examples, not descriptions of what code should do
+- **Specific stack**: Include versions (`Next.js 16`, `Go 1.23`, `Kotlin 2.0`)
+- **Actionable boundaries**: "Never commit secrets" not "I cannot access secrets"
+
 ---
 
 # Application-Specific Guidelines
@@ -340,3 +387,15 @@ mise check
 # Back to root
 cd ../..
 ```
+
+---
+
+# Build and Verify
+
+**IMPORTANT**: After making any code or documentation changes, run `mise all` from the repository root to build and verify all applications:
+
+```bash
+mise all
+```
+
+This runs all checks across all applications to ensure nothing is broken.

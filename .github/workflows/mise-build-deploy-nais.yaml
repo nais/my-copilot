@@ -131,8 +131,6 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       name: ${{ steps.name.outputs.name }}
-      image-base: ${{ inputs.artifact-registry }}/${{ inputs.artifact-repo }}/${{ steps.name.outputs.name }}
-      image: ${{ inputs.artifact-registry }}/${{ inputs.artifact-repo }}/${{ steps.name.outputs.name }}:${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
         with:
@@ -325,6 +323,7 @@ jobs:
         with:
           team: ${{ inputs.nais-team }}
           tag: ${{ needs.meta.outputs.version }}
+          image_suffix: ${{ needs.meta.outputs.name }}
           push_image: ${{ github.ref == 'refs/heads/main' || (inputs.deploy-pr-to-dev && github.event_name == 'pull_request') }}
           dockerfile: ${{ inputs.working-directory != '.' && format('{0}/{1}', inputs.working-directory, inputs.dockerfile-path) || inputs.dockerfile-path }}
           docker_context: ${{ inputs.working-directory != '.' && format('{0}/{1}', inputs.working-directory, inputs.docker-context) || inputs.docker-context }}
