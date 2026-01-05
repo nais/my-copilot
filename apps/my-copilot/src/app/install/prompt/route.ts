@@ -4,9 +4,10 @@ import { NextRequest } from "next/server";
 // Allowed VS Code prompt installation URL patterns
 // Only allows vscode: or vscode-insiders: scheme with chat-prompt/install path
 // and a url parameter pointing to raw.githubusercontent.com/navikt/
+// Note: Next.js automatically URL-decodes query params, so we match decoded URLs
 const ALLOWED_PATTERNS = [
-  /^vscode:chat-prompt\/install\?url=https%3A%2F%2Fraw\.githubusercontent\.com%2Fnavikt%2F/,
-  /^vscode-insiders:chat-prompt\/install\?url=https%3A%2F%2Fraw\.githubusercontent\.com%2Fnavikt%2F/,
+  /^vscode:chat-prompt\/install\?url=https:\/\/raw\.githubusercontent\.com\/navikt\//,
+  /^vscode-insiders:chat-prompt\/install\?url=https:\/\/raw\.githubusercontent\.com\/navikt\//,
 ];
 
 /**
