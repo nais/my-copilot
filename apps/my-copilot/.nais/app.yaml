@@ -29,6 +29,7 @@ spec:
       - /_next/**
       - /*.svg
       - /favicon.ico
+      - /install/**
   observability:
     autoInstrumentation:
       enabled: true
