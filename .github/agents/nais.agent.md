@@ -55,7 +55,7 @@ kubectl rollout restart deployment/<app-name> -n <namespace>
 ## Related Agents
 
 | Agent | Use For |
-|-------|---------||
+|-------|---------|
 | `@auth-agent` | Azure AD, TokenX, ID-porten configuration |
 | `@observability-agent` | Prometheus, Grafana, alerting setup |
 | `@kafka-agent` | Kafka topic configuration and Rapids & Rivers |
