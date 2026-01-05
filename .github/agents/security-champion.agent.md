@@ -159,45 +159,55 @@ spec:
 
 **NEVER commit secrets to Git.**
 
+Use [Nais Console](https://console.nav.cloud.nais.io/) to create and manage secrets for your team. See the official documentation:
+- [Create and manage secrets in Console](https://docs.nais.io/services/secrets/how-to/console/)
+- [Use a secret in your workload](https://docs.nais.io/services/secrets/how-to/workload/)
+
+**Creating a secret in Console:**
+1. Open [Nais Console](https://console.nav.cloud.nais.io/)
+2. Select your team
+3. Select the `Secrets` tab
+4. Click `Create Secret`
+5. Select environment, enter name, and add key-value pairs
+
+**Expose secret as environment variables:**
+
 ```yaml
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
   name: my-app
 spec:
-  # Azure Key Vault (recommended)
-  azure:
-    application:
-      enabled: true
-      allowAllUsers: false
-      claims:
-        extra:
-          - azp_name
+  # All key-value pairs become environment variables
+  envFrom:
+    - secret: my-app-secrets
+```
 
-  # Secrets from Kubernetes (legacy)
+**Mount secret as files:**
+
+```yaml
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+spec:
+  # Each key becomes a file at the mount path
   filesFrom:
     - secret: my-app-secrets
       mountPath: /var/run/secrets/my-app
-
-  # Environment variables from secrets
-  envFrom:
-    - secret: my-app-config
 ```
 
-**Accessing Azure Key Vault**:
+**Accessing secrets in code:**
 
 ```kotlin
-import com.azure.identity.DefaultAzureCredentialBuilder
-import com.azure.security.keyvault.secrets.SecretClientBuilder
+// Environment variable (from envFrom)
+val apiKey = System.getenv("API_KEY")
 
-val credential = DefaultAzureCredentialBuilder().build()
-val secretClient = SecretClientBuilder()
-    .vaultUrl("https://my-keyvault.vault.azure.net/")
-    .credential(credential)
-    .buildClient()
-
-val apiKey = secretClient.getSecret("api-key").value
+// File-based secret (from filesFrom)
+val dbPassword = File("/var/run/secrets/my-app/DB_PASSWORD").readText()
 ```
+
+> **Note**: When you edit a secret in Console, workloads using that secret automatically restart to receive updated values.
 
 ### Resource Limits
 
@@ -749,7 +759,7 @@ Use this checklist for security reviews. Specialized agents can help with specif
 - [ ] Path traversal prevention
 
 ## Secrets & Data
-- [ ] Secrets in Azure Key Vault or K8s secrets (not in code)
+- [ ] Secrets managed in [Nais Console](https://docs.nais.io/services/secrets/how-to/console/) (not in code)
 - [ ] Encryption at rest for sensitive data
 - [ ] No sensitive data in logs
 - [ ] Error messages don't leak sensitive info
@@ -908,7 +918,7 @@ From [sikkerhet.nav.no/docs/verktoy](https://sikkerhet.nav.no/docs/verktoy/):
 - Use parameterized queries, never string concatenation
 - Validate all inputs at the boundary
 - Define `accessPolicy` for every service
-- Use Azure Key Vault or K8s secrets, never hardcoded
+- Use Nais Console secrets, never hardcoded
 - Log security events with CEF format
 - Follow Golden Path priorities in order
 
